@@ -865,3 +865,211 @@ window.ALTS = {
     },
   },
 };
+
+// ── Transcript-vs-PitchBook exit reconciliation (Carry tab). For each firm, the last 2 earnings calls
+//    (S&P Global) vs PitchBook exits in the same window. verdict: Match | Partial | Diverge.
+window.ALTS.exitRecon = {
+  "BX": {
+    "verdict": "Partial",
+    "transcripts": [
+      "Q4 2025 — Jan 29, 2026",
+      "Q1 2026 — Apr 23, 2026"
+    ],
+    "pbExits": "18 exits, ~$46.4B disclosed TV (Wiz $32B dominates Q1; ex-Wiz ~$14.4B)",
+    "note": "Directional match on exit momentum but significant PitchBook gaps. Management named Resolution Life (PB: $8.2B Oct 31 2025, confirmed) and ARKA Group / 'aerospace & defense company' (PB: $2.6B Mar 9 2026, confirmed). Wiz ($32B Q1 2026) is the single largest PB exit and was NOT referenced in the April 23 transcript. Medline IPO ($7.2B, described as 'largest PE-backed IPO since 2021') was heavily discussed but does NOT appear in PB for Q4 2025 or Q1 2026 — likely captured in a prior period or Medline is a minority stake. Net realizations reported: Q4 +59% YoY ($957M) and Q1 +26% YoY ($448M). Management cited near-term slowdown (Iran-Israel war) on the Q1 call.",
+    "points": [
+      "MATCH: Resolution Life Group exit ($8.2B, Oct 31, 2025) — confirmed in both Q4 2025 transcript and PitchBook",
+      "MATCH: ARKA Group / 'aerospace & defense company' exit ($2.6B, Mar 9, 2026) — confirmed in Q1 2026 transcript and PitchBook",
+      "GAP: Wiz exit ($32B, Q1 2026) in PitchBook but not referenced by management in the Q1 transcript",
+      "GAP: Medline IPO ($7.2B) discussed extensively in transcripts but absent from PitchBook for Q4 2025 and Q1 2026",
+      "TONE: Management described realizations as 'accelerating' (Q4) with Q1 pace 'moderating' near-term due to geopolitical uncertainty"
+    ]
+  },
+  "KKR": {
+    "verdict": "Partial",
+    "transcripts": [
+      "Q4 2025 — Feb 5, 2026",
+      "Q1 2026 — May 5, 2026"
+    ],
+    "pbExits": "8 exits, ~$14.64B disclosed TV (Resolution Life $8.2B dominates Q4)",
+    "note": "Transcript monetization figures materially exceed PitchBook exit count — KKR's $880M Q1 monetization includes public secondary sales and dividend recaps not captured as PitchBook exit events. Named exits: OneStream Software (4.5x cost, cited in Q1 transcript) appears in PitchBook as Apr 1 2026 — on the Q1/Q2 border. CoolIT Systems (~15x cost, cited in Q1) not in PitchBook. Hyundai Marine Solutions secondary (7x+ cost, cited) in PitchBook as May 2025 — a prior period. Management acknowledged the $7 ANI/unit 2026 target is 'challenging' due to delayed exit activity; Q1 realized carry $720M (+120% YoY) was the bright spot. Forward pipeline described as 'largest ever' at $1.2B+.",
+    "points": [
+      "MATCH: Kito Crosby ($2.7B, Q1 2026) and Novaria Group ($2.2B, Q1 2026) both confirmed in PitchBook",
+      "MATCH: Resolution Life ($8.2B, Q4 2025) confirmed in PitchBook",
+      "BORDER: OneStream Software — transcript cites Q1 exit (4.5x cost) but PitchBook date is Apr 1, 2026 (technically Q2)",
+      "GAP: CoolIT Systems (~15x return, cited in Q1 transcript) absent from PitchBook entirely",
+      "GAP: Hyundai Marine Solutions secondary (cited as Q1 event) in PitchBook as May 2025 — prior period timing mismatch",
+      "TONE: Management noted $7 ANI target likely unachievable in 2026; $1.2B forward pipeline described as 'largest ever'"
+    ]
+  },
+  "APO": {
+    "verdict": "Partial",
+    "transcripts": [
+      "Q4 2025 — Feb 9, 2026",
+      "Q1 2026 — May 6, 2026"
+    ],
+    "pbExits": "10 exits, ~$8.32B disclosed TV (Aspen $3.5B and AB InBev $2.9B dominate Q1)",
+    "note": "Apollo's transcripts center on credit origination and insurance (Athene AUM), not traditional PE exit activity. Realized performance fees in Q4 came from Fund X catch-up carry (first time above escrow hurdle), Accord+ portfolio monetization, and credit hedge fund fee crystallization — structures not visible as PitchBook exit events. QXO ($753M, Jan 20 2026), Aspen Insurance ($3.5B, Feb 24 2026), and AB InBev metal containers ($2.9B, Jan 30 2026) are all plausible portfolio exits and appear in PitchBook for Q1 2026 — but management did not name them on the calls. Jim Zelter stated explicitly: 'our performance in 2026 is not going to be market-dependent on the equity market.' Apollo's $71B origination target and insurance balance sheet growth dominated Q1 commentary.",
+    "points": [
+      "PLAUSIBLE: QXO ($753M, Jan 2026), Aspen Insurance ($3.5B, Feb 2026), AB InBev containers ($2.9B, Jan 2026) in PitchBook and within transcript period — but management did not name these assets",
+      "STRUCTURE: Q4 realized carry largely from Fund X escrow release and Accord+ credit portfolio — not PE exits captured in PitchBook",
+      "DIVERGE: Transcripts make no reference to traditional PE exit pipeline; PitchBook shows 10 exits across the 2 quarters",
+      "TONE: 'Performance in 2026 is not going to be market-dependent on the equity market' (Jim Zelter, Q1 2026) — credit/insurance orientation confirmed",
+      "TONE: $71B origination target and Athene AUM growth dominated both calls; PE realizations treated as incidental"
+    ]
+  },
+  "ARES": {
+    "verdict": "Partial",
+    "transcripts": [
+      "Q4 2025 — Feb 5, 2026",
+      "Q1 2026 — May 1, 2026"
+    ],
+    "pbExits": "19 exits, ~$22.75B disclosed TV (Clario $8.875B and GHX $5B dominate Q1)",
+    "note": "Ares transcripts focus almost entirely on credit metrics (portfolio EBITDA growth ~10%, LTV in 40s%, 2.2x interest coverage), fundraising records, and European-style carry accrual — not named PE exits. The two largest Q1 PitchBook exits (Clario $8.875B and Global Healthcare Exchange $5B) were NOT mentioned in the May 1 transcript. X-energy IPO was highlighted on the Q1 call (cost ~$100M, fair value ~$700M), but the IPO closed late April 2026 — technically Q2. Jarrod Phillips guided to ~$350M European-style realized performance income in 2026 (double 2025 level). Q4 call described 2026 as 'most significant year for realization of European-style performance fees ever.'",
+    "points": [
+      "GAP: Clario ($8.875B, Q1 2026) and Global Healthcare Exchange ($5B, Q1 2026) are the two largest PitchBook exits but absent from Q1 transcript",
+      "TIMING: X-energy IPO celebrated in Q1 transcript but IPO completed late April 2026 — technically Q2; not in PitchBook for Q1",
+      "STRUCTURE: European-style carry means Ares does not realize performance fees until full capital return — so large Q1 PB exits may not yet generate realized carry in financial statements",
+      "TONE: Q4 2025 call: '2026 most significant year for realization of European-style performance fees ever'; Q1 2026 confirms $350M guidance",
+      "TONE: Credit portfolio health dominates both calls — EBITDA growth ~10%, LTV in low-40s%, 2.2x interest coverage cited as evidence of portfolio resilience"
+    ]
+  },
+  "BAM": {
+    "verdict": "Partial",
+    "transcripts": [
+      "Q1 2026 (May 8, 2026)",
+      "Q4 2025 (Feb 4, 2026)"
+    ],
+    "pbExits": "0 exits, $0 disclosed TV across the 2 quarters (Oct 2025–Mar 2026)",
+    "note": "BAM's PitchBook entity is essentially empty — only 2 all-time exits (Livensa Living Mar 2025, Energy Infrastructure Trust May 2024), both outside the window. Management cited $8B of equity proceeds from monetization in Q1 2026 and $50B for full-year 2025 (at the broader Brookfield ecosystem level), but these realizations sit under Brookfield Corporation's operating subsidiaries and funds, not under the BAM asset-management entity that PitchBook tracks. The 'Partial' verdict reflects genuine directional alignment (management is clearly active in monetizations) but a structural data gap that makes direct comparison impossible.",
+    "points": [
+      "Q1 2026: management said the platform 'invested or committed $34 billion and generated approximately $8 billion of equity proceeds from monetization' in the quarter, with expectations that 'activity will further build as the year progresses.'",
+      "Q4 2025 full-year summary: 'we monetized $50 billion of equity from investments at very good returns, demonstrating that stabilized high-quality assets and essential service businesses continue to attract strong demand.'",
+      "Forward commentary is constructive: 'M&A has picked up, particularly in larger strategic transactions where buyers are moving with greater conviction'; 'sponsors are seeking to return capital, which is contributing to increased deal supply.'",
+      "No individual portfolio company exits were named in either transcript — consistent with BAM's role as a fee-earning asset manager; monetization disclosures occur at the Brookfield Corporation and fund level.",
+      "PitchBook BAM entity captures virtually no exits (0 in the study window, 2 all-time), so the data source cannot validate or contradict management's commentary; the sparse PitchBook record is expected given how Brookfield is structured."
+    ]
+  },
+  "CG": {
+    "verdict": "Partial",
+    "transcripts": [
+      "Q1 2026 (May 7, 2026)",
+      "Q4 2025 (Feb 6, 2026)"
+    ],
+    "pbExits": "4 exits, ~$208M disclosed TV across the 2 quarters (Oct 2025–Mar 2026)",
+    "note": "Management's realization narrative is emphatically bullish — record $12B+ quarterly realization volumes, record U.S. buyout DPI, and high-profile IPOs (Medline, StandardAero, Hexaware, Rigaku) cited prominently. PitchBook captures only 4 small exits (The Atlas Group, Netceed, Schön Klinik secondary, Arctic Glacier) totaling ~$208M, nowhere near the multi-billion dollar volumes described. The directional signal — an active exit environment — aligns, but PitchBook's CG entity misses the major transactions (especially IPOs and large M&A) that drove Carlyle's reported realizations, likely because those sit under specific fund entities or are tracked under the issuing subsidiary rather than 'The Carlyle Group Inc.' as buyer.",
+    "points": [
+      "Q4 2025: Harvey Schwartz cited 'the largest sponsor-backed IPO of all time' in Medline (equity value $49B, IPO raised >$7B), plus StandardAero, Hexaware and Rigaku IPOs — 'we have been the #1 private equity sponsor globally by IPO proceeds, generating roughly $10 billion of IPO issuance over the past 2 years.'",
+      "Q4 2025: 'realized proceeds totaled $34 billion, almost 20% higher year-over-year and our second best year on record'; '$12 billion of proceeds in Q4 alone.'",
+      "Q1 2026: 'Realizations were more than $12 billion, reflecting the high quality of our portfolio'; 'record amount of capital to U.S. buyout fund investors this quarter, a rate which is more than 40% higher than our prior record set in 2021.'",
+      "Q1 2026: CP VII returned nearly $5B in proceeds in Q1 alone (DPI now >70%); net realized performance revenue of only $21M because 'most exits were in funds not yet realizing carry, notably CP VII and CP VIII' — management telegraphed upcoming carry from Japan IV, Financial Services Fund III, and European Tech Fund IV.",
+      "PitchBook captures 4 modest exits in the window (The Atlas Group, Netceed at $82M, Schön Klinik secondary, Arctic Glacier at $126M) — materially understates Carlyle's actual realization activity; the gap likely reflects that large IPOs and M&A exits are recorded under fund or company entities, not The Carlyle Group Inc. as seller."
+    ]
+  },
+  "TPG": {
+    "verdict": "Match",
+    "transcripts": [
+      "Q1 2026 (May 1, 2026)",
+      "Q4 2025 (Feb 5, 2026)"
+    ],
+    "pbExits": "6 exits, ~$3,650M disclosed TV across the 2 quarters (Oct 2025–Mar 2026)",
+    "note": "TPG's management commentary and PitchBook data are directionally consistent and the named exit types overlap well. Management cited ~$9B of Q1 2026 realizations (doubled YoY) with named exits in OneOncology (to Cencora) and Intersect Power digital business (to Google), plus the Curium Pharma CV. PitchBook records Ouro Medicines ($1,675M M&A, Mar 2026) in Q1 and a cluster of health/biotech exits in Q4 2025 (Elektrofi $810M, BETA Technologies $1,015M IPO, Saluda Medical $150M IPO, Fandom, ChemEOR), consistent with the active realization pace described. The ~$3.65B disclosed TV is plausible for a subset of the $9B+ management cited; PitchBook likely misses some exits (e.g. the OneOncology/Cencora deal, the Intersect/Google transaction) because they may be tracked differently.",
+    "points": [
+      "Q1 2026: Jon Winkelried said 'we are off to a strong start for monetizations in 2026 with nearly $9 billion realized in the first quarter, which doubled year-over-year'; named strategic exits were OneOncology (sold to Cencora, TPG Capital) and Intersect Power's digital power business (sold to Google, Rise Climate), both achieved within 4 years of initial investment.",
+      "Q1 2026: '$68 million in realized performance allocations in the quarter, exceeding the $50 million we had previously guided to' — anchored by the OneOncology and Intersect Power sales.",
+      "Q4 2025: TPG generated '$23 billion of realizations in 2025' with 'double-digit value creation across nearly all platforms'; Q4 alone included the Wireless Logic EUR 2B GP-led CV (largest single-asset CV in Europe in 2025) and $48M of realized performance allocations primarily from the credit platform.",
+      "Forward commentary: management maintains 'an active pipeline of liquidity prospects across each of our strategies' and expects 'strong and consistent pace to continue or even accelerate' assuming favorable market conditions; focus areas include Japan real estate, digital infrastructure, and GP-led secondaries.",
+      "PitchBook records 6 exits in the window totaling ~$3.65B disclosed TV, including BETA Technologies ($1,015M IPO Nov 2025), Elektrofi ($810M M&A Nov 2025), Ouro Medicines ($1,675M M&A Mar 2026), Saluda Medical ($150M IPO Dec 2025) and Fandom/ChemEOR — directionally consistent with management's active-exit narrative, though PitchBook likely captures only a subset of the total $9B+ Q1 volume."
+    ]
+  },
+  "PGHN": {
+    "verdict": "Match",
+    "transcripts": [
+      "FY2025 (2026-03-10)",
+      "H1 2025 (2025-09-02)"
+    ],
+    "pbExits": "8 exits, ~$13.5B disclosed TV across the 2 reports",
+    "note": "Transcript claims +47% exit activity increase. PB shows ~8 sized exits totaling ~$13.5B in 2025. Directional consistency: management narrative of high-activity realization year is supported by volume and size of PB entries. Performance fee of CHF 819M consistent with scale of realizations.",
+    "points": [
+      "Apex Logistics: transcript named (H1 2025) → PB $996M Oct 2025 (MATCH)",
+      "Klarna IPO: transcript described public-market exit → PB $1372M Sep 2025 (MATCH)",
+      "AmSurg: transcript named → PB $3900M Jun 2025 (MATCH)",
+      "Vermaat: transcript named → PB $1743M Dec 2025 (MATCH)",
+      "VSB Holding: not named in transcript excerpt but PB records $1570M Apr 2025",
+      "Form Technologies: not named in transcript excerpt, PB $1074M Jan 2025",
+      "Techem: management referenced agreed sale in H1 2025; not found in exits.js — likely European data gap or not yet closed"
+    ]
+  },
+  "EQT": {
+    "verdict": "Partial",
+    "transcripts": [
+      "FY2025 (2026-01-30)",
+      "Q1 2026 (2026-04-25)"
+    ],
+    "pbExits": "7 exits, ~$10.9B disclosed TV across the 2 reports",
+    "note": "EUR 19B fund exits in FY2025 vs PB ~$2.9B disclosed for 2025 = massive undercount (~85% gap). Even including Q1 2026 items, PB captures only ~$10.9B vs transcript's implied EUR 19B+ for funds alone plus $6.3B Galderma final. EQT's exit route is predominantly ECM block trades in listed vehicles (Galderma, Azelis, Kodiak, Beijer Ref) which appear only partially or with delay in PB. IFS completely absent.",
+    "points": [
+      "Galderma: transcript confirms multiple tranches + ~$20B capital gains total; PB shows $6.3B final block Mar 2026 (PARTIAL — PB only captures final tranche, mid-2025 tranches absent)",
+      "Azelis: transcript Q1'26 mentions partial sale; PB $225M Feb 2026 (MATCH)",
+      "Dellner Couplers: transcript Q1'26 named; PB $960M Feb 2026 (MATCH)",
+      "IFS minority at 7x MOIC (~EUR 3B): major exit NOT in PB exits.js",
+      "Galderma 2025 tranches ($20B cumulative): only final $6.3B block in PB",
+      "Thyssenkrupp elevator stake: absent from PB",
+      "Perficient: absent from PB"
+    ]
+  },
+  "CVC": {
+    "verdict": "Partial",
+    "transcripts": [
+      "FY2025 (2026-03-11)",
+      "H1 2025 (2025-09-04)"
+    ],
+    "pbExits": "5 exits, ~$6.5B disclosed TV across the 2 reports",
+    "note": "EUR 21.9B claimed vs ~$6.5B PB disclosed (all periods combined including post-period Naturgy) = ~70% undercount. CVC was a recent IPO (Apr 2024) and its PB coverage is very thin on historical exits. Named deals where both sources agree are consistent, but volume gap is enormous.",
+    "points": [
+      "OANDA: transcript H1'25 named; PB $250M Jan 2025 (MATCH)",
+      "Ethniki: transcript FY'25 named; PB $694M Nov 2025 (MATCH)",
+      "Alvogen: transcript FY'25 named; PB $2000M Dec 2025 (MATCH)",
+      "Naturgy: transcript FY'25 referenced (close 2026); PB $3587M May 2026 (MATCH — post period)",
+      "EUR 21.9B total FY2025 realizations vs PB ~$2.9B for 2025 alone: >85% of volume absent",
+      "Transcript cites 'most PE exits in Europe of any firm in 2025' — implies 20+ named deals; PB shows only 3 in 2025",
+      "Many European-domiciled PE exits (unnamed in transcript) not captured by PB investor-entity feed"
+    ]
+  },
+  "ICG": {
+    "verdict": "Partial",
+    "transcripts": [
+      "FY2026 (year ended Mar 31, 2026) (2026-05-21)",
+      "H1 2026 (6m ended Sep 30, 2025) (2025-11-18)"
+    ],
+    "pbExits": "6 exits, ~$4.6B disclosed TV across the 2 reports",
+    "note": "$7B claimed FY2026 vs PB ~$4.6B disclosed across broader period including FY2025 items = gap explained largely by ICG's credit-heavy strategy. Equity-facing exits (PSB Academy, With Intelligence, Ventura) are reasonably well-captured. The gap is structural (credit vs equity) not a PB data quality issue per se.",
+    "points": [
+      "With Intelligence: transcript FY2026 named; PB $1800M Nov 2025 (MATCH — also in PGHN feed as joint deal)",
+      "PSB Academy: transcript FY2026 named; PB $544M Jan 2026 (MATCH)",
+      "Amolyt Pharma: transcript referenced as prior-period exit; PB $1107M Jul 2024 (MATCH — in prior FY2025)",
+      "Bulk of ~$7B FY2026 realizations: PB shows only ~$2.7B for FY2026 period (Apr 2025-Mar 2026)",
+      "Credit/structured debt repayments: not recorded as equity exit events in PB — structurally absent",
+      "Multiple direct lending maturities referenced in H1 transcript: not in PB",
+      "Coverage: ICG's PB coverage gap is primarily structural: ICG is ~50% credit strategies (direct lending, CLOs, structured), whose exits/repayments do not appear in equity exit feeds. For ICG's equity PE book, PB coverage is estimated at 50-60%. For total AUM-level exits, PB captures ~30-40%."
+    ]
+  },
+  "BPT": {
+    "verdict": "Match",
+    "transcripts": [
+      "FY2025 (2026-03-12)",
+      "H1 2025 (2025-07-18)"
+    ],
+    "pbExits": "6 exits, ~$10.9B disclosed TV across the 2 reports",
+    "note": "EUR 8.1B LP returns (~$8.7B at ~1.08 EUR/USD) vs PB ~$10.9B disclosed. Close alignment, with PB slightly higher due to inclusion of Sun World ($1.4B, Mar 2026) and the infra exits being under separate PB entities not captured in BPT entity total. PE-side exits strongly corroborated; infra exits partially explained by separate entity structure.",
+    "points": [
+      "Dorna Sports: transcript named; PB $3659M Jul 2025 (MATCH)",
+      "Cruise.co.uk: transcript referenced H1; PB $341M Jul 2025 (MATCH)",
+      "Cyrus Herez: transcript named; PB $1400M Oct 2025 (MATCH)",
+      "Kereis: transcript named at 2.2x MOIC; PB $2332M Oct 2025 (MATCH)",
+      "Vermaat: transcript named (joint with PGHN); PB $1743M Dec 2025 (MATCH)",
+      "Sun World: PB $1425M Mar 2026 (in-period; not specifically named in transcript excerpt)",
+      "Brevo (SaaS exit): transcript named with strong MOIC; NOT in PB exits.js — European data gap"
+    ]
+  }
+};
