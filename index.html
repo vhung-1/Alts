@@ -13,7 +13,13 @@
   * { box-sizing: border-box; margin: 0; padding: 0; }
   html, body { background: #F5F0E8; }
   button { outline: none; font-family: inherit; }
-  ::-webkit-scrollbar { width: 7px; height: 7px; }
+  /* Global readability scale — enlarge the whole dashboard uniformly,
+     stepped down on narrower screens so it never forces horizontal scroll. */
+  .page { zoom: 1.35; }
+  @media (max-width: 1440px) { .page { zoom: 1.22; } }
+  @media (max-width: 1340px) { .page { zoom: 1.10; } }
+  @media (max-width: 1120px) { .page { zoom: 1.0; } }
+  ::-webkit-scrollbar { width: 9px; height: 9px; }
   ::-webkit-scrollbar-track { background: #F5F0E8; }
   ::-webkit-scrollbar-thumb { background: #C9BFA8; border-radius: 4px; }
   #boot { font-family: 'Inconsolata', monospace; color: #6B5E4A; padding: 40px; font-size: 13px; }
@@ -561,7 +567,7 @@
     return (
       <div style={{ minHeight:"100vh", background:T.bg, color:T.text, fontFamily:SANS }}>
         <div style={{ height:4, background:`linear-gradient(90deg, ${FIRM_ORDER.map(colorOf).join(",")})` }} />
-        <div style={{ maxWidth:1280, margin:"0 auto", padding:"24px 22px 70px" }}>
+        <div className="page" style={{ maxWidth:1080, margin:"0 auto", padding:"24px 22px 70px" }}>
           {/* header */}
           <div style={{ display:"flex", flexWrap:"wrap", gap:16, alignItems:"flex-end", marginBottom:22, paddingBottom:18, borderBottom:`1.5px solid ${T.borderFt}` }}>
             <div style={{ flex:1, minWidth:280 }}>
