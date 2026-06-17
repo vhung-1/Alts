@@ -38,9 +38,14 @@ Or just open `index.html` directly in a browser. **First paint needs network acc
 ## File structure
 
 ```
-index.html   Presentation only — design system, components, 5 tabs. Never needs editing to update data.
-data.js      The entire data layer (window.ALTS). Edit this each quarter.
-README.md    This file.
+index.html               Presentation only — design system, components, 5 tabs. No edits needed to refresh data.
+data.js                  Main data layer (window.ALTS): firms, fundraising, guidance, consensus, accrued carry, momentum.
+exits.js                 Full per-exit detail (window.ALTS_EXITS) powering the Carry > Exit activity quarterly tables
+                         (click a quarter to expand). One object per exit: {c,d,s,t,h,f} = company, date, size $M,
+                         type, holding (Maj/Min), fund (n/d — PitchBook's exit feed doesn't attribute the selling fund).
+VISIBLE_ALPHA_TEMPLATE.md  Prompt + JSON template to compile Visible Alpha consensus from a tearsheet (Section 3).
+.github/workflows/       GitHub Pages deploy workflow (auto-deploys main → vhung-1.github.io/Alts on every push).
+README.md                This file.
 ```
 
 ## Updating each quarter
