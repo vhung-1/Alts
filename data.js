@@ -47,6 +47,23 @@ window.ALTS = {
     { key:"netFlowsCredit", label:"Net flows → FPAUM (credit)", unit:"$B" },
   ],
 
+  // Near-term fundraising momentum (editorial ranking from the latest-call + PitchBook reads). Tier: Very High | High | Moderate | Steady.
+  fundraisingMomentum: [
+    { tk:"BX",  tier:"Very High", driver:"$69B raised in Q1 (~$250B LTM); BXLS VI & COF V hit hard caps, BCP Asia III at its $13B cap; Strategic Partners X (>$22B) + Energy Transition V now launching." },
+    { tk:"KKR", tier:"Very High", driver:"North America XIV closed at a record $23B; Asia V first close ~mid-26; Europe VI, Global Infra V & RE Americas IV in market; K-Series +80% YoY." },
+    { tk:"ARES",tier:"Very High", driver:"Record $30B Q1 (+46%); ASOF III closed ~$10B; ACF III at hard cap (Q2), SDL IV launching (Q3/Q4), data-center fund first close (summer). $125B 2028 target." },
+    { tk:"APO", tier:"Very High", driver:"$115B inflows incl. Athora/PIC ($50B organic); HVF III closed $6.5B, Accord VII $1.9B; Fund XI in market; origination $71B (+25%)." },
+    { tk:"EQT", tier:"High",      driver:"BPEA IX closed at its $15.6B hard cap (largest-ever Asia PE fund); EQT XI and Infrastructure VII both launching ~mid-26; record €1B Q1 evergreen net inflows." },
+    { tk:"CG",  tier:"High",      driver:"Fundraising 'super cycle': AlpInvest record $6.8B in Q1; CP X anchored by a $5B cornerstone (launch H2-26); new ABF strategy first close." },
+    { tk:"CVC", tier:"High",      driver:"Record €23B FY25; Secondaries VI (>$8.5B) nearing final close, Catalyst III oversubscribed ($2B); flagship Fund X in pre-marketing (launch early 2027)." },
+    { tk:"TPG", tier:"Moderate",  driver:"$50B+ 2026 target ($10B in Q1); Capital X & Healthcare III final closes H2; Rise Climate II final close Q3." },
+    { tk:"BAM", tier:"Moderate",  driver:"Expects largest-ever year; flagship PE $6B first close + flagship infra first close in 2026; AI infra fund; $40B Just Group mandate." },
+    { tk:"ICG", tier:"Moderate",  driver:"$17B in FY26 (beat plan); Europe IX (>€10B) nearing final close; LP Secondaries II (launched Dec-25) anchors FY27. $55B 4-yr target ~a year early." },
+    { tk:"BPT", tier:"Moderate",  driver:"€24B-by-2026 target on track (€14B raised); BE VIII first close Q2; ECP VI final close brought forward to H2." },
+    { tk:"PGHN",tier:"Steady",    driver:"$26B organic in FY25 (+22%); evergreen-led (33 vehicles); Direct Infra IV closes H1-26. Momentum is broad/recurring rather than flagship-spiky." },
+    { tk:"OWL", tier:"Steady",    driver:"$11B Q1 ($57B LTM); Net Lease VI tracking to its $7.5B hard cap by year-end; BODI IV initial close H2; perpetual/wealth vehicles drive steady flows." },
+  ],
+
   firms: {
 
     // ───────────────────────── BX (pending agent) ─────────────────────────
@@ -74,8 +91,9 @@ window.ALTS = {
       guidanceSummary:"No quantitative FRE guidance via the S&P tool (none returned). From the call: H2'26 management-fee acceleration as new drawdown funds (SP X, BETP V, BCP Asia III, BCP IX) come off fee holidays, partly offset by near-term BDC/wealth softness and RE headwinds. Realization pipeline strong but contingent on a Middle East resolution.",
       consensus:{ FRE:{act:1501}, PFRE:{act:448}, FRE_ps:{act:1.26}, DE_ps:{act:1.36} },
       exits:{ quarterly:{
-        "2024 Q4":{count:7,totalTV:1135}, "2025 Q1":{count:11,totalTV:1946}, "2025 Q2":{count:7,totalTV:3088},
-        "2025 Q3":{count:8,totalTV:11481}, "2025 Q4":{count:9,totalTV:9119}, "2026 Q1":{count:9,totalTV:36449} },
+        "2023 Q2":{count:13,totalTV:822}, "2023 Q3":{count:12,totalTV:1183}, "2023 Q4":{count:2,totalTV:0}, "2024 Q1":{count:9,totalTV:1305},
+        "2024 Q2":{count:9,totalTV:1133}, "2024 Q3":{count:9,totalTV:3925}, "2024 Q4":{count:8,totalTV:1135}, "2025 Q1":{count:8,totalTV:1946},
+        "2025 Q2":{count:10,totalTV:3469}, "2025 Q3":{count:7,totalTV:11101}, "2025 Q4":{count:10,totalTV:10178}, "2026 Q1":{count:9,totalTV:34579} },
         notable:[
           { company:"Wiz", exitDate:"2026-03-11", exitSize:"$32,000M", type:"M&A", investorSince:"2021", flag:"minority" },
           { company:"Resolution Life", exitDate:"2025-10-31", exitSize:"$8,200M", type:"M&A", investorSince:"2023", flag:"minority" },
@@ -117,13 +135,15 @@ window.ALTS = {
       guidanceSummary:"Held FRE and fundraising guidance but cut ANI below the initial $7/share target on delayed exits (volatility), with carry shifting to 2027+. Flagged a record >$1.2B forward-monetization pipeline (OneStream, CoolIT, Hyundai Marine, infra/PE). Strategic Holdings (>$350M) and insurance (~$300M+/qtr) maintained. (S&P guidance tool not used; transcript-sourced.)",
       consensus:{ FRE:{act:981}, PFRE:{act:720}, FRE_ps:{act:1.13}, DE_ps:{act:1.39} },
       exits:{ quarterly:{
-        "2024 Q4":{count:6,totalTV:8038}, "2025 Q1":{count:7,totalTV:15368}, "2025 Q2":{count:7,totalTV:642},
-        "2025 Q3":{count:7,totalTV:11748}, "2025 Q4":{count:5,totalTV:9743}, "2026 Q1":{count:4,totalTV:6300} },
+        "2023 Q2":{count:12,totalTV:8719}, "2023 Q3":{count:16,totalTV:3711}, "2023 Q4":{count:7,totalTV:2731}, "2024 Q1":{count:9,totalTV:3138},
+        "2024 Q2":{count:7,totalTV:339}, "2024 Q3":{count:4,totalTV:0}, "2024 Q4":{count:6,totalTV:8038}, "2025 Q1":{count:7,totalTV:15368},
+        "2025 Q2":{count:7,totalTV:642}, "2025 Q3":{count:6,totalTV:11646}, "2025 Q4":{count:6,totalTV:9743}, "2026 Q1":{count:4,totalTV:6300} },
         notable:[
           { company:"WME Group", exitDate:"2025-03-24", exitSize:"$13,000M", type:"Buyout", investorSince:"2021", flag:"minority — not PE seller" },
           { company:"Colonial Pipeline", exitDate:"2025-07-31", exitSize:"$9,000M", type:"Buyout", investorSince:"2010", flag:"~15% minority" },
           { company:"Resolution Life", exitDate:"2025-10-31", exitSize:"$8,200M", type:"M&A", investorSince:"2019", flag:"minority" },
           { company:"OneStream", exitDate:"2026-04-01", exitSize:"$6,415M", type:"Buyout", investorSince:"2019", flag:"minority; Q2'26 · 4.5x" },
+          { company:"OZ Minerals", exitDate:"2023-05-02", exitSize:"$5,900M", type:"M&A", investorSince:"2014", flag:"minority" },
           { company:"Darktrace", exitDate:"2024-10-01", exitSize:"$5,470M", type:"Buyout", investorSince:"2016", flag:"minority; KCM advisor" },
           { company:"Kito Crosby", exitDate:"2026-02-03", exitSize:"$2,700M", type:"M&A", investorSince:"2013", flag:"" },
           { company:"Seiyu", exitDate:"2025-07-01", exitSize:"$2,646M", type:"M&A", investorSince:"2021", flag:"" },
@@ -160,9 +180,12 @@ window.ALTS = {
       guidanceSummary:"The clearest quantitative guide of the group: 20%+ FRE growth and 10% SRE growth (at 11% alts return) both reaffirmed; net spread 120–125bps. Q2 origination expected even stronger than Q1's $71B (toward the $97B record); PIC contributes from Q2 at ~20bps on ~$125B AUM. 2029 targets unchanged and achievable without acquisitions.",
       consensus:{ FRE:{act:728}, FRE_ps:{act:1.17}, SRE_ps:{act:1.15}, DE_ps:{act:1.94} },
       exits:{ quarterly:{
-        "2024 Q4":{count:3,totalTV:null}, "2025 Q1":{count:2,totalTV:1211}, "2025 Q2":{count:2,totalTV:null},
-        "2025 Q3":{count:5,totalTV:833}, "2025 Q4":{count:4,totalTV:1172}, "2026 Q1":{count:6,totalTV:7153} },
+        "2023 Q2":{count:5,totalTV:414}, "2023 Q3":{count:2,totalTV:0}, "2023 Q4":{count:2,totalTV:108}, "2024 Q1":{count:2,totalTV:0},
+        "2024 Q2":{count:5,totalTV:63665}, "2024 Q3":{count:2,totalTV:2047}, "2024 Q4":{count:4,totalTV:0}, "2025 Q1":{count:3,totalTV:4011},
+        "2025 Q2":{count:2,totalTV:0}, "2025 Q3":{count:5,totalTV:833}, "2025 Q4":{count:7,totalTV:6262}, "2026 Q1":{count:7,totalTV:7153} },
         notable:[
+          { company:"Pioneer Natural Resources", exitDate:"2024-05-03", exitSize:"$63,000M", type:"M&A", investorSince:"N/A", flag:"minority — whole Exxon deal TV" },
+          { company:"MEG Energy", exitDate:"2025-11-13", exitSize:"$5,090M", type:"M&A", investorSince:"2006", flag:"minority" },
           { company:"Aspen Insurance Holdings", exitDate:"2026-02-24", exitSize:"$3,500M", type:"M&A", investorSince:"2019", flag:"minority" },
           { company:"NSI Industries", exitDate:"2026-06-09", exitSize:"$3,000M", type:"M&A", investorSince:"2020", flag:"minority; Q2'26" },
           { company:"Invited Clubs", exitDate:"2026-05-05", exitSize:"$3,000M", type:"Buyout", investorSince:"2017", flag:"Q2'26" },
@@ -203,8 +226,9 @@ window.ALTS = {
       guidanceSummary:"Reaffirmed all long-term targets: 16–20% FRE CAGR, 20–25% realized-income CAGR, ~20% annual dividend growth. For 2026 expects FRE margin expansion toward the top of the 0–150bps range; $125B cumulative fundraising target through 2028 explicitly reaffirmed.",
       consensus:{ FRE:{act:464}, PFRE:{act:75}, DE_ps:{act:1.24} },
       exits:{ quarterly:{
-        "2024 Q4":{count:3,totalTV:5}, "2025 Q1":{count:6,totalTV:2814}, "2025 Q2":{count:2,totalTV:null},
-        "2025 Q3":{count:8,totalTV:6079}, "2025 Q4":{count:8,totalTV:2563}, "2026 Q1":{count:16,totalTV:25046} },
+        "2023 Q2":{count:6,totalTV:1663}, "2023 Q3":{count:3,totalTV:232}, "2023 Q4":{count:7,totalTV:3302}, "2024 Q1":{count:3,totalTV:8},
+        "2024 Q2":{count:3,totalTV:411}, "2024 Q3":{count:2,totalTV:25}, "2024 Q4":{count:2,totalTV:0}, "2025 Q1":{count:5,totalTV:2814},
+        "2025 Q2":{count:5,totalTV:1100}, "2025 Q3":{count:6,totalTV:7441}, "2025 Q4":{count:6,totalTV:705}, "2026 Q1":{count:12,totalTV:19046} },
         notable:[
           { company:"Clario", exitDate:"2026-03-24", exitSize:"$8,875M", type:"M&A", investorSince:"2019", flag:"" },
           { company:"Global Healthcare Exchange", exitDate:"2026-02-05", exitSize:"$5,000M", type:"Buyout", investorSince:"2014", flag:"" },
@@ -246,8 +270,9 @@ window.ALTS = {
       guidanceSummary:"Formal S&P guidance limited to DPS ($0.5025). Management reaffirmed exceeding Investor-Day FRE targets for 2026 with outperformance 'largely secured'; step-changes from flagship PE fees turning on, flagship infra first close, the $40B Just Group mandate, and full Oaktree consolidation (Q2'26).",
       consensus:{ FRE:{act:772}, FRE_ps:{act:0.48}, DE_ps:{act:0.43} },
       exits:{ quarterly:{
-        "2024 Q4":{count:3,totalTV:405}, "2025 Q1":{count:2,totalTV:1537}, "2025 Q2":{count:null,totalTV:null},
-        "2025 Q3":{count:1,totalTV:null}, "2025 Q4":{count:3,totalTV:682}, "2026 Q1":{count:2,totalTV:233} },
+        "2023 Q2":{count:0,totalTV:0}, "2023 Q3":{count:0,totalTV:0}, "2023 Q4":{count:0,totalTV:0}, "2024 Q1":{count:0,totalTV:0},
+        "2024 Q2":{count:1,totalTV:0}, "2024 Q3":{count:0,totalTV:0}, "2024 Q4":{count:0,totalTV:0}, "2025 Q1":{count:1,totalTV:1249},
+        "2025 Q2":{count:0,totalTV:0}, "2025 Q3":{count:0,totalTV:0}, "2025 Q4":{count:0,totalTV:0}, "2026 Q1":{count:0,totalTV:0} },
         notable:[
           { company:"Aveo Group", exitDate:"2025-07-21", exitSize:"$2,515M", type:"Buyout", investorSince:"2019", flag:"parent entity" },
           { company:"Fundamental Income Properties", exitDate:"2025-07-23", exitSize:"$2,200M", type:"Buyout", investorSince:"2020", flag:"parent entity" },
@@ -284,21 +309,20 @@ window.ALTS = {
       guidanceSummary:"Reiterated Feb-2026 targets: $1.9B FRE, $6+ DE/share and $200B inflows by end-2028, with full confidence in achieving/exceeding each. For 2026: mid-to-high-single-digit FRE growth and accelerating management-fee growth as GPE/AlpInvest/Credit ramp. $0.35/qtr dividend maintained.",
       consensus:{ FRE:{act:300}, PFRE:{act:21}, DE_ps:{act:0.89} },
       exits:{ quarterly:{
-        "2024 Q4":{count:11,totalTV:3336}, "2025 Q1":{count:8,totalTV:1749}, "2025 Q2":{count:8,totalTV:426},
-        "2025 Q3":{count:8,totalTV:4474}, "2025 Q4":{count:10,totalTV:2951}, "2026 Q1":{count:7,totalTV:7507} },
+        "2023 Q2":{count:3,totalTV:0}, "2023 Q3":{count:6,totalTV:49}, "2023 Q4":{count:5,totalTV:1768}, "2024 Q1":{count:5,totalTV:1804},
+        "2024 Q2":{count:2,totalTV:50}, "2024 Q3":{count:6,totalTV:3061}, "2024 Q4":{count:4,totalTV:2105}, "2025 Q1":{count:5,totalTV:647},
+        "2025 Q2":{count:7,totalTV:426}, "2025 Q3":{count:4,totalTV:1183}, "2025 Q4":{count:6,totalTV:1969}, "2026 Q1":{count:2,totalTV:126} },
         notable:[
-          { company:"Neogov", exitDate:"2025-09-26", exitSize:"$3,000M", type:"Buyout", investorSince:"2021", flag:"" },
-          { company:"Golden Goose", exitDate:"2026-02-17", exitSize:"$2,958M", type:"Buyout", investorSince:"2017", flag:"" },
-          { company:"The Very Group", exitDate:"2026-01-09", exitSize:"$2,686M", type:"Buyout", investorSince:"2025", flag:"" },
+          { company:"Cogentrix Energy", exitDate:"2024-08-05", exitSize:"$3,000M", type:"Buyout", investorSince:"2012", flag:"" },
           { company:"Forgital Group", exitDate:"2024-12-17", exitSize:"$2,105M", type:"Buyout", investorSince:"2019", flag:"" },
-          { company:"StandardAero", exitDate:"2026-01-29", exitSize:"$1,550M", type:"Secondary", investorSince:"2004", flag:"" },
-          { company:"Hexaware Technologies", exitDate:"2025-02-19", exitSize:"$1,008M", type:"IPO", investorSince:"N/A", flag:"" },
+          { company:"McDonald's China", exitDate:"2024-01-30", exitSize:"$1,804M", type:"Secondary", investorSince:"2017", flag:"minority" },
+          { company:"Saverglass", exitDate:"2023-12-04", exitSize:"$1,434M", type:"M&A", investorSince:"2016", flag:"" },
           { company:"HSO Group", exitDate:"2025-08-13", exitSize:"$1,000M", type:"Buyout", investorSince:"2019", flag:"" },
-          { company:"Calastone", exitDate:"2025-10-14", exitSize:"$898M", type:"M&A", investorSince:"2020", flag:"" },
-          { company:"Tescan Group", exitDate:"2025-12-25", exitSize:"$678M", type:"M&A", investorSince:"2022", flag:"" },
+          { company:"Calastone", exitDate:"2025-10-14", exitSize:"$897M", type:"M&A", investorSince:"2020", flag:"" },
           { company:"1E", exitDate:"2025-01-31", exitSize:"$647M", type:"M&A", investorSince:"2021", flag:"" },
+          { company:"Prima Assicurazioni", exitDate:"2025-11-28", exitSize:"$542M", type:"M&A", investorSince:"2018", flag:"minority" },
         ],
-        summary:"PitchBook returned 141 of 4,181 records. Q1'26 strongest by TV (~$7.5B: Golden Goose, The Very Group, StandardAero) vs the transcript's $12B realized proceeds — undisclosed sizes make TV a subset. Q2'25 ($426M on 8 exits) understated." },
+        summary:"Clean 3-yr pull (PBID 10048-15): 58 unique exits from 93 raw rows. Biggest realizations Cogentrix $3.0B, Forgital $2.1B, McDonald's China $1.8B, Saverglass $1.4B. Transcript cited ~$12B Q1'26 realized proceeds (mostly CP VII) — far above PitchBook deal TV, which only captures announced transactions." },
     },
 
     // ───────────────────────── TPG ─────────────────────────
@@ -327,9 +351,11 @@ window.ALTS = {
       guidanceSummary:"Key 2026 targets: 47% FRE margin (vs 44.3% in Q1), $50B+ raised, continued double-digit FRE growth (LTM FRE >$1B). $140M of latent management fees embedded in $33B undeployed credit dry powder. No change to fundraising guidance despite macro volatility.",
       consensus:{ FRE:{act:247}, PFRE:{act:68}, DE_ps:{act:0.70} },
       exits:{ quarterly:{
-        "2024 Q4":{count:4,totalTV:2303}, "2025 Q1":{count:4,totalTV:1541}, "2025 Q2":{count:5,totalTV:315},
-        "2025 Q3":{count:4,totalTV:2353}, "2025 Q4":{count:4,totalTV:2398}, "2026 Q1":{count:5,totalTV:9000} },
+        "2023 Q2":{count:7,totalTV:2172}, "2023 Q3":{count:3,totalTV:7274}, "2023 Q4":{count:8,totalTV:1837}, "2024 Q1":{count:4,totalTV:141},
+        "2024 Q2":{count:3,totalTV:292}, "2024 Q3":{count:8,totalTV:2522}, "2024 Q4":{count:6,totalTV:2483}, "2025 Q1":{count:3,totalTV:191},
+        "2025 Q2":{count:8,totalTV:1449}, "2025 Q3":{count:3,totalTV:843}, "2025 Q4":{count:5,totalTV:1976}, "2026 Q1":{count:1,totalTV:1675} },
         notable:[
+          { company:"Creative Artists Agency", exitDate:"2023-09-27", exitSize:"$7,000M", type:"Buyout", investorSince:"2010", flag:"" },
           { company:"Intersect Power (digital power)", exitDate:"2026-Q1", exitSize:"$5,000M", type:"Asset sale (to Google)", investorSince:"N/A", flag:"Rise Climate" },
           { company:"Curium Pharma", exitDate:"2026-Q1", exitSize:"$3,800M", type:"Continuation vehicle", investorSince:"N/A", flag:"largest EU single-asset CV" },
           { company:"Ouro Medicines", exitDate:"2026-03-22", exitSize:"$1,675M", type:"M&A", investorSince:"2025", flag:"" },
@@ -408,8 +434,9 @@ window.ALTS = {
       guidanceSummary:"Primary guidance is qualitative: performance fees/income 25–40% of revenue medium-term (FY26 at ~25% on 2025 pull-forward), stable ~1.24% mgmt-fee margin and ~63% EBITDA margin. IFRS 18 from FY26 reclassifies investment income to revenue, modestly boosting reported margin only. No numeric AUM/EPS guidance. (S&P guidance tool: no data for PGHN.)",
       consensus:{},
       exits:{ quarterly:{
-        "2024 Q4":{count:3,totalTV:786}, "2025 Q1":{count:4,totalTV:2074}, "2025 Q2":{count:5,totalTV:5626},
-        "2025 Q3":{count:3,totalTV:1372}, "2025 Q4":{count:6,totalTV:4539}, "2026 Q1":{count:4,totalTV:4900} },
+        "2023 Q2":{count:1,totalTV:0}, "2023 Q3":{count:5,totalTV:0}, "2023 Q4":{count:2,totalTV:0}, "2024 Q1":{count:3,totalTV:967},
+        "2024 Q2":{count:3,totalTV:2625}, "2024 Q3":{count:3,totalTV:0}, "2024 Q4":{count:2,totalTV:786}, "2025 Q1":{count:4,totalTV:2074},
+        "2025 Q2":{count:4,totalTV:5626}, "2025 Q3":{count:3,totalTV:1532}, "2025 Q4":{count:6,totalTV:4539}, "2026 Q1":{count:3,totalTV:4000} },
         notable:[
           { company:"atNorth", exitDate:"2026-02-26", exitSize:"$4,000M", type:"M&A", investorSince:"2021", flag:"data centers/AI" },
           { company:"AmSurg", exitDate:"2025-06-17", exitSize:"$3,900M", type:"M&A", investorSince:"2023", flag:"" },
@@ -451,8 +478,9 @@ window.ALTS = {
       guidanceSummary:"Three pillars for 2026: (1) FRE margin toward the ≥55% medium-term target (52% in FY2025) on flat headcount + AI efficiency; (2) exit volumes ~in line with the record FY2025 (~€19B+/~30 events) with carry from four carry-mode funds (notably EQT VIII), but explicitly excluding Infra IV and EQT IX; (3) evergreen net inflows well above the €4B run-rate, plus the Coller combination (Q3'26) taking combined AUM to ~€312B. (S&P guidance tool: no data.)",
       consensus:{},
       exits:{ quarterly:{
-        "2024 Q4":{count:5,totalTV:null}, "2025 Q1":{count:2,totalTV:1500}, "2025 Q2":{count:2,totalTV:null},
-        "2025 Q3":{count:3,totalTV:1075}, "2025 Q4":{count:2,totalTV:338}, "2026 Q1":{count:4,totalTV:7510} },
+        "2023 Q2":{count:4,totalTV:1568}, "2023 Q3":{count:2,totalTV:480}, "2023 Q4":{count:2,totalTV:1503}, "2024 Q1":{count:2,totalTV:2062},
+        "2024 Q2":{count:1,totalTV:2101}, "2024 Q3":{count:3,totalTV:322}, "2024 Q4":{count:5,totalTV:0}, "2025 Q1":{count:2,totalTV:1500},
+        "2025 Q2":{count:2,totalTV:0}, "2025 Q3":{count:3,totalTV:1075}, "2025 Q4":{count:2,totalTV:338}, "2026 Q1":{count:4,totalTV:7510} },
         notable:[
           { company:"Galderma", exitDate:"2026-03-13", exitSize:"$6,325M", type:"Secondary (block trade)", investorSince:"2019", flag:"~$20B gain; largest sponsor block trade ever" },
           { company:"O2 Power", exitDate:"2025-01-10", exitSize:"$1,500M", type:"M&A", investorSince:"2019", flag:"India renewables" },
@@ -492,9 +520,12 @@ window.ALTS = {
       guidanceSummary:"Central target: €200B FPAUM by end-2028 at 10%+ CAGR. Near-term PRE flat in 2026 (carry recognition slips on macro/exit timing), stepping to ~€400M in 2027 (Asia V) and €1.2–1.5B combined in 2028–29 (Fund VIII). Cost discipline mid-to-high single digit; €850M dividend+buyback for 2025. (S&P guidance tool: no data.)",
       consensus:{},
       exits:{ quarterly:{
-        "2024 Q4":{count:2,totalTV:null}, "2025 Q1":{count:3,totalTV:250}, "2025 Q2":{count:2,totalTV:null},
-        "2025 Q3":{count:0,totalTV:null}, "2025 Q4":{count:2,totalTV:2694}, "2026 Q1":{count:1,totalTV:null} },
+        "2023 Q2":{count:3,totalTV:428}, "2023 Q3":{count:0,totalTV:0}, "2023 Q4":{count:0,totalTV:0}, "2024 Q1":{count:2,totalTV:2786},
+        "2024 Q2":{count:1,totalTV:220}, "2024 Q3":{count:2,totalTV:2000}, "2024 Q4":{count:1,totalTV:0}, "2025 Q1":{count:5,totalTV:250},
+        "2025 Q2":{count:1,totalTV:0}, "2025 Q3":{count:1,totalTV:0}, "2025 Q4":{count:3,totalTV:3514}, "2026 Q1":{count:2,totalTV:7623} },
         notable:[
+          { company:"Pension Insurance Corporation", exitDate:"2026-03-27", exitSize:"$7,623M", type:"Buyout", investorSince:"2017", flag:"minority" },
+          { company:"Worldwide Express", exitDate:"2026-06-01", exitSize:"$5,000M", type:"Buyout", investorSince:"2021", flag:"minority; Q2'26" },
           { company:"Naturgy Energy Group", exitDate:"2026-05-26", exitSize:"$3,587M", type:"Secondary (private)", investorSince:"2018", flag:"minority" },
           { company:"Alvogen Group", exitDate:"2025-12-03", exitSize:"$2,000M", type:"M&A", investorSince:"2015", flag:"" },
           { company:"Ethniki Hellenic Insurance", exitDate:"2025-11-27", exitSize:"$694M", type:"M&A", investorSince:"2022", flag:"" },
@@ -532,8 +563,9 @@ window.ALTS = {
       guidanceSummary:"ICG repositioned medium-term disclosure around FRE, performance fees and balance sheet (peer-aligned). FRE margin expands from 47% (ex catch-up); approaching zero net debt, opening capital-allocation optionality (dividends, buybacks, M&A given discount-to-peers, co-investment). Amundi partnership adds wealth distribution. (S&P guidance tool: no data.)",
       consensus:{},
       exits:{ quarterly:{
-        "2024 Q4":{count:2,totalTV:null}, "2025 Q1":{count:1,totalTV:null}, "2025 Q2":{count:1,totalTV:null},
-        "2025 Q3":{count:2,totalTV:731}, "2025 Q4":{count:1,totalTV:1800}, "2026 Q1":{count:2,totalTV:544} },
+        "2023 Q2":{count:1,totalTV:0}, "2023 Q3":{count:2,totalTV:0}, "2023 Q4":{count:1,totalTV:0}, "2024 Q1":{count:0,totalTV:0},
+        "2024 Q2":{count:2,totalTV:398}, "2024 Q3":{count:3,totalTV:1107}, "2024 Q4":{count:2,totalTV:0}, "2025 Q1":{count:1,totalTV:0},
+        "2025 Q2":{count:1,totalTV:0}, "2025 Q3":{count:2,totalTV:796}, "2025 Q4":{count:1,totalTV:1800}, "2026 Q1":{count:1,totalTV:544} },
         notable:[
           { company:"With Intelligence", exitDate:"2025-11-25", exitSize:"$1,800M", type:"M&A", investorSince:"2020", flag:"minority" },
           { company:"Akuo Energy", exitDate:"2025-07-04", exitSize:"$731M", type:"Buyout", investorSince:"N/A", flag:"minority" },
@@ -572,8 +604,9 @@ window.ALTS = {
       guidanceSummary:"Guides 13–16% revenue growth through the cycle with EBITDA margin stepping to 55–60% as BE VIII and ECP VI become fully fee-paying. PRE guided 20–25% of income (top end) for FY26–27, anchored by the Calpine/Constellation position. ~£2B of embedded balance-sheet cash over 5 years; prioritises M&A over buybacks. (S&P guidance tool: no data.)",
       consensus:{ PFRE:{act:151.6} },
       exits:{ quarterly:{
-        "2024 Q4":{count:2,totalTV:null}, "2025 Q1":{count:1,totalTV:null}, "2025 Q2":{count:1,totalTV:null},
-        "2025 Q3":{count:2,totalTV:4000}, "2025 Q4":{count:4,totalTV:5475}, "2026 Q1":{count:2,totalTV:1425} },
+        "2023 Q2":{count:2,totalTV:2664}, "2023 Q3":{count:1,totalTV:0}, "2023 Q4":{count:1,totalTV:0}, "2024 Q1":{count:1,totalTV:0},
+        "2024 Q2":{count:1,totalTV:0}, "2024 Q3":{count:2,totalTV:0}, "2024 Q4":{count:3,totalTV:0}, "2025 Q1":{count:0,totalTV:0},
+        "2025 Q2":{count:1,totalTV:0}, "2025 Q3":{count:2,totalTV:4000}, "2025 Q4":{count:4,totalTV:5475}, "2026 Q1":{count:2,totalTV:1425} },
         notable:[
           { company:"Dorna Sports (MotoGP)", exitDate:"2025-07-03", exitSize:"$3,659M", type:"M&A", investorSince:"2006", flag:"minority" },
           { company:"Kereis", exitDate:"2025-10-27", exitSize:"$2,332M", type:"Buyout", investorSince:"2020", flag:"" },
@@ -599,6 +632,16 @@ window.ALTS = {
     note: "Apollo net down ~$350M vs FY2025 (Fund IX + ANRP realizations).",
     asOf: "1Q26 (Mar 31, 2026)",
   },
+
+  // Section 4b — the 1-2 funds that drive each disclosing firm's accrued carry (watch list).
+  accruedFocus: {
+    KKR: "Co-Investment Vehicles ($1.84B gross) and Americas Fund XII ($1.44B) are the PE engines (~⅓ of PE carry); Global Infrastructure IV ($1.03B) leads Real Assets. Asian Fund III/IV are next into harvest.",
+    BX:  "BCP Global ($1.86B net) is the single biggest carry pool; Secondaries ($1.09B) and Energy/Transition ($1.01B) come next — these three drive most realizable PE carry.",
+    ARES:"Credit leads: ACE V ($131M net) and PCS II ($115M) are the funds to watch; ASOF II ($100M) is realizing down. Note ACOF VI's large gross ($617M) converts to little net (~98% comp).",
+    CG:  "CP VII ($409M net) is the key fund — stepped down and actively realizing (drove Q1 proceeds); CP VIII ($227M) is next. AlpInvest secondaries (ASF VII, $153M) is the new growth pool.",
+    APO: "Fund IX ($484M net) is the core PE carry (down on AOL/Aspen exits); Fund X ($215M) is building. Redding Ridge ($113M) leads the credit carry.",
+  },
+
   accrued: {
     KKR: {
       name:"KKR", color:"#B45309", period:"1Q26", periodEnd:"Mar 31, 2026",
