@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Alts Tracker — Fundraising · Guidance · Consensus · Carry</title>
+<!-- React + Babel via CDN (same pattern as the source carry-dashboard JSX). Works offline-fallback aware. -->
+<script crossorigin src="https://cdn.jsdelivr.net/npm/react@18.3.1/umd/react.production.min.js"></script>
+<script crossorigin src="https://cdn.jsdelivr.net/npm/react-dom@18.3.1/umd/react-dom.production.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@babel/standalone@7.25.6/babel.min.js"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Inconsolata:wght@400;600;700&family=DM+Sans:wght@300;400;500&display=swap');
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { background: #F5F0E8; }
+  button { outline: none; font-family: inherit; }
+  ::-webkit-scrollbar { width: 7px; height: 7px; }
+  ::-webkit-scrollbar-track { background: #F5F0E8; }
+  ::-webkit-scrollbar-thumb { background: #C9BFA8; border-radius: 4px; }
+  #boot { font-family: 'Inconsolata', monospace; color: #6B5E4A; padding: 40px; font-size: 13px; }
+  .spin { display:inline-block; animation: sp 1s linear infinite; } @keyframes sp { to { transform: rotate(360deg); } }
+</style>
+</head>
+<body>
+  <div id="root"><div id="boot"><span class="spin">◴</span> Loading Alts Tracker… (needs network access for React/fonts on first paint)</div></div>
+
+  <!-- DATA layer: edit data.js to update each quarter. -->
+  <script src="data.js"></script>
+
+  <script type="text/plain" id="appsrc">
+  const { useState, useMemo } = React;
+
+  // ───────────────────────── DESIGN TOKENS (cream / research-brief) ─────────────────────────
+  const T = {
+    bg:"#F5F0E8", bgCard:"#FDFAF4", bgHover:"#EDE8DC", bgStripe:"#F9F5EE",
+    border:"#DDD5C4", borderFt:"#C9BFA8",
+    text:"#1C1712", textSub:"#6B5E4A", textMuted:"#9C8D79", textFaint:"#B8AA96",
+    accent:"#8B5E1A", accentBg:"#8B5E1A18", neg:"#C0392B", pos:"#1A7A5A",
+  };
+  const SERIF = "'Cormorant Garamond', 'Playfair Display', Georgia, serif";
+  const MONO  = "'Inconsolata', ui-monospace, monospace";
+  const SANS  = "'DM Sans', 'Helvetica Neue', sans-serif";
+
+  const DATA   = window.ALTS || { meta:{}, firms:{}, accrued:{} };
+  const FIRMS  = DATA.firms || {};
+  const FIRM_ORDER = DATA.order || Object.keys(FIRMS);
+  const colorOf = (tk) => (FIRMS[tk] && FIRMS[tk].color) || T.accent;
+
+  // ───────────────────────── HELPERS ─────────────────────────
+  const isNum = (n) => typeof n === "number" && !isNaN(n);
+  const fmtM = (n) => { // value already in $M
+    if (!isNum(n)) return "—";
+    const a = Math.abs(n), d = a % 1 !== 0 ? 1 : 0;
+    const s = a.toLocaleString("en-US",{minimumFractionDigits:d,maximumFractionDigits:d});
+    return n < 0 ? `(${s})` : s;
+  };
+  const fmtB = (m, cur="$") => { // value in $M -> $B
+    if (!isNum(m)) return "—";
+    const a = Math.abs(m);
+    return (m < 0 ? "−" : "") + `${cur}${(a/1000).toFixed(1)}B`;
+  };
+  const money = (v) => (v==null || v==="" ) ? "—" : v;   // pass-through for pre-formatted strings
+  const pctTxt = (v) => (v==null || v==="") ? "—" : v;
+
+  // ───────────────────────── SMALL UI PRIMITIVES ─────────────────────────
+  function Badge({ children, color=T.textMuted, bg=T.bgHover, bd=T.border }) {
+    return <span style={{ display:"inline-block", fontSize:9, padding:"1px 6px", borderRadius:3,
+      background:bg, color, border:`1px solid ${bd}`, fontFamily:MONO, fontWeight:700, letterSpacing:"0.04em", whiteSpace:"nowrap" }}>{children}</span>;
+  }
+  function FirmTag({ tk, big }) {
+    const f = FIRMS[tk]; const c = colorOf(tk);
+    return (
+      <span style={{ display:"inline-flex", alignItems:"center", gap:6 }}>
+        <span style={{ width:3, height:big?18:13, background:c, borderRadius:2, flexShrink:0 }} />
+        <span style={{ fontFamily:MONO, fontWeight:700, color:c, fontSize:big?14:11 }}>{tk}</span>
+        {big && f && <span style={{ fontFamily:SERIF, fontSize:15, color:T.text }}>{f.name}</span>}
+      </span>
+    );
+  }
+  function Bar({ pct, color, h=8, track=T.bgHover }) {
+    return <div style={{ position:"relative", height:h, background:track, borderRadius:h/2, overflow:"hidden" }}>
+      <div style={{ position:"absolute", left:0, top:0, height:"100%", width:`${Math.max(0,Math.min(100,pct))}%`, background:color, borderRadius:h/2 }} />
+    </div>;
+  }
+  function Empty({ label }) {
+    return <div style={{ padding:"18px", textAlign:"center", color:T.textFaint, fontFamily:MONO, fontSize:11, fontStyle:"italic" }}>{label}</div>;
+  }
+  function SectionTitle({ kicker, title, sub }) {
+    return (
+      <div style={{ marginBottom:16 }}>
+        {kicker && <div style={{ fontSize:8.5, fontFamily:MONO, color:T.textMuted, letterSpacing:"0.2em", textTransform:"uppercase", marginBottom:5 }}>{kicker}</div>}
+        <h2 style={{ fontFamily:SERIF, fontSize:22, fontWeight:700, color:T.text, lineHeight:1 }}>{title}</h2>
+        {sub && <p style={{ fontSize:11, color:T.textSub, marginTop:5, maxWidth:760, lineHeight:1.5 }}>{sub}</p>}
+      </div>
+    );
+  }
+
+  // Period badge coloured by cadence
+  function PeriodBadge({ f }) {
+    const annual = f.cadence && f.cadence !== "quarterly";
+    return <Badge color={annual?"#9C6B1A":"#6045A8"} bg={annual?"#9C6B1A18":"#6045A822"} bd={annual?"#9C6B1A44":"#6045A844"}>{f.period}</Badge>;
+  }
+
+  // ───────────────────────── FIRM FILTER CHIPS ─────────────────────────
+  function FirmFilter({ value, onChange, only }) {
+    const list = ["All", ...FIRM_ORDER.filter(tk => !only || only.includes(tk))];
+    return (
+      <div style={{ display:"flex", gap:5, flexWrap:"wrap", marginBottom:18, alignItems:"center" }}>
+        <span style={{ fontSize:8, color:T.textFaint, fontFamily:MONO, marginRight:2, letterSpacing:"0.1em" }}>FIRM</span>
+        {list.map(tk => {
+          const active = value === tk;
+          const c = tk === "All" ? T.accent : colorOf(tk);
+          return (
+            <button key={tk} onClick={()=>onChange(tk)} style={{
+              padding:"3px 11px", borderRadius:20, cursor:"pointer", fontSize:10, fontFamily:MONO,
+              fontWeight: active?700:500, border:`1.5px solid ${active?c:T.border}`,
+              background: active? c+"1A" : T.bgCard, color: active? c : T.textSub, transition:"all .15s",
+            }}>{tk}</button>
+          );
+        })}
+      </div>
+    );
+  }
+
+  const shownFirms = (filter) => filter === "All" ? FIRM_ORDER : [filter];
+
+  // ═════════════════════════ OVERVIEW ═════════════════════════
+  function Overview({ go }) {
+    // KPI roll-ups
+    const lastQ = "2026 Q1";
+    let fundsInMarket = 0, exitTVsum = 0, exitCount = 0;
+    FIRM_ORDER.forEach(tk => {
+      const f = FIRMS[tk];
+      fundsInMarket += (f.fundraising||[]).length;
+      const q = (f.exits && f.exits.quarterly && f.exits.quarterly[lastQ]) || null;
+      if (q) { if (isNum(q.totalTV)) exitTVsum += q.totalTV; if (isNum(q.count)) exitCount += q.count; }
+    });
+    const acc = window.__ACCRUED__;
+    const kpis = [
+      { label:"Managers tracked", value: FIRM_ORDER.length, sub:"global alts" },
+      { label:"Funds in market", value: fundsInMarket, sub:"across coverage" },
+      { label:`Exit TV · ${lastQ}`, value: fmtB(exitTVsum), sub:`${exitCount} PitchBook exits (disclosed TV)` },
+      { label:"Net accrued carry", value: fmtB(acc?acc.grandNet:null), sub:`${acc?acc.firms.length:0} disclosing firms` },
+    ];
+    return (
+      <div>
+        <div style={{ display:"flex", gap:10, flexWrap:"wrap", marginBottom:22 }}>
+          {kpis.map(k => (
+            <div key={k.label} style={{ background:T.bgCard, border:`1.5px solid ${T.border}`, borderRadius:10, padding:"12px 18px", flex:"1 1 170px", minWidth:160 }}>
+              <div style={{ fontSize:8, fontFamily:MONO, color:T.textMuted, letterSpacing:"0.12em", textTransform:"uppercase", marginBottom:4 }}>{k.label}</div>
+              <div style={{ fontSize:24, fontFamily:MONO, fontWeight:700, color:T.accent, lineHeight:1 }}>{k.value}</div>
+              <div style={{ fontSize:8.5, color:T.textFaint, fontFamily:MONO, marginTop:3 }}>{k.sub}</div>
+            </div>
+          ))}
+        </div>
+
+        <SectionTitle kicker="Coverage" title="Manager snapshot" sub="Latest reported period per firm. Click a card to jump to its fundraising detail. European names report on a semi-annual / annual cadence." />
+        <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill, minmax(225px, 1fr))", gap:12 }}>
+          {FIRM_ORDER.map(tk => {
+            const f = FIRMS[tk]; const c = colorOf(tk);
+            const q = (f.exits && f.exits.quarterly && f.exits.quarterly["2026 Q1"]) || null;
+            const r = f.reported || {};
+            return (
+              <div key={tk} onClick={()=>go("fundraising", tk)} style={{ cursor:"pointer", background:T.bgCard, border:`1.5px solid ${T.border}`, borderTop:`3px solid ${c}`, borderRadius:10, padding:"12px 14px", transition:"box-shadow .15s" }}
+                   onMouseEnter={e=>e.currentTarget.style.boxShadow="0 4px 14px #0001"} onMouseLeave={e=>e.currentTarget.style.boxShadow="none"}>
+                <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start" }}>
+                  <div><div style={{ fontFamily:MONO, fontWeight:700, color:c, fontSize:15 }}>{tk}</div>
+                       <div style={{ fontFamily:SERIF, fontSize:13, color:T.text, lineHeight:1.1, marginTop:1 }}>{f.name}</div></div>
+                  <PeriodBadge f={f} />
+                </div>
+                <div style={{ marginTop:9, display:"flex", flexWrap:"wrap", gap:"4px 12px", fontSize:9.5, fontFamily:MONO, color:T.textSub }}>
+                  <span>Funds in mkt: <b style={{color:T.text}}>{(f.fundraising||[]).length||"—"}</b></span>
+                  <span>FRE: <b style={{color:T.text}}>{r.FRE || "—"}</b></span>
+                  <span>FPAUM: <b style={{color:T.text}}>{r.fpAUM || "—"}</b></span>
+                  <span>Exits Q1'26: <b style={{color:T.text}}>{q&&isNum(q.count)?q.count:"—"}</b></span>
+                </div>
+                <div style={{ marginTop:6, fontSize:8, color:T.textFaint, fontFamily:MONO }}>{f.exchange} · {f.country} · rpt {f.reportDate||"—"}</div>
+              </div>
+            );
+          })}
+        </div>
+
+        {acc && <div style={{ marginTop:26 }}>
+          <SectionTitle kicker="Carry" title="Net accrued carried interest — disclosing firms" sub="Bottom-up from fund-level 10-Q data. Full detail under the Carry tab." />
+          <div style={{ background:T.bgCard, border:`1.5px solid ${T.border}`, borderRadius:10, padding:"18px 22px" }}>
+            <AccruedCompChart />
+          </div>
+        </div>}
+      </div>
+    );
+  }
+
+  // ═════════════════════════ FUNDRAISING ═════════════════════════
+  function Fundraising({ filter, setFilter }) {
+    return (
+      <div>
+        <SectionTitle kicker="Section 1" title="Fundraising — funds in market" sub="What management flagged as in-market on the latest earnings call, augmented with PitchBook fund data (target / hard cap, prior-fund size, amount raised, expected first & final close)." />
+        <FirmFilter value={filter} onChange={setFilter} />
+        {shownFirms(filter).map(tk => {
+          const f = FIRMS[tk]; const c = colorOf(tk); const rows = f.fundraising || [];
+          return (
+            <div key={tk} style={{ marginBottom:22, background:T.bgCard, border:`1.5px solid ${T.border}`, borderRadius:10, overflow:"hidden" }}>
+              <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", padding:"11px 16px", borderBottom:`1px solid ${T.border}`, borderTop:`3px solid ${c}`, background:c+"08" }}>
+                <FirmTag tk={tk} big />
+                <PeriodBadge f={f} />
+              </div>
+              {f.fundraisingSummary && <div style={{ padding:"10px 16px", fontSize:11, color:T.textSub, lineHeight:1.6, borderBottom:`1px solid ${T.border}`, fontStyle:"italic" }}>{f.fundraisingSummary}</div>}
+              {rows.length === 0 ? <Empty label="Fundraising data pending / not separately disclosed." /> : (
+                <div style={{ overflowX:"auto" }}>
+                  <table style={{ width:"100%", borderCollapse:"collapse", fontSize:10.5 }}>
+                    <thead><tr style={{ background:T.bgHover }}>
+                      {["Fund / vehicle","Strategy","Status","Target","Hard cap","Prev fund","Raised","First close","Final close"].map((h,i)=>(
+                        <th key={h} style={{ padding:"7px 12px", textAlign:i>2?"right":"left", fontFamily:MONO, fontSize:8, fontWeight:700, letterSpacing:"0.08em", color:T.textMuted, borderBottom:`2px solid ${T.border}`, whiteSpace:"nowrap" }}>{h.toUpperCase()}</th>
+                      ))}
+                    </tr></thead>
+                    <tbody>
+                      {rows.map((r,i)=>(
+                        <React.Fragment key={i}>
+                        <tr style={{ background: i%2?T.bgStripe:T.bgCard }}>
+                          <td style={{ padding:"7px 12px", fontFamily:MONO, fontSize:10.5, color:T.text, fontWeight:600 }}>{r.name}{r.pb && r.pb!=="N/A" && <span style={{ marginLeft:5, fontSize:7.5, color:T.textFaint }}>PB:{r.pb}</span>}</td>
+                          <td style={{ padding:"7px 12px", fontFamily:SERIF, fontStyle:"italic", color:T.textSub, fontSize:11 }}>{r.strategy||"—"}</td>
+                          <td style={{ padding:"7px 12px", fontFamily:MONO, fontSize:9, color:c }}>{r.status||"—"}</td>
+                          {["target","hardCap","prevFund","raisedToDate","firstClose","finalClose"].map(k=>(
+                            <td key={k} style={{ padding:"7px 12px", textAlign:"right", fontFamily:MONO, fontSize:10, color: (r[k]&&r[k]!=="N/A")?T.text:T.textFaint, whiteSpace:"nowrap" }}>{(r[k]&&r[k]!=="N/A")?r[k]:"—"}</td>
+                          ))}
+                        </tr>
+                        {r.comment && <tr style={{ background: i%2?T.bgStripe:T.bgCard }}><td colSpan={9} style={{ padding:"0 12px 8px 12px", fontSize:9.5, color:T.textMuted, fontStyle:"italic", lineHeight:1.5 }}>↳ {r.comment}</td></tr>}
+                        </React.Fragment>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
+    );
+  }
+
+  // ═════════════════════════ GUIDANCE ═════════════════════════
+  function Guidance({ filter, setFilter }) {
+    return (
+      <div>
+        <SectionTitle kicker="Section 2" title="Earnings guidance" sub="Forward guidance pulled from each company's latest transcript (S&P Global) plus structured company-issued guidance. One table per firm." />
+        <FirmFilter value={filter} onChange={setFilter} />
+        <div style={{ display:"grid", gridTemplateColumns: filter==="All"?"repeat(auto-fill, minmax(420px, 1fr))":"1fr", gap:16 }}>
+          {shownFirms(filter).map(tk => {
+            const f = FIRMS[tk]; const c = colorOf(tk); const rows = f.guidance || [];
+            return (
+              <div key={tk} style={{ background:T.bgCard, border:`1.5px solid ${T.border}`, borderTop:`3px solid ${c}`, borderRadius:10, overflow:"hidden" }}>
+                <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", padding:"10px 14px", borderBottom:`1px solid ${T.border}`, background:c+"08" }}>
+                  <FirmTag tk={tk} big /><PeriodBadge f={f} />
+                </div>
+                {f.guidanceSummary && <div style={{ padding:"9px 14px", fontSize:10.5, color:T.textSub, lineHeight:1.55, borderBottom:`1px solid ${T.border}`, fontStyle:"italic" }}>{f.guidanceSummary}</div>}
+                {rows.length===0 ? <Empty label="Guidance data pending / firm gives limited quantitative guidance." /> : (
+                  <table style={{ width:"100%", borderCollapse:"collapse", fontSize:10.5 }}>
+                    <thead><tr style={{ background:T.bgHover }}>
+                      {["Metric","Period","Guidance","Src"].map((h,i)=>(
+                        <th key={h} style={{ padding:"6px 12px", textAlign:i===2?"left":"left", fontFamily:MONO, fontSize:8, fontWeight:700, letterSpacing:"0.08em", color:T.textMuted, borderBottom:`2px solid ${T.border}` }}>{h.toUpperCase()}</th>
+                      ))}
+                    </tr></thead>
+                    <tbody>
+                      {rows.map((r,i)=>(
+                        <tr key={i} style={{ background:i%2?T.bgStripe:T.bgCard, verticalAlign:"top" }}>
+                          <td style={{ padding:"7px 12px", fontFamily:MONO, fontSize:10, color:T.text, fontWeight:600 }}>{r.metric}{r.comment && <div style={{ fontWeight:400, fontStyle:"italic", color:T.textMuted, fontSize:9, marginTop:2, lineHeight:1.4 }}>{r.comment}</div>}</td>
+                          <td style={{ padding:"7px 12px", fontFamily:MONO, fontSize:9, color:T.textSub, whiteSpace:"nowrap" }}>{r.period}</td>
+                          <td style={{ padding:"7px 12px", fontFamily:MONO, fontSize:10.5, color:c, fontWeight:700 }}>{r.value}</td>
+                          <td style={{ padding:"7px 12px" }}><Badge color={r.source==="guidance tool"?"#1A7A5A":T.textMuted} bg={r.source==="guidance tool"?"#1A7A5A18":T.bgHover} bd={r.source==="guidance tool"?"#1A7A5A44":T.border}>{r.source==="guidance tool"?"GUID":"CALL"}</Badge></td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    );
+  }
+
+  // ═════════════════════════ CONSENSUS (Visible Alpha scaffold) ═════════════════════════
+  const CONS_METRICS = (window.ALTS && window.ALTS.consensusMetrics) || [
+    { key:"FRE",            label:"Fee-Related Earnings",         unit:"$M" },
+    { key:"PFRE",           label:"Perf. fees / PRE",             unit:"$M" },
+    { key:"FRE_ps",         label:"FRE per share",                unit:"$"  },
+    { key:"SRE_ps",         label:"SRE per share",                unit:"$", note:"Apollo etc." },
+    { key:"DE_ps",          label:"DE per share",                 unit:"$"  },
+    { key:"netFlowsTotal",  label:"Net flows → fee-paying AUM",   unit:"$B" },
+    { key:"netFlowsCredit", label:"Net flows → FPAUM (credit)",   unit:"$B" },
+  ];
+  function Consensus({ filter, setFilter }) {
+    return (
+      <div>
+        <SectionTitle kicker="Section 3" title="Consensus — Visible Alpha tearsheets" sub="Scaffold wired to the data layer. Paste Visible Alpha consensus into data.js (firms[TK].consensus); reported actuals are pre-filled from the transcripts where stated, and surprise is computed automatically." />
+        <div style={{ background:"#8B5E1A0C", border:`1px solid ${T.accent}55`, borderRadius:8, padding:"11px 15px", marginBottom:18, fontSize:10.5, color:T.textSub, lineHeight:1.6, fontFamily:MONO }}>
+          <b style={{color:T.accent}}>How to populate:</b> In <code style={{background:T.bgHover, padding:"1px 4px", borderRadius:3}}>data.js</code>, set <code style={{background:T.bgHover, padding:"1px 4px", borderRadius:3}}>firms.&lt;TK&gt;.consensus = {`{ FRE:{cons:464, n:11, act:464}, DE_ps:{cons:1.20, n:12, act:1.24}, … }`}</code> for the 7 metrics below. <code>cons</code>=VA mean · <code>n</code>=# estimates · <code>act</code>=reported. Leave a metric out if N/A.
+        </div>
+        <FirmFilter value={filter} onChange={setFilter} />
+        <div style={{ display:"grid", gridTemplateColumns: filter==="All"?"repeat(auto-fill, minmax(430px, 1fr))":"1fr", gap:16 }}>
+          {shownFirms(filter).map(tk => {
+            const f = FIRMS[tk]; const c = colorOf(tk); const cons = f.consensus || {};
+            return (
+              <div key={tk} style={{ background:T.bgCard, border:`1.5px solid ${T.border}`, borderTop:`3px solid ${c}`, borderRadius:10, overflow:"hidden" }}>
+                <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", padding:"10px 14px", borderBottom:`1px solid ${T.border}`, background:c+"08" }}>
+                  <FirmTag tk={tk} big /><PeriodBadge f={f} />
+                </div>
+                <table style={{ width:"100%", borderCollapse:"collapse", fontSize:10.5 }}>
+                  <thead><tr style={{ background:T.bgHover }}>
+                    {["Metric","VA cons.","#Est","Reported","Surprise"].map((h,i)=>(
+                      <th key={h} style={{ padding:"6px 10px", textAlign:i?"right":"left", fontFamily:MONO, fontSize:8, fontWeight:700, letterSpacing:"0.06em", color:T.textMuted, borderBottom:`2px solid ${T.border}` }}>{h.toUpperCase()}</th>
+                    ))}
+                  </tr></thead>
+                  <tbody>
+                    {CONS_METRICS.map((m,i)=>{
+                      const d = cons[m.key] || {};
+                      const hasC = isNum(d.cons), hasA = isNum(d.act);
+                      let surprise = "—", scol = T.textFaint;
+                      if (hasC && hasA) { const diff = d.act - d.cons; const sign = diff>=0?"+":"−";
+                        const rel = d.cons!==0 ? Math.abs(diff/d.cons)*100 : null;
+                        surprise = `${sign}${Math.abs(diff).toLocaleString("en-US",{maximumFractionDigits:2})}${rel!=null?` (${sign}${rel.toFixed(1)}%)`:""}`;
+                        scol = diff>=0?T.pos:T.neg; }
+                      return (
+                        <tr key={m.key} style={{ background:i%2?T.bgStripe:T.bgCard }}>
+                          <td style={{ padding:"6px 10px", fontFamily:MONO, fontSize:9.5, color:T.text }}>{m.label}<span style={{color:T.textFaint}}> · {m.unit}</span>{m.note && <span style={{ color:T.textFaint, fontStyle:"italic" }}> ({m.note})</span>}</td>
+                          <td style={{ padding:"6px 10px", textAlign:"right", fontFamily:MONO, fontSize:10, color: hasC?T.text:T.textFaint }}>{hasC?d.cons.toLocaleString("en-US",{maximumFractionDigits:2}):"·"}</td>
+                          <td style={{ padding:"6px 10px", textAlign:"right", fontFamily:MONO, fontSize:9, color:T.textMuted }}>{isNum(d.n)?d.n:"·"}</td>
+                          <td style={{ padding:"6px 10px", textAlign:"right", fontFamily:MONO, fontSize:10.5, color: hasA?c:T.textFaint, fontWeight:700 }}>{hasA?d.act.toLocaleString("en-US",{maximumFractionDigits:2}):"·"}</td>
+                          <td style={{ padding:"6px 10px", textAlign:"right", fontFamily:MONO, fontSize:9.5, color:scol }}>{surprise}</td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+                <div style={{ padding:"6px 12px", background:T.bgHover, fontSize:8, color:T.textFaint, fontFamily:MONO }}>· = awaiting Visible Alpha · reported actuals from {f.period} transcript where stated</div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    );
+  }
+
+  // ═════════════════════════ CARRY ═════════════════════════
+  const QUARTERS = ["2024 Q4","2025 Q1","2025 Q2","2025 Q3","2025 Q4","2026 Q1"];
+
+  function CarryExits({ filter, setFilter }) {
+    // cross-firm max for bar scaling
+    const allTV = [];
+    FIRM_ORDER.forEach(tk => QUARTERS.forEach(q => { const e=FIRMS[tk].exits; const v=e&&e.quarterly&&e.quarterly[q]; if(v&&isNum(v.totalTV)) allTV.push(v.totalTV); }));
+    const maxTV = Math.max(1, ...allTV);
+    return (
+      <div>
+        <div style={{ background:"#C0392B0C", border:`1px solid ${T.neg}44`, borderRadius:8, padding:"11px 15px", marginBottom:18, fontSize:10, color:T.textSub, lineHeight:1.6 }}>
+          <b style={{color:T.neg}}>Read me — exit TV ≠ realized carry.</b> PitchBook "exit size" is the <i>total transaction / enterprise value</i> of the deal, not the manager's equity proceeds (stakes range ~15–100%). Per the KKR exit-pull study, PitchBook exit TV is a <i>weak</i> predictor of reported realized performance income (r&lt;0.35): fund-level crystallizations, open-market sales, advisory fees and clawbacks are invisible, while bankruptcies show as "exits" with zero carry. Use as a directional activity proxy only. Many exits carry no disclosed size, so quarterly TV is a partial minimum.
+        </div>
+        <FirmFilter value={filter} onChange={setFilter} />
+        {shownFirms(filter).map(tk => {
+          const f = FIRMS[tk]; const c = colorOf(tk); const e = f.exits || {};
+          const q = e.quarterly || {}; const notable = e.notable || [];
+          return (
+            <div key={tk} style={{ marginBottom:22, background:T.bgCard, border:`1.5px solid ${T.border}`, borderTop:`3px solid ${c}`, borderRadius:10, overflow:"hidden" }}>
+              <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", padding:"10px 16px", borderBottom:`1px solid ${T.border}`, background:c+"08" }}>
+                <FirmTag tk={tk} big /><Badge>PitchBook · investor exits</Badge>
+              </div>
+              {/* quarterly bars */}
+              <div style={{ padding:"14px 16px", display:"grid", gridTemplateColumns:"repeat(auto-fit, minmax(120px,1fr))", gap:10, borderBottom: notable.length?`1px solid ${T.border}`:"none" }}>
+                {QUARTERS.map(qq => { const v=q[qq]||{}; const tv=isNum(v.totalTV)?v.totalTV:null;
+                  return (
+                    <div key={qq}>
+                      <div style={{ display:"flex", justifyContent:"space-between", fontSize:8.5, fontFamily:MONO, color:T.textMuted, marginBottom:3 }}>
+                        <span>{qq.replace("20","'").replace("'20","'")}</span><span style={{color:T.text}}>{isNum(v.count)?`${v.count}×`:"—"}</span>
+                      </div>
+                      <Bar pct={tv!=null?(tv/maxTV*100):0} color={c+"CC"} h={7} />
+                      <div style={{ fontSize:9, fontFamily:MONO, color: tv!=null?T.textSub:T.textFaint, marginTop:3 }}>{tv!=null?fmtB(tv):"n/d"}</div>
+                    </div>
+                  );
+                })}
+              </div>
+              {e.summary && <div style={{ padding:"8px 16px", fontSize:9.5, color:T.textMuted, fontStyle:"italic", lineHeight:1.5, borderBottom: notable.length?`1px solid ${T.border}`:"none" }}>{e.summary}</div>}
+              {notable.length>0 && (
+                <div style={{ overflowX:"auto" }}>
+                  <table style={{ width:"100%", borderCollapse:"collapse", fontSize:10 }}>
+                    <thead><tr style={{ background:T.bgHover }}>
+                      {["Company","Exit date","Exit TV","Type","Held since","Flag"].map((h,i)=>(
+                        <th key={h} style={{ padding:"6px 12px", textAlign:i===2?"right":"left", fontFamily:MONO, fontSize:8, fontWeight:700, letterSpacing:"0.06em", color:T.textMuted, borderBottom:`2px solid ${T.border}`, whiteSpace:"nowrap" }}>{h.toUpperCase()}</th>
+                      ))}
+                    </tr></thead>
+                    <tbody>
+                      {notable.map((r,i)=>(
+                        <tr key={i} style={{ background:i%2?T.bgStripe:T.bgCard }}>
+                          <td style={{ padding:"6px 12px", fontFamily:MONO, fontSize:10, color:T.text }}>{r.company}</td>
+                          <td style={{ padding:"6px 12px", fontFamily:MONO, fontSize:9.5, color:T.textSub, whiteSpace:"nowrap" }}>{r.exitDate}</td>
+                          <td style={{ padding:"6px 12px", textAlign:"right", fontFamily:MONO, fontSize:10, color:(r.exitSize&&r.exitSize!=="N/A")?T.text:T.textFaint }}>{(r.exitSize&&r.exitSize!=="N/A")?r.exitSize:"n/d"}</td>
+                          <td style={{ padding:"6px 12px", fontFamily:SERIF, fontStyle:"italic", fontSize:10.5, color:T.textSub }}>{r.type}</td>
+                          <td style={{ padding:"6px 12px", fontFamily:MONO, fontSize:9.5, color:T.textMuted }}>{r.investorSince||"—"}</td>
+                          <td style={{ padding:"6px 12px" }}>{r.flag && r.flag!=="blank" && r.flag!=="" ? <Badge color={T.neg} bg="#C0392B14" bd="#C0392B44">{r.flag}</Badge> : ""}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+              {!notable.length && !e.summary && <Empty label="Exit data pending." />}
+            </div>
+          );
+        })}
+      </div>
+    );
+  }
+
+  // ── Accrued carry (ported from source dashboard; bottom-up derivation) ──
+  const KKR_COMP = 0.25;
+  function deriveAccrued() {
+    const RAW = DATA.accrued || {};
+    const out = Object.entries(RAW).map(([key, firm]) => {
+      const segments = (firm.segments||[]).map(seg => {
+        const funds = (seg.funds||[]).map(f => {
+          let net=f.net, gross=f.gross;
+          if (net===undefined && gross!=null) net = +(gross*KKR_COMP).toFixed(1);
+          if (gross==null && net!=null) {
+            if (firm.name==="Carlyle")    gross = +(net/0.38).toFixed(1);
+            if (firm.name==="Blackstone") gross = +(net/0.56).toFixed(1);
+          }
+          return { ...f, gross: gross??null, net: net??null, netIsEst: f.net===undefined };
+        });
+        const segNet=+funds.reduce((s,f)=>s+(f.net??0),0).toFixed(1);
+        const segGross=+funds.reduce((s,f)=>s+(f.gross??0),0).toFixed(1);
+        return { ...seg, funds, net:segNet, gross:segGross };
+      });
+      const totalNet=+segments.reduce((s,g)=>s+g.net,0).toFixed(1);
+      const totalGross=+segments.reduce((s,g)=>s+g.gross,0).toFixed(1);
+      return { key, ...firm, segments, totalNet, totalGross };
+    });
+    const grandNet=+out.reduce((s,f)=>s+f.totalNet,0).toFixed(1);
+    const grandGross=+out.reduce((s,f)=>s+f.totalGross,0).toFixed(1);
+    return { firms: out, grandNet, grandGross };
+  }
+  window.__ACCRUED__ = (DATA.accrued && Object.keys(DATA.accrued).length) ? deriveAccrued() : null;
+
+  function AccruedCompChart() {
+    const acc = window.__ACCRUED__; if (!acc) return <Empty label="No accrued-carry data." />;
+    const maxNet = Math.max(...acc.firms.map(f=>f.totalNet), 1);
+    return (
+      <div>
+        <div style={{ fontSize:9, color:T.textMuted, fontFamily:MONO, letterSpacing:"0.12em", textTransform:"uppercase", marginBottom:14 }}>Net Accrued Carry — disclosing firms</div>
+        {acc.firms.map(firm => {
+          const c = (FIRMS[firm.key] && FIRMS[firm.key].color) || firm.color || T.accent;
+          return (
+            <div key={firm.name} style={{ display:"flex", alignItems:"center", gap:12, marginBottom:11 }}>
+              <div style={{ width:96, flexShrink:0, fontFamily:SERIF, fontSize:14, fontWeight:700, color:c }}>{firm.name}</div>
+              <div style={{ flex:1, display:"flex", height:16, borderRadius:4, overflow:"hidden", gap:1 }}>
+                {firm.segments.map((seg,i)=>{ const pct = firm.totalNet>0?(Math.max(0,seg.net)/firm.totalNet)*100:0; const ops=["EE","BB","88","55","33"];
+                  return <div key={seg.label} title={`${seg.label}: ${fmtB(seg.net)}`} style={{ width:`${pct}%`, background:c+ops[i%5], minWidth:pct>0?1:0 }} />; })}
+              </div>
+              <div style={{ width:54, textAlign:"right", fontFamily:MONO, fontSize:14, fontWeight:700, color:c, flexShrink:0 }}>{fmtB(firm.totalNet)}</div>
+            </div>
+          );
+        })}
+        <div style={{ marginTop:10, paddingTop:10, borderTop:`1px solid ${T.border}`, display:"flex", justifyContent:"space-between", fontFamily:MONO, fontSize:10, color:T.textSub }}>
+          <span>5-firm aggregate</span>
+          <span>net <b style={{color:T.accent}}>{fmtB(acc.grandNet)}</b> · gross <b style={{color:T.text}}>{fmtB(acc.grandGross)}</b></span>
+        </div>
+      </div>
+    );
+  }
+
+  function CarryAccrued() {
+    const acc = window.__ACCRUED__;
+    const [sortCol,setSortCol]=useState("net"); const [sortDir,setSortDir]=useState(-1);
+    const [seg,setSeg]=useState("All"); const [firmF,setFirmF]=useState("All");
+    if (!acc) return <Empty label="No accrued-carry data in data.js." />;
+    const rows = acc.firms.flatMap(firm => firm.segments.flatMap(s => s.funds.map(f=>({
+      firm:firm.name, key:firm.key, color:(FIRMS[firm.key]&&FIRMS[firm.key].color)||firm.color, period:firm.period,
+      segment:s.label, name:f.name, vintage:f.vintage, gross:f.gross, net:f.net, note:f.note, netIsEst:f.netIsEst }))));
+    const segs=["All",...new Set(rows.map(r=>r.segment))];
+    const firmsL=["All",...acc.firms.map(f=>f.name)];
+    const filt = rows.filter(r=>(firmF==="All"||r.firm===firmF)&&(seg==="All"||r.segment===seg));
+    const sorted=[...filt].sort((a,b)=> sortDir*((b[sortCol]??-9e9)-(a[sortCol]??-9e9)) || (typeof a[sortCol]==="string"? sortDir*b[sortCol].localeCompare(a[sortCol]):0));
+    const maxNet=Math.max(...filt.map(r=>r.net??0),1);
+    const chip=(v,active,c,on)=>(<button key={v} onClick={on} style={{ padding:"2px 9px", borderRadius:20, cursor:"pointer", fontSize:9, fontFamily:MONO, fontWeight:active?700:400, border:`1.5px solid ${active?c:T.border}`, background:active?c+"18":T.bgCard, color:active?c:T.textSub }}>{v}</button>);
+    const TH=({label,col,right})=>(<th onClick={()=>sortCol===col?setSortDir(d=>-d):(setSortCol(col),setSortDir(-1))} style={{ padding:"7px 12px", textAlign:right?"right":"left", cursor:"pointer", color:sortCol===col?T.accent:T.textMuted, fontSize:8.5, fontFamily:MONO, letterSpacing:"0.08em", fontWeight:700, borderBottom:`2px solid ${sortCol===col?T.accent:T.border}`, whiteSpace:"nowrap", background:T.bgHover }}>{label}{sortCol===col?(sortDir<0?" ↓":" ↑"):""}</th>);
+    return (
+      <div>
+        <div style={{ display:"flex", gap:5, flexWrap:"wrap", marginBottom:8, alignItems:"center" }}>
+          <span style={{ fontSize:8, color:T.textFaint, fontFamily:MONO, marginRight:2 }}>FIRM</span>
+          {firmsL.map(v=>chip(v, firmF===v, v==="All"?T.accent:((acc.firms.find(f=>f.name===v)||{}).color||T.accent), ()=>setFirmF(v)))}
+        </div>
+        <div style={{ display:"flex", gap:5, flexWrap:"wrap", marginBottom:14, alignItems:"center" }}>
+          <span style={{ fontSize:8, color:T.textFaint, fontFamily:MONO, marginRight:2 }}>SEG</span>
+          {segs.map(v=>chip(v, seg===v, T.accent, ()=>setSeg(v)))}
+        </div>
+        <div style={{ overflowX:"auto", borderRadius:8, border:`1px solid ${T.border}` }}>
+          <table style={{ width:"100%", borderCollapse:"collapse", fontSize:11 }}>
+            <thead><tr>
+              <TH label="FIRM" col="firm" /><TH label="FUND / VEHICLE" col="name" /><TH label="SEGMENT" col="segment" />
+              <TH label="VINTAGE" col="vintage" right /><TH label="GROSS $M" col="gross" right /><TH label="NET $M" col="net" right />
+              <th style={{ width:70, background:T.bgHover, borderBottom:`2px solid ${T.border}` }} />
+            </tr></thead>
+            <tbody>
+              {sorted.map((r,i)=>{ const np=maxNet>0?Math.min(100,Math.max(0,(r.net??0)/maxNet*100)):0;
+                return (
+                  <tr key={i} style={{ background:i%2?T.bgStripe:T.bgCard }}>
+                    <td style={{ padding:"5px 12px" }}><span style={{ fontFamily:MONO, fontSize:10, color:r.color, fontWeight:700 }}>{r.key}</span></td>
+                    <td style={{ padding:"5px 12px", fontFamily:MONO, fontSize:10.5, color:T.text }}>{r.name}{r.note && <span style={{ marginLeft:5, fontSize:8.5, color:T.textFaint, fontStyle:"italic" }}>{r.note}</span>}</td>
+                    <td style={{ padding:"5px 12px", fontFamily:SERIF, fontStyle:"italic", fontSize:11, color:T.textSub }}>{r.segment}</td>
+                    <td style={{ padding:"5px 12px", textAlign:"right", fontFamily:MONO, fontSize:10, color:T.textFaint }}>{r.vintage}</td>
+                    <td style={{ padding:"5px 12px", textAlign:"right", fontFamily:MONO, fontSize:10.5, color:(r.gross??0)<0?T.neg:T.textSub }}>{r.gross!=null?fmtM(r.gross):"—"}</td>
+                    <td style={{ padding:"5px 12px", textAlign:"right", fontFamily:MONO, fontSize:11, fontWeight:700, color:(r.net??0)<0?T.neg:r.color, opacity:r.netIsEst?0.7:1 }}>{r.net!=null?fmtM(r.net):"—"}{r.netIsEst?"†":""}</td>
+                    <td style={{ padding:"5px 8px" }}><Bar pct={np} color={r.color+"AA"} h={6} /></td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+        <div style={{ marginTop:10, fontSize:8.5, color:T.textFaint, lineHeight:1.8 }}>† KKR net estimated at 25% of gross (75% comp guidance). All totals computed bottom-up from fund data; "Other / Adj." lines reconcile to disclosed segment totals. {DATA.accruedMeta && DATA.accruedMeta.note}</div>
+      </div>
+    );
+  }
+
+  function Carry() {
+    const [sub,setSub]=useState("exits");
+    const [filter,setFilter]=useState("All");
+    const acc = window.__ACCRUED__;
+    return (
+      <div>
+        <SectionTitle kicker="Section 4" title="Carry tracker" sub="Two lenses on carried interest: realized-carry activity via PitchBook portfolio exits (all 13), and net accrued (unrealized) carry from fund-level 10-Q disclosure." />
+        <div style={{ display:"flex", gap:6, marginBottom:18 }}>
+          {[["exits","Exit activity"],["accrued","Net accrued carry"]].map(([id,lab])=>(
+            <button key={id} onClick={()=>setSub(id)} style={{ padding:"6px 16px", borderRadius:7, cursor:"pointer", fontFamily:MONO, fontSize:10.5, fontWeight:sub===id?700:500, letterSpacing:"0.05em", border:`1.5px solid ${sub===id?T.accent:T.border}`, background:sub===id?T.accent+"14":T.bgCard, color:sub===id?T.accent:T.textSub }}>{lab.toUpperCase()}</button>
+          ))}
+        </div>
+        {sub==="exits" ? <CarryExits filter={filter} setFilter={setFilter} /> : (
+          <div>
+            <div style={{ marginBottom:14, fontSize:11, color:T.textSub, lineHeight:1.6 }}>
+              Net accrued carried interest, bottom-up from fund-level 10-Q data. Currently {acc?acc.firms.length:0} firms disclose at this granularity (KKR, Blackstone, Ares, Carlyle, Apollo, all 1Q26). The remaining names either report differently or do not break carry out by fund — exit activity above is the cross-firm comparable.
+            </div>
+            {acc && <div style={{ background:T.bgCard, border:`1.5px solid ${T.border}`, borderRadius:10, padding:"16px 20px", marginBottom:18 }}><AccruedCompChart /></div>}
+            <CarryAccrued />
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  // ═════════════════════════ APP SHELL ═════════════════════════
+  const TABS = [
+    { id:"overview",    label:"Overview" },
+    { id:"fundraising", label:"Fundraising" },
+    { id:"guidance",    label:"Guidance" },
+    { id:"consensus",   label:"Consensus" },
+    { id:"carry",       label:"Carry" },
+  ];
+  function App() {
+    const [tab,setTab]=useState("overview");
+    const [fFilter,setFFilter]=useState("All");   // fundraising
+    const [gFilter,setGFilter]=useState("All");   // guidance
+    const [cFilter,setCFilter]=useState("All");   // consensus
+    const go=(t,tk)=>{ setTab(t); if(tk){ setFFilter(tk); } window.scrollTo(0,0); };
+    return (
+      <div style={{ minHeight:"100vh", background:T.bg, color:T.text, fontFamily:SANS }}>
+        <div style={{ height:4, background:`linear-gradient(90deg, ${FIRM_ORDER.map(colorOf).join(",")})` }} />
+        <div style={{ maxWidth:1280, margin:"0 auto", padding:"24px 22px 70px" }}>
+          {/* header */}
+          <div style={{ display:"flex", flexWrap:"wrap", gap:16, alignItems:"flex-end", marginBottom:22, paddingBottom:18, borderBottom:`1.5px solid ${T.borderFt}` }}>
+            <div style={{ flex:1, minWidth:280 }}>
+              <div style={{ fontSize:8.5, fontFamily:MONO, color:T.textMuted, letterSpacing:"0.2em", textTransform:"uppercase", marginBottom:6 }}>Alternative Asset Managers · Research Tracker</div>
+              <h1 style={{ fontFamily:SERIF, fontSize:30, fontWeight:700, lineHeight:1, letterSpacing:"-0.01em" }}>Alts Tracker</h1>
+              <div style={{ marginTop:8, fontSize:10.5, color:T.textSub, display:"flex", gap:10, flexWrap:"wrap" }}>
+                <span>Fundraising · Guidance · Consensus · Carry</span><span style={{color:T.borderFt}}>·</span>
+                <span>{FIRM_ORDER.length} managers</span><span style={{color:T.borderFt}}>·</span>
+                <span>as of <b style={{color:T.accent}}>{DATA.meta.asOf||"—"}</b></span>
+              </div>
+            </div>
+            <div style={{ display:"flex", flexWrap:"wrap", gap:4, maxWidth:430, justifyContent:"flex-end" }}>
+              {FIRM_ORDER.map(tk=>(<span key={tk} onClick={()=>go("fundraising",tk)} style={{cursor:"pointer"}}><Badge color={colorOf(tk)} bg={colorOf(tk)+"14"} bd={colorOf(tk)+"44"}>{tk}</Badge></span>))}
+            </div>
+          </div>
+          {/* tabs */}
+          <div style={{ display:"flex", gap:2, borderBottom:`1.5px solid ${T.border}`, marginBottom:22, flexWrap:"wrap" }}>
+            {TABS.map(t=>(
+              <button key={t.id} onClick={()=>setTab(t.id)} style={{ background:"none", border:"none", cursor:"pointer", padding:"9px 20px", fontSize:11, fontFamily:MONO, fontWeight:tab===t.id?700:400, letterSpacing:"0.08em", color:tab===t.id?T.accent:T.textMuted, borderBottom:`2.5px solid ${tab===t.id?T.accent:"transparent"}`, marginBottom:-1.5 }}>{t.label.toUpperCase()}</button>
+            ))}
+          </div>
+          {tab==="overview"    && <Overview go={go} />}
+          {tab==="fundraising" && <Fundraising filter={fFilter} setFilter={setFFilter} />}
+          {tab==="guidance"    && <Guidance filter={gFilter} setFilter={setGFilter} />}
+          {tab==="consensus"   && <Consensus filter={cFilter} setFilter={setCFilter} />}
+          {tab==="carry"       && <Carry />}
+          {/* footer */}
+          <div style={{ marginTop:30, paddingTop:14, borderTop:`1px solid ${T.border}`, fontSize:8.5, color:T.textFaint, lineHeight:1.9, fontFamily:MONO }}>
+            Sources: S&P Global (transcripts, guidance) · PitchBook Premium (investor funds & exits) · Visible Alpha (consensus — paste into data.js) · company 10-Q/10-K (accrued carry). Exit "size" = total transaction value, not manager proceeds. Reported actuals as stated on each firm's latest call. Not investment advice.
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // boot
+  if (window.React && window.ReactDOM) {
+    ReactDOM.createRoot(document.getElementById("root")).render(<App/>);
+  } else {
+    document.getElementById("boot").innerHTML = "⚠ Could not load React from CDN. This dashboard needs network access on first load (React + Babel + Google Fonts).";
+  }
+  </script>
+
+  <script>
+    // Transpile the JSX above with the CLASSIC runtime (React.createElement) so it runs
+    // against the React UMD global — independent of the Babel build's default JSX runtime.
+    (function () {
+      var bootEl = document.getElementById("boot");
+      if (!window.React || !window.ReactDOM) { if (bootEl) bootEl.textContent = "⚠ React failed to load from CDN (this dashboard needs network access on first paint)."; return; }
+      if (!window.Babel)                     { if (bootEl) bootEl.textContent = "⚠ Babel failed to load from CDN (this dashboard needs network access on first paint)."; return; }
+      try {
+        var src = document.getElementById("appsrc").textContent;
+        var out = Babel.transform(src, { presets: [["react", { runtime: "classic" }]] }).code;
+        (0, eval)(out);
+      } catch (e) {
+        if (bootEl) bootEl.textContent = "⚠ Dashboard failed to render: " + (e && e.message ? e.message : e);
+        throw e;
+      }
+    })();
+  </script>
+</body>
+</html>
