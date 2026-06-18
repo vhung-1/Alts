@@ -5,7 +5,7 @@ An interactive, single-page dashboard tracking the listed alternative-asset mana
 1. **Fundraising** — the funds each manager flagged as *in market* on its latest earnings call, augmented with PitchBook fund data (target / hard cap, prior-fund size, amount raised, expected first & final close).
 2. **Guidance** — forward earnings guidance pulled from each company's latest transcript (S&P Global) plus structured company-issued guidance, one table per firm.
 3. **Consensus** — a Visible Alpha tearsheet scaffold for the 7 KPIs (FRE, perf fees/PRE, FRE/sh, SRE/sh, DE/sh, net flows to fee-paying AUM total & credit). Reported actuals are pre-filled from the transcripts; **paste the VA consensus into `data.js`** and the dashboard computes the surprise.
-4. **Carry** — two views: **Exit activity** (PitchBook portfolio exits by quarter, 12 firms — Blue Owl excluded as it earns fees not carry) and **Net accrued carry** (fund-level, bottom-up from 10-Q disclosure for the 5 US firms that report it). The exit table is laid out **transposed** — quarters run across the top, `# Exits` / `Disclosed TV` down the side, click a quarter column to expand its individual exits — and each firm carries a **transcript check** that reconciles its last two earnings calls' monetization commentary against what PitchBook recorded (verdict: Match / Partial / Diverge).
+4. **Carry** — three views: **Exit activity** (PitchBook portfolio exits by quarter, 12 firms — Blue Owl excluded as it earns fees not carry), **IPOs & listings** (IPO and post-IPO open-market secondary deals — captures listings the exit feed misses when the GP keeps a stake), and **Net accrued carry** (fund-level, bottom-up from 10-Q disclosure for the 5 US firms that report it). The exit and IPO tables are laid out **transposed** — quarters run across the top, metrics down the side, click a quarter column to expand its detail — and each firm's exit table carries a **transcript check** reconciling its last two earnings calls' monetization commentary against what PitchBook recorded (verdict: Match / Partial / Diverge).
 5. **Deployment** — new investments each manager made, by quarter, from PitchBook's investor-investment feed (all 13 firms, Blue Owl included). Same transposed, click-to-expand layout as the exit table. PitchBook's investor feed exposes entry dates but **not** entry deal sizes, so this tab tracks deployment *cadence* (number of new investments per quarter) rather than dollars.
 
 There is also an **Overview** tab with a per-firm snapshot and the cross-firm accrued-carry chart.
@@ -47,6 +47,10 @@ exits.js                 Full per-exit detail (window.ALTS_EXITS) powering the C
 deploy.js                Full per-investment detail (window.ALTS_DEPLOY) powering the Deployment tab. One object per
                          new investment: {c,d,s,t} = company, entry date (investor_since), size $M (always null — the
                          investor feed doesn't expose entry size), type. All 13 firms incl. Blue Owl.
+ipos.js                  IPO & public-listing events (window.ALTS_IPOS) for Carry > IPOs & listings. One object per
+                         event: {c,d,s,t} = company, deal date, gross proceeds $M, type (IPO or post-IPO open-market
+                         secondary). From PitchBook company-deal records — captures listings where the GP keeps a stake
+                         (which the exit feed omits). 7 PE firms with captured events.
 VISIBLE_ALPHA_TEMPLATE.md  Prompt + JSON template to compile Visible Alpha consensus from a tearsheet (Section 3).
 .github/workflows/       GitHub Pages deploy workflow (auto-deploys main → vhung-1.github.io/Alts on every push).
 README.md                This file.
@@ -120,6 +124,12 @@ The common pattern across the names: management's realization narrative is **dir
 ### Deployment — `window.ALTS_DEPLOY` (`deploy.js`)
 
 New investments by quarter for all 13 firms, bucketed by PitchBook entry date (`investor_since`). The investor-investment feed gives the company and entry date but **not** the entry deal size, so the Deployment tab shows the *number* of new investments (deployment cadence), not dollars. Counts reflect what PitchBook surfaces per investor entity in-window and can understate very active managers (BAM is sparse — most Brookfield deals sit under the parent, not the asset-manager entity).
+
+### IPOs & listings — `window.ALTS_IPOS` (`ipos.js`)
+
+IPO and post-IPO open-market secondary events by quarter, with **gross proceeds ($M)**. This deliberately captures the gap in the exit feed: PitchBook only marks a holding "Former" (→ Exit activity) when the GP **fully** exits, so a sponsor that lists a company but keeps a stake never appears as an exit. These events instead come from PitchBook **company-deal** records (`get_company_deals`), which expose the IPO itself plus subsequent open-market sell-downs (the real realization events). Built from two clean sources: the IPO-type rows already in `exits.js` (full exits at listing) and a set of **marquee/named listings** enriched precisely per company (e.g. Medline $7.2B Dec-2025 + sell-downs, StandardAero, Hexaware, Rigaku, X-energy, Klarna).
+
+> **Coverage is not exhaustive.** A full scan of every manager's active portfolio (~3,100 holdings) for IPOs was attempted but is impractical via the connector — `get_company_deals` is per-company with no deal-type filter, and the parallel burst exhausted the PitchBook API rate limit (client-level daily quota). Recent active holdings also proved near-empty (e.g. KKR's 50 most-recent active holdings yielded zero in-window IPOs). So the view covers all **full-exit IPOs** + **named/marquee retained-stake listings**; smaller or older retained-stake listings may be missing. To extend, re-run a *sequential* per-company `get_company_deals` scan after the quota resets.
 
 ## Important caveats
 
