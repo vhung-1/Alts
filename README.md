@@ -1,11 +1,12 @@
 # Alts Tracker
 
-An interactive, single-page dashboard tracking the listed alternative-asset managers across four lenses:
+An interactive, single-page dashboard tracking the listed alternative-asset managers across five lenses:
 
 1. **Fundraising** — the funds each manager flagged as *in market* on its latest earnings call, augmented with PitchBook fund data (target / hard cap, prior-fund size, amount raised, expected first & final close).
 2. **Guidance** — forward earnings guidance pulled from each company's latest transcript (S&P Global) plus structured company-issued guidance, one table per firm.
 3. **Consensus** — a Visible Alpha tearsheet scaffold for the 7 KPIs (FRE, perf fees/PRE, FRE/sh, SRE/sh, DE/sh, net flows to fee-paying AUM total & credit). Reported actuals are pre-filled from the transcripts; **paste the VA consensus into `data.js`** and the dashboard computes the surprise.
-4. **Carry** — two views: **Exit activity** (PitchBook portfolio exits by quarter, all 13 firms) and **Net accrued carry** (fund-level, bottom-up from 10-Q disclosure for the 5 US firms that report it).
+4. **Carry** — three views: **Exit activity** (PitchBook portfolio exits by quarter, all 13 firms), **IPOs & listings** (public-market events for portfolio companies), and **Net accrued carry** (fund-level, bottom-up from 10-Q disclosure for the 5 US firms that report it).
+5. **Deployment** — new investments and pipeline activity by manager (PitchBook new investments + earnings call commentary). Entry sizes are almost never disclosed; use as a directional pipeline-activity indicator.
 
 There is also an **Overview** tab with a per-firm snapshot and the cross-firm accrued-carry chart.
 
@@ -38,9 +39,16 @@ Or just open `index.html` directly in a browser. **First paint needs network acc
 ## File structure
 
 ```
-index.html   Presentation only — design system, components, 5 tabs. Never needs editing to update data.
-data.js      The entire data layer (window.ALTS). Edit this each quarter.
-README.md    This file.
+index.html                   Presentation only — design system, components, 6 tabs. Never needs editing to update data.
+data.js                      Main data layer (window.ALTS) — all firm metadata, fundraising, guidance, consensus, accrued carry.
+exits.js                     PitchBook exit records (window.ALTS_EXITS) — per-exit detail for all 13 firms.
+ipos.js                      IPO & listing events (window.ALTS_IPOS) — public-market events for portfolio companies.
+deploy.js                    New investments / deployment pipeline (window.ALTS_DEPLOY) — per-firm investment activity.
+VISIBLE_ALPHA_TEMPLATE.md    Prompt template for extracting VA consensus data. See Section 3.
+README.md                    This file.
+.github/workflows/
+  deploy-pages.yml           GitHub Actions workflow — deploys to GitHub Pages on push to main.
+.nojekyll                    Disables Jekyll processing on GitHub Pages.
 ```
 
 ## Updating each quarter

@@ -1,4 +1,4 @@
-name: Deploy to GitHub Pages
+name: Deploy static content to Pages
 
 on:
   push:
@@ -10,25 +10,22 @@ permissions:
   pages: write
   id-token: write
 
-# Allow one concurrent deployment; newer pushes supersede in-progress runs.
 concurrency:
   group: pages
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 jobs:
   deploy:
-    runs-on: ubuntu-latest
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Configure Pages (enables Pages if needed)
+      - name: Setup Pages
         uses: actions/configure-pages@v5
-        with:
-          enablement: true
-      - name: Upload site (repo root — index.html + data.js)
+      - name: Upload artifact (repo root — index.html + data.js)
         uses: actions/upload-pages-artifact@v3
         with:
           path: '.'
