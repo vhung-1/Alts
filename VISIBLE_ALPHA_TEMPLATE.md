@@ -1,90 +1,81 @@
-# Visible Alpha Consensus — Paste Template
+# Visible Alpha → Alts Tracker consensus template
 
-Use this prompt to extract Visible Alpha consensus data for a single firm and
-paste the result into `data.js` under `firms[TICKER].consensus`.
-
----
-
-## Extraction Prompt
-
-> For **[FIRM NAME]** (ticker: **[TICKER]**), pull the Visible Alpha consensus
-> estimates for the most recently reported quarter (**[PERIOD]**) and the next
-> two forward quarters. I need the following 7 metrics (where covered):
->
-> | Key | Metric | Unit |
-> |-----|--------|------|
-> | `FRE` | Fee-Related Earnings | $M |
-> | `PFRE` | Performance fees / PRE / realized carry | $M |
-> | `FRE_ps` | FRE per share | $ |
-> | `SRE_ps` | Spread-Related Earnings per share (Apollo etc.) | $ |
-> | `DE_ps` | Distributable Earnings per share | $ |
-> | `netFlowsTotal` | Net flows → total fee-paying AUM | $B |
-> | `netFlowsCredit` | Net flows → fee-paying AUM (credit only) | $B |
->
-> For each metric covered, return:
-> - `cons`: VA consensus mean (most recently reported period actual if available)
-> - `n`: number of analyst estimates
-> - `act`: reported actual for the quarter (if already reported)
->
-> Format the output as a JSON object I can paste directly.
+Hand this whole file to Claude along with a **Visible Alpha tearsheet** (screenshot, PDF, or Excel) for **one firm**. Claude returns a JSON object you paste straight into `data.js` to light up that firm's **Consensus** tab (consensus vs. reported, with the surprise computed automatically).
 
 ---
 
-## Output Format
+## Prompt to give Claude
 
-```js
-// Paste into data.js → firms.TICKER.consensus = { … }
+> You are extracting sell-side **consensus** figures from a Visible Alpha tearsheet for a single alternative-asset manager, to populate a dashboard.
+>
+> **Input:** the attached Visible Alpha tearsheet for **<TICKER>** (one of: BX, KKR, APO, ARES, BAM, CG, TPG, OWL, PGHN, EQT, CVC, ICG, BPT) for fiscal period **<PERIOD, e.g. Q1 2026 / FY2025>**.
+>
+> **Extract the consensus MEAN and the # of contributing estimates** for each of the 7 metrics below, for that period. Then give me a JSON object exactly in the shape under "Output format".
+>
+> **Metrics (key → meaning → unit):**
+> 1. `FRE` — Fee-Related Earnings, total — **$M**
+> 2. `PFRE` — Performance fees / performance-related earnings (use realized performance revenues, or "performance fee related earnings" if VA breaks it out) — **$M**
+> 3. `FRE_ps` — FRE per share — **$**
+> 4. `SRE_ps` — Spread-Related Earnings per share (Apollo-type insurers only) — **$**
+> 5. `DE_ps` — Distributable Earnings per share — **$**
+> 6. `netFlowsTotal` — net flows into fee-paying AUM, total, for the period — **$B**
+> 7. `netFlowsCredit` — net flows into fee-paying AUM, credit only, for the period — **$B**
+>
+> **Rules:**
+> - Report numbers in the units above (convert if the tearsheet differs: $bn→$M ×1000; keep per-share in $; net flows in $B).
+> - For each metric give `cons` (consensus mean) and `n` (number of estimates). If the tearsheet shows the reported/actual too, also fill `act`; otherwise omit `act` (the dashboard already pre-fills reported actuals from transcripts).
+> - **Only include metrics the tearsheet actually covers.** Omit any metric that isn't shown or isn't applicable (e.g. `SRE_ps` for non-insurers; `PFRE`/carry for Blue Owl). Do not guess or interpolate.
+> - Note the consensus vintage/date and contributor count if shown.
+> - Output **only** the JSON object, then a one-line note of anything ambiguous.
+
+---
+
+## Output format (what Claude returns — paste into `data.js`)
+
+In `data.js`, set `window.ALTS.firms.<TICKER>.consensus = { ... }` to:
+
+```json
 {
-  FRE:            { cons: 464, n: 11, act: 464 },
-  PFRE:           { cons:  75, n:  8, act:  75 },
-  FRE_ps:         { cons: 1.20, n: 12, act: 1.22 },
-  SRE_ps:         { cons: 1.15, n:  9, act: 1.15 },   // Apollo only
-  DE_ps:          { cons: 1.20, n: 12, act: 1.24 },
-  netFlowsTotal:  { cons: 30.0, n:  7, act: 30.2 },
-  netFlowsCredit: { cons: 18.0, n:  5, act: 18.5 },
+  "FRE":            { "cons": 0,    "n": 0 },
+  "PFRE":           { "cons": 0,    "n": 0 },
+  "FRE_ps":         { "cons": 0.00, "n": 0 },
+  "SRE_ps":         { "cons": 0.00, "n": 0 },
+  "DE_ps":          { "cons": 0.00, "n": 0 },
+  "netFlowsTotal":  { "cons": 0.0,  "n": 0 },
+  "netFlowsCredit": { "cons": 0.0,  "n": 0 }
 }
 ```
 
-Leave out any metric that VA does not cover for this firm.
+- `cons` = Visible Alpha consensus **mean**; `n` = number of contributing estimates.
+- Add `"act": <number>` to any metric if you want to override the dashboard's pre-filled reported actual.
+- **Drop any line the tearsheet doesn't cover** — e.g. for OWL omit `PFRE` (no carry); for non-Apollo names omit `SRE_ps`; for European names that don't report FRE/DE-per-share, include only what VA provides.
 
----
-
-## Worked Example — BX Q1 2026
+### Worked example — `BX`, Q1 2026
 
 ```js
-// firms.BX.consensus (Q1 2026 — as reported 2026-04-23)
-{
-  FRE:   { act: 1501 },          // $1,501M — from transcript
-  PFRE:  { act: 448  },          // net realizations $448M
-  FRE_ps:{ act: 1.26 },          // $1.26/sh
-  DE_ps: { act: 1.36 },          // distributable earnings/sh
-  // VA cons not yet populated — paste from Visible Alpha tearsheet
-}
+window.ALTS.firms.BX.consensus = {
+  FRE:            { cons: 1480, n: 12, act: 1501 },   // $M
+  PFRE:           { cons: 470,  n: 9,  act: 448  },   // $M (realized perf. revenues)
+  FRE_ps:         { cons: 1.24, n: 12, act: 1.26 },   // $
+  DE_ps:          { cons: 1.33, n: 13, act: 1.36 },   // $
+  netFlowsTotal:  { cons: 70,   n: 8 },               // $B
+  netFlowsCredit: { cons: 40,   n: 6 },               // $B
+};
 ```
+
+(SRE_ps omitted — not applicable to Blackstone. `act` values already match the transcript-sourced reported figures the dashboard ships with; you can leave them off and the dashboard uses its own.)
 
 ---
 
-## Per-Firm Applicability
+## How the dashboard uses it
 
-| Ticker | FRE | PFRE | FRE\_ps | SRE\_ps | DE\_ps | netFlowsTotal | netFlowsCredit |
-|--------|-----|------|---------|---------|--------|--------------|----------------|
-| BX     | ✓   | ✓    | ✓       | —       | ✓      | partial       | —              |
-| KKR    | ✓   | ✓    | ✓       | —       | ✓      | —             | —              |
-| APO    | ✓   | —    | ✓       | ✓       | ✓      | partial       | partial        |
-| ARES   | ✓   | ✓    | —       | —       | ✓      | ✓             | ✓              |
-| BAM    | ✓   | —    | ✓       | —       | ✓      | —             | —              |
-| CG     | ✓   | ✓    | —       | —       | ✓      | —             | —              |
-| TPG    | ✓   | ✓    | —       | —       | ✓      | —             | —              |
-| OWL    | —   | —    | ✓       | —       | ✓      | —             | —              |
-| PGHN   | —   | —    | —       | —       | —      | —             | —              |
-| EQT    | —   | —    | —       | —       | —      | —             | —              |
-| CVC    | —   | —    | —       | —       | —      | —             | —              |
-| ICG    | —   | —    | —       | —       | —      | —             | —              |
-| BPT    | —   | ✓    | —       | —       | —      | —             | —              |
+For each metric the Consensus tab shows **VA consensus · #est · Reported · Surprise**. `Surprise = act − cons` (absolute and %), green if reported beat consensus, red if it missed. Cells with no `cons` show `·` (awaiting VA). Reported actuals are pre-filled from each firm's latest transcript, so you only need to paste the `cons`/`n` values.
 
-**Notes:**
-- PGHN, EQT, CVC, ICG, BPT are not covered by Visible Alpha (European names on semi-annual/annual cadence; limited sell-side coverage on VA).
-- OWL does not separately report total FRE ($); only FRE per share.
-- Apollo SRE\_ps is unique to Apollo's reporting framework.
-- `cons` = Visible Alpha mean estimate; `n` = number of estimates; `act` = reported actual.
-- Units: $M for FRE/PFRE; $ for per-share metrics; $B for net flows.
+## Per-firm applicability cheat-sheet
+
+| Firm | FRE | PFRE | FRE/sh | SRE/sh | DE/sh | Net flows (tot/credit) |
+|---|---|---|---|---|---|---|
+| BX, KKR, CG, ARES, TPG, BAM | ✓ | ✓ | ✓ | — | ✓ | ✓ |
+| APO | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| OWL | ✓ | — (no carry) | ✓ | — | ✓ | ✓ |
+| PGHN, EQT, CVC, ICG, BPT | use VA's mgmt-fee/FRE-equiv & EPS lines; per-share FRE/DE often N/A | ✓ (carry/PRE) | if shown | — | if shown | if shown |
