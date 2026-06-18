@@ -13,7 +13,13 @@
   * { box-sizing: border-box; margin: 0; padding: 0; }
   html, body { background: #F5F0E8; }
   button { outline: none; font-family: inherit; }
-  ::-webkit-scrollbar { width: 7px; height: 7px; }
+  /* Global readability scale — enlarge the whole dashboard uniformly,
+     stepped down on narrower screens so it never forces horizontal scroll. */
+  .page { zoom: 1.35; }
+  @media (max-width: 1440px) { .page { zoom: 1.22; } }
+  @media (max-width: 1340px) { .page { zoom: 1.10; } }
+  @media (max-width: 1120px) { .page { zoom: 1.0; } }
+  ::-webkit-scrollbar { width: 9px; height: 9px; }
   ::-webkit-scrollbar-track { background: #F5F0E8; }
   ::-webkit-scrollbar-thumb { background: #C9BFA8; border-radius: 4px; }
   #boot { font-family: 'Inconsolata', monospace; color: #6B5E4A; padding: 40px; font-size: 13px; }
@@ -23,11 +29,14 @@
 <body>
   <div id="root"><div id="boot"><span class="spin">◴</span> Loading Alts Tracker… (needs network access for React/fonts on first paint)</div></div>
 
-  <!-- DATA layer: edit the .js files to update each quarter. -->
+  <!-- DATA layer: edit data.js to update each quarter. -->
   <script src="data.js"></script>
+  <!-- Full per-exit detail for the Carry > Exit activity tables (window.ALTS_EXITS). -->
   <script src="exits.js"></script>
-  <script src="ipos.js"></script>
+  <!-- Full per-investment detail for the Deployment tab (window.ALTS_DEPLOY). -->
   <script src="deploy.js"></script>
+  <!-- IPO / public-listing events for the Carry > IPOs & listings view (window.ALTS_IPOS). -->
+  <script src="ipos.js"></script>
 
   <script type="text/plain" id="appsrc">
   const { useState, useMemo } = React;
@@ -134,14 +143,18 @@
     FIRM_ORDER.forEach(tk => {
       const f = FIRMS[tk];
       fundsInMarket += (f.fundraising||[]).length;
-      const q = (f.exits && f.exits.quarterly && f.exits.quarterly[lastQ]) || null;
+      const q = (tk!=="OWL" && f.exits && f.exits.quarterly && f.exits.quarterly[lastQ]) || null;  // OWL earns fees, not carry
       if (q) { if (isNum(q.totalTV)) exitTVsum += q.totalTV; if (isNum(q.count)) exitCount += q.count; }
     });
+    let deployCount = 0;
+    const DEP = window.ALTS_DEPLOY || {};
+    FIRM_ORDER.forEach(tk => (DEP[tk]||[]).forEach(e => { if (quarterOf(e.d)===lastQ) deployCount++; }));
     const acc = window.__ACCRUED__;
     const kpis = [
       { label:"Managers tracked", value: FIRM_ORDER.length, sub:"global alts" },
       { label:"Funds in market", value: fundsInMarket, sub:"across coverage" },
       { label:`Exit TV · ${lastQ}`, value: fmtB(exitTVsum), sub:`${exitCount} PitchBook exits (disclosed TV)` },
+      { label:`New inv. · ${lastQ}`, value: deployCount||"—", sub:"PitchBook new investments" },
       { label:"Net accrued carry", value: fmtB(acc?acc.grandNet:null), sub:`${acc?acc.firms.length:0} disclosing firms` },
     ];
     return (
@@ -193,10 +206,46 @@
   }
 
   // ═════════════════════════ FUNDRAISING ═════════════════════════
+  const MOMENTUM_TIERS = { "Very High":"#1A7A5A", "High":"#5E8A1A", "Moderate":"#9C6B1A", "Steady":"#9C8D79" };
+  function MomentumTable() {
+    const rows = DATA.fundraisingMomentum || [];
+    if (!rows.length) return null;
+    return (
+      <div style={{ marginBottom:20, background:T.bgCard, border:`1.5px solid ${T.border}`, borderRadius:10, overflow:"hidden" }}>
+        <div style={{ padding:"9px 14px", borderBottom:`1px solid ${T.border}`, background:T.bgHover, fontFamily:MONO, fontSize:9, letterSpacing:"0.1em", color:T.textMuted, textTransform:"uppercase" }}>
+          ▲ Near-term fundraising momentum — ranked
+        </div>
+        <div style={{ overflowX:"auto" }}>
+        <table style={{ width:"100%", borderCollapse:"collapse", fontSize:10.5 }}>
+          <tbody>
+            {rows.map((m,i)=>{ const tc=MOMENTUM_TIERS[m.tier]||T.textSub;
+              return (
+                <tr key={m.tk} style={{ background:i%2?T.bgStripe:T.bgCard }}>
+                  <td style={{ padding:"7px 14px", width:96, whiteSpace:"nowrap" }}><FirmTag tk={m.tk} /></td>
+                  <td style={{ padding:"7px 10px", width:110, whiteSpace:"nowrap" }}>
+                    <span style={{ fontFamily:MONO, fontSize:9.5, fontWeight:700, color:tc, border:`1px solid ${tc}55`, background:tc+"14", borderRadius:4, padding:"2px 8px" }}>{m.tier}</span>
+                  </td>
+                  <td style={{ padding:"7px 14px", fontSize:10.5, color:T.textSub, lineHeight:1.5 }}>{m.driver}</td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+        </div>
+      </div>
+    );
+  }
   function Fundraising({ filter, setFilter }) {
+    const srcBadge = (r) => (
+      <span style={{ display:"inline-flex", gap:3, justifyContent:"center" }}>
+        <Badge color={T.accent} bg={T.accentBg} bd={T.accent+"55"}>CALL</Badge>
+        {r.pb && r.pb!=="N/A" && <span title={`PitchBook fund ${r.pb}`}><Badge color="#1A7A5A" bg="#1A7A5A18" bd="#1A7A5A55">PB</Badge></span>}
+      </span>
+    );
     return (
       <div>
-        <SectionTitle kicker="Section 1" title="Fundraising — funds in market" sub="What management flagged as in-market on the latest earnings call, augmented with PitchBook fund data (target / hard cap, prior-fund size, amount raised, expected first & final close)." />
+        <SectionTitle kicker="Section 1" title="Fundraising — funds in market" sub="What management flagged as in-market on the latest earnings call (CALL), augmented with PitchBook fund data (PB) — target / hard cap, prior-fund size, amount raised, expected first & final close." />
+        <MomentumTable />
         <FirmFilter value={filter} onChange={setFilter} />
         {shownFirms(filter).map(tk => {
           const f = FIRMS[tk]; const c = colorOf(tk); const rows = f.fundraising || [];
@@ -211,22 +260,23 @@
                 <div style={{ overflowX:"auto" }}>
                   <table style={{ width:"100%", borderCollapse:"collapse", fontSize:10.5 }}>
                     <thead><tr style={{ background:T.bgHover }}>
-                      {["Fund / vehicle","Strategy","Status","Target","Hard cap","Prev fund","Raised","First close","Final close"].map((h,i)=>(
-                        <th key={h} style={{ padding:"7px 12px", textAlign:i>2?"right":"left", fontFamily:MONO, fontSize:8, fontWeight:700, letterSpacing:"0.08em", color:T.textMuted, borderBottom:`2px solid ${T.border}`, whiteSpace:"nowrap" }}>{h.toUpperCase()}</th>
+                      {["Fund / vehicle","Strategy","Status","Source","Target","Hard cap","Prev fund","Raised","First close","Final close"].map((h,i)=>(
+                        <th key={h} style={{ padding:"7px 12px", textAlign: h==="Source"?"center":(i>=4?"right":"left"), fontFamily:MONO, fontSize:8, fontWeight:700, letterSpacing:"0.08em", color:T.textMuted, borderBottom:`2px solid ${T.border}`, whiteSpace:"nowrap" }}>{h.toUpperCase()}</th>
                       ))}
                     </tr></thead>
                     <tbody>
                       {rows.map((r,i)=>(
                         <React.Fragment key={i}>
                         <tr style={{ background: i%2?T.bgStripe:T.bgCard }}>
-                          <td style={{ padding:"7px 12px", fontFamily:MONO, fontSize:10.5, color:T.text, fontWeight:600 }}>{r.name}{r.pb && r.pb!=="N/A" && <span style={{ marginLeft:5, fontSize:7.5, color:T.textFaint }}>PB:{r.pb}</span>}</td>
+                          <td style={{ padding:"7px 12px", fontFamily:MONO, fontSize:10.5, color:T.text, fontWeight:600 }}>{r.name}</td>
                           <td style={{ padding:"7px 12px", fontFamily:SERIF, fontStyle:"italic", color:T.textSub, fontSize:11 }}>{r.strategy||"—"}</td>
                           <td style={{ padding:"7px 12px", fontFamily:MONO, fontSize:9, color:c }}>{r.status||"—"}</td>
+                          <td style={{ padding:"7px 8px", textAlign:"center" }}>{srcBadge(r)}</td>
                           {["target","hardCap","prevFund","raisedToDate","firstClose","finalClose"].map(k=>(
                             <td key={k} style={{ padding:"7px 12px", textAlign:"right", fontFamily:MONO, fontSize:10, color: (r[k]&&r[k]!=="N/A")?T.text:T.textFaint, whiteSpace:"nowrap" }}>{(r[k]&&r[k]!=="N/A")?r[k]:"—"}</td>
                           ))}
                         </tr>
-                        {r.comment && <tr style={{ background: i%2?T.bgStripe:T.bgCard }}><td colSpan={9} style={{ padding:"0 12px 8px 12px", fontSize:9.5, color:T.textMuted, fontStyle:"italic", lineHeight:1.5 }}>↳ {r.comment}</td></tr>}
+                        {r.comment && <tr style={{ background: i%2?T.bgStripe:T.bgCard }}><td colSpan={10} style={{ padding:"0 12px 8px 12px", fontSize:9.5, color:T.textMuted, fontStyle:"italic", lineHeight:1.5 }}>↳ {r.comment}</td></tr>}
                         </React.Fragment>
                       ))}
                     </tbody>
@@ -236,6 +286,7 @@
             </div>
           );
         })}
+        <div style={{ marginTop:8, fontSize:9, color:T.textFaint, fontFamily:MONO }}>SOURCE: <b style={{color:T.accent}}>CALL</b> = flagged on the latest earnings call · <b style={{color:"#1A7A5A"}}>PB</b> = augmented with a PitchBook fund profile (target/size/close).</div>
       </div>
     );
   }
@@ -345,73 +396,175 @@
   }
 
   // ═════════════════════════ CARRY ═════════════════════════
-  const QUARTERS = ["2024 Q4","2025 Q1","2025 Q2","2025 Q3","2025 Q4","2026 Q1"];
+  const QUARTERS = ["2023 Q2","2023 Q3","2023 Q4","2024 Q1","2024 Q2","2024 Q3","2024 Q4","2025 Q1","2025 Q2","2025 Q3","2025 Q4","2026 Q1"];
+  const QEX = QUARTERS.concat(["2026 Q2"]);                     // 12 complete quarters + current quarter-to-date
+  const CARRY_ORDER  = FIRM_ORDER.filter(tk => tk !== "OWL");   // Blue Owl earns fees, not carry — excluded from Carry
+  const DEPLOY_ORDER = FIRM_ORDER;                             // deployment applies to every manager (Blue Owl included)
+  const fmtTV = (m) => !isNum(m) ? "n/d" : (Math.abs(m) >= 1000 ? fmtB(m) : `$${Math.round(m)}M`);
+  const qLabel = (qq) => qq.slice(5) + "'" + qq.slice(2,4);   // "2023 Q2" → "Q2'23"
+  const quarterOf = (d) => { const p=String(d).split("-"); const qn=Math.floor((parseInt(p[1],10)-1)/3)+1; return p[0]+" Q"+qn; };
 
-  function CarryExits({ filter, setFilter }) {
-    // cross-firm max for bar scaling
-    const allTV = [];
-    FIRM_ORDER.forEach(tk => QUARTERS.forEach(q => { const e=FIRMS[tk].exits; const v=e&&e.quarterly&&e.quarterly[q]; if(v&&isNum(v.totalTV)) allTV.push(v.totalTV); }));
-    const maxTV = Math.max(1, ...allTV);
+  // Shared transposed quarterly matrix — quarters run across the TOP, metrics down the LEFT (keeps the page short).
+  //  kind="exit"   → Carry > Exit activity (window.ALTS_EXITS): # Exits + Disclosed TV + a per-firm transcript check.
+  //  kind="deploy" → Deployment tab (window.ALTS_DEPLOY): # New investments. The investor feed gives entry dates but
+  //                  not entry deal size, so the $ row auto-hides (hasValue=false) and we show cadence.
+  //  kind="ipo"    → Carry > IPOs & listings (window.ALTS_IPOS): # Events + gross proceeds, from company-deal IPOs and
+  //                  post-IPO open-market secondaries (captures listings even where the GP keeps a stake).
+  function QuarterPanel({ kind, filter, setFilter }) {
+    const isExit = kind === "exit", isIPO = kind === "ipo";
+    const SRC   = (isExit ? window.ALTS_EXITS : isIPO ? window.ALTS_IPOS : window.ALTS_DEPLOY) || {};
+    const ORDER = isExit ? CARRY_ORDER : isIPO ? CARRY_ORDER.filter(tk => Array.isArray(SRC[tk]) && SRC[tk].length) : DEPLOY_ORDER;
+    const RECON = (isExit && DATA.exitRecon) || {};
+    const hasValue = Object.keys(SRC).some(k => Array.isArray(SRC[k]) && SRC[k].some(e => isNum(e.s)));
+    const [open, setOpen]       = useState({});   // open[tk]    = quarter column currently expanded
+    const [recOpen, setRecOpen] = useState({});   // recOpen[tk] = transcript-check expanded?
+    const countLabel = isExit ? "# Exits" : isIPO ? "# Events" : "# New inv.";
+    const noun       = isExit ? "exits" : isIPO ? "IPO / listing events" : "new investments";
+    const valLabel   = isExit ? "Disclosed TV" : isIPO ? "Proceeds" : "Capital in";
+    const valWord    = isExit ? "disclosed TV" : isIPO ? "gross proceeds" : "deployed";
+    const boxCol     = isExit ? T.neg : isIPO ? T.accent : "#1A7A5A";
+    const vmap = { "Match":T.pos, "Partial":"#9C6B1A", "Diverge":T.neg };
+    const firmsToShow = filter==="All" ? ORDER : (ORDER.includes(filter) ? [filter] : (isIPO ? ORDER : []));
     return (
       <div>
-        <div style={{ background:"#C0392B0C", border:`1px solid ${T.neg}44`, borderRadius:8, padding:"11px 15px", marginBottom:18, fontSize:10, color:T.textSub, lineHeight:1.6 }}>
-          <b style={{color:T.neg}}>Read me — exit TV ≠ realized carry.</b> PitchBook "exit size" is the <i>total transaction / enterprise value</i> of the deal, not the manager's equity proceeds (stakes range ~15–100%). Per the KKR exit-pull study, PitchBook exit TV is a <i>weak</i> predictor of reported realized performance income (r&lt;0.35): fund-level crystallizations, open-market sales, advisory fees and clawbacks are invisible, while bankruptcies show as "exits" with zero carry. Use as a directional activity proxy only. Many exits carry no disclosed size, so quarterly TV is a partial minimum.
+        <div style={{ background: boxCol+"0C", border:`1px solid ${boxCol}44`, borderRadius:8, padding:"11px 15px", marginBottom:18, fontSize:10, color:T.textSub, lineHeight:1.6 }}>
+          {isExit ? (
+            <span><b style={{color:T.neg}}>Read me — exit TV ≠ realized carry.</b> PitchBook "exit size" is the <i>total transaction / enterprise value</i> of the deal, not the manager's equity proceeds (stakes range ~15–100%; minority deals flagged <b>min</b>). Per the KKR exit-pull study, exit TV is a <i>weak</i> predictor of realized performance income (r&lt;0.35): fund-level crystallizations, open-market sales and clawbacks are invisible, and bankruptcies show as exits with zero carry. Many exits have no disclosed size, so TV is a partial minimum. <b>Quarters run across the top — click any quarter to expand its individual exits.</b> Cells are shaded per firm (darker = larger). The <b>Transcript check</b> strip under each firm compares the last two earnings calls' monetization commentary against what PitchBook recorded. Blue Owl is excluded (fees, not carry). <b>Fund</b> reads <i>n/d</i> — the feed doesn't name the selling fund.</span>
+          ) : isIPO ? (
+            <span><b style={{color:T.accent}}>Read me — IPOs &amp; listings.</b> Built from PitchBook <i>company-deal</i> records — the <b>IPO</b> itself plus any post-IPO <b>open-market secondary</b> sell-downs (the actual realization events). This is the gap the exit feed misses: when a sponsor lists a company but keeps a stake, PitchBook keeps the holding <i>Active</i> (no "exit"), so the IPO never shows in Exit activity. Proceeds = total offering / transaction size, not the manager's take. <b>Quarters run across the top — click any quarter to see the listings.</b> Coverage = marquee/named listings plus a best-effort scan of each firm's recent active holdings, so very old holdings that listed may be missed. Blue Owl excluded.</span>
+          ) : (
+            <span><b style={{color:"#1A7A5A"}}>Read me — deployment cadence.</b> New investments are dated by PitchBook entry date (<code>investor_since</code>) and counted per quarter — a clean read on <i>deployment pace</i>. PitchBook's investor-investment feed exposes the company and entry date but <b>not the entry deal size</b> (only exits carry a size), so this tab tracks the <b>number</b> of new investments rather than dollars; click any quarter to see which companies. Counts reflect what PitchBook surfaces in-window and can understate very active managers. All 13 names, Blue Owl included.</span>
+          )}
         </div>
-        <FirmFilter value={filter} onChange={setFilter} />
-        {shownFirms(filter).map(tk => {
-          const f = FIRMS[tk]; const c = colorOf(tk); const e = f.exits || {};
-          const q = e.quarterly || {}; const notable = e.notable || [];
+        <FirmFilter value={filter} onChange={setFilter} only={ORDER} />
+        {firmsToShow.map(tk => {
+          const f = FIRMS[tk]; const c = colorOf(tk);
+          const list = SRC[tk] || [];
+          const b = {}; QEX.forEach(qq => b[qq] = { n:0, tv:0, rows:[] });
+          list.forEach(e => { const qq = quarterOf(e.d); if (b[qq]) { b[qq].n++; if (isNum(e.s)) b[qq].tv += e.s; b[qq].rows.push(e); } });
+          QEX.forEach(qq => b[qq].rows.sort((x,y)=>(y.s||0)-(x.s||0) || String(x.c).localeCompare(String(y.c))));
+          const maxTV = Math.max(1, ...QEX.map(qq => b[qq].tv));
+          const maxN  = Math.max(1, ...QEX.map(qq => b[qq].n));
+          const totN  = QUARTERS.reduce((s,qq)=>s+b[qq].n, 0);
+          const totTV = QUARTERS.reduce((s,qq)=>s+b[qq].tv, 0);
+          const openQ = open[tk] || null;
+          const rec = RECON[tk];
+          const heat = (val,max)=>{ if(!(val>0)||!(max>0)) return "transparent"; const a=Math.round(Math.min(1,val/max)*0.5*255); return c + a.toString(16).padStart(2,"0"); };
+          const stick = { position:"sticky", left:0, zIndex:2 };
+          const toggle = (qq) => b[qq].n && setOpen(o=>({ ...o, [tk]: o[tk]===qq?null:qq }));
           return (
             <div key={tk} style={{ marginBottom:22, background:T.bgCard, border:`1.5px solid ${T.border}`, borderTop:`3px solid ${c}`, borderRadius:10, overflow:"hidden" }}>
-              <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", padding:"10px 16px", borderBottom:`1px solid ${T.border}`, background:c+"08" }}>
-                <FirmTag tk={tk} big /><Badge>PitchBook · investor exits</Badge>
+              <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", padding:"10px 16px", borderBottom:`1px solid ${T.border}`, background:c+"08", flexWrap:"wrap", gap:6 }}>
+                <FirmTag tk={tk} big />
+                <span style={{ fontFamily:MONO, fontSize:9.5, color:T.textMuted }}>last 3 yrs · <b style={{color:T.text}}>{totN}</b> {noun}{hasValue?<span> · <b style={{color:T.text}}>{fmtTV(totTV)}</b> {valWord}</span>:null}</span>
               </div>
-              {/* quarterly bars */}
-              <div style={{ padding:"14px 16px", display:"grid", gridTemplateColumns:"repeat(auto-fit, minmax(120px,1fr))", gap:10, borderBottom: notable.length?`1px solid ${T.border}`:"none" }}>
-                {QUARTERS.map(qq => { const v=q[qq]||{}; const tv=isNum(v.totalTV)?v.totalTV:null;
-                  return (
-                    <div key={qq}>
-                      <div style={{ display:"flex", justifyContent:"space-between", fontSize:8.5, fontFamily:MONO, color:T.textMuted, marginBottom:3 }}>
-                        <span>{qq.replace("20","'").replace("'20","'")}</span><span style={{color:T.text}}>{isNum(v.count)?`${v.count}×`:"—"}</span>
-                      </div>
-                      <Bar pct={tv!=null?(tv/maxTV*100):0} color={c+"CC"} h={7} />
-                      <div style={{ fontSize:9, fontFamily:MONO, color: tv!=null?T.textSub:T.textFaint, marginTop:3 }}>{tv!=null?fmtB(tv):"n/d"}</div>
-                    </div>
-                  );
-                })}
+              {list.length===0 ? <Empty label={isExit?"Exit detail not loaded (exits.js).":isIPO?"IPO detail not loaded (ipos.js).":"Deployment detail not loaded (deploy.js)."} /> : (
+              <div style={{ overflowX:"auto" }}>
+                <table style={{ borderCollapse:"collapse", fontSize:10, minWidth:"100%" }}>
+                  <thead>
+                    <tr style={{ background:T.bgHover }}>
+                      <th style={{ ...stick, background:T.bgHover, padding:"6px 12px", textAlign:"left", fontFamily:MONO, fontSize:7.5, fontWeight:700, letterSpacing:"0.06em", color:T.textMuted, borderBottom:`2px solid ${T.border}`, borderRight:`1px solid ${T.border}`, whiteSpace:"nowrap" }}>QUARTER ▸</th>
+                      {QEX.map(qq => { const r=b[qq]; const sel=openQ===qq; const partial=qq==="2026 Q2";
+                        return (
+                          <th key={qq} onClick={()=>toggle(qq)} title={partial?"current quarter to date":""}
+                              style={{ padding:"6px 9px", textAlign:"center", fontFamily:MONO, fontSize:8.5, fontWeight:700, letterSpacing:"0.02em", color: sel?"#fff":(r.n?c:T.textFaint), background: sel?c:(partial?T.bgStripe:T.bgHover), borderBottom:`2px solid ${sel?c:T.border}`, borderLeft:`1px solid ${T.border}`, cursor:r.n?"pointer":"default", whiteSpace:"nowrap" }}>
+                            {qLabel(qq)}{partial && <div style={{ fontSize:6, fontWeight:700, opacity:0.85, letterSpacing:0 }}>QTD</div>}
+                          </th>
+                        );
+                      })}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td style={{ ...stick, background:T.bgCard, padding:"8px 12px", fontFamily:MONO, fontSize:9, fontWeight:700, color:T.textSub, borderBottom:hasValue?`1px solid ${T.border}`:"none", borderRight:`1px solid ${T.border}`, whiteSpace:"nowrap" }}>{countLabel}</td>
+                      {QEX.map(qq => { const r=b[qq]; const sel=openQ===qq;
+                        return <td key={qq} onClick={()=>toggle(qq)}
+                          style={{ padding:"8px 9px", textAlign:"center", fontFamily:MONO, fontSize:11.5, fontWeight:700, color:r.n?T.text:T.textFaint, background: sel?c+"22":heat(r.n,maxN), borderBottom:hasValue?`1px solid ${T.border}`:"none", borderLeft:`1px solid ${T.border}`, cursor:r.n?"pointer":"default" }}>{r.n||"·"}</td>;
+                      })}
+                    </tr>
+                    {hasValue && (
+                    <tr>
+                      <td style={{ ...stick, background:T.bgCard, padding:"8px 12px", fontFamily:MONO, fontSize:9, fontWeight:700, color:T.textSub, borderRight:`1px solid ${T.border}`, whiteSpace:"nowrap" }}>{valLabel}<span style={{ color:T.textFaint, fontWeight:400 }}> $</span></td>
+                      {QEX.map(qq => { const r=b[qq]; const sel=openQ===qq;
+                        return <td key={qq} onClick={()=>toggle(qq)}
+                          style={{ padding:"8px 9px", textAlign:"center", fontFamily:MONO, fontSize:9.5, fontWeight:700, color:r.tv>0?c:T.textFaint, background: sel?c+"22":heat(r.tv,maxTV), borderLeft:`1px solid ${T.border}`, cursor:r.n?"pointer":"default", whiteSpace:"nowrap" }}>{r.tv>0?fmtTV(r.tv):(r.n?"n/d":"·")}</td>;
+                      })}
+                    </tr>
+                    )}
+                  </tbody>
+                </table>
               </div>
-              {e.summary && <div style={{ padding:"8px 16px", fontSize:9.5, color:T.textMuted, fontStyle:"italic", lineHeight:1.5, borderBottom: notable.length?`1px solid ${T.border}`:"none" }}>{e.summary}</div>}
-              {notable.length>0 && (
-                <div style={{ overflowX:"auto" }}>
-                  <table style={{ width:"100%", borderCollapse:"collapse", fontSize:10 }}>
-                    <thead><tr style={{ background:T.bgHover }}>
-                      {["Company","Exit date","Exit TV","Type","Held since","Flag"].map((h,i)=>(
-                        <th key={h} style={{ padding:"6px 12px", textAlign:i===2?"right":"left", fontFamily:MONO, fontSize:8, fontWeight:700, letterSpacing:"0.06em", color:T.textMuted, borderBottom:`2px solid ${T.border}`, whiteSpace:"nowrap" }}>{h.toUpperCase()}</th>
-                      ))}
-                    </tr></thead>
-                    <tbody>
-                      {notable.map((r,i)=>(
-                        <tr key={i} style={{ background:i%2?T.bgStripe:T.bgCard }}>
-                          <td style={{ padding:"6px 12px", fontFamily:MONO, fontSize:10, color:T.text }}>{r.company}</td>
-                          <td style={{ padding:"6px 12px", fontFamily:MONO, fontSize:9.5, color:T.textSub, whiteSpace:"nowrap" }}>{r.exitDate}</td>
-                          <td style={{ padding:"6px 12px", textAlign:"right", fontFamily:MONO, fontSize:10, color:(r.exitSize&&r.exitSize!=="N/A")?T.text:T.textFaint }}>{(r.exitSize&&r.exitSize!=="N/A")?r.exitSize:"n/d"}</td>
-                          <td style={{ padding:"6px 12px", fontFamily:SERIF, fontStyle:"italic", fontSize:10.5, color:T.textSub }}>{r.type}</td>
-                          <td style={{ padding:"6px 12px", fontFamily:MONO, fontSize:9.5, color:T.textMuted }}>{r.investorSince||"—"}</td>
-                          <td style={{ padding:"6px 12px" }}>{r.flag && r.flag!=="blank" && r.flag!=="" ? <Badge color={T.neg} bg="#C0392B14" bd="#C0392B44">{r.flag}</Badge> : ""}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
               )}
-              {!notable.length && !e.summary && <Empty label="Exit data pending." />}
+              {openQ && b[openQ] && b[openQ].rows.length>0 && (() => {
+                const r = b[openQ];
+                const cols = isExit
+                  ? [["Company","left"],["Exit date","left"],["Exit TV","right"],["Type","left"],["Hold","left"],["Fund / vehicle","left"]]
+                  : isIPO
+                  ? [["Company","left"],["Date","left"],["Proceeds","right"],["Type","left"]]
+                  : [["Company","left"],["Entry date","left"]];
+                return (
+                  <div style={{ borderTop:`1px solid ${T.border}`, background:c+"06" }}>
+                    <div style={{ padding:"7px 16px", fontFamily:MONO, fontSize:9, color:c, background:c+"10", borderBottom:`1px solid ${T.border}` }}>
+                      {qLabel(openQ)}{openQ==="2026 Q2"?" ·QTD":""} — <b>{r.n}</b> {isExit?("exit"+(r.n>1?"s":"")):isIPO?("event"+(r.n>1?"s":"")):("new investment"+(r.n>1?"s":""))}{hasValue?<span> · <b>{r.tv>0?fmtTV(r.tv):"n/d"}</b> {valWord}</span>:null}
+                    </div>
+                    <div style={{ overflowX:"auto" }}>
+                      <table style={{ width:"100%", borderCollapse:"collapse", fontSize:10 }}>
+                        <thead><tr>
+                          {cols.map(([h,al],i)=>(
+                            <th key={i} style={{ padding:"5px 16px", textAlign:al, fontFamily:MONO, fontSize:7.5, fontWeight:700, letterSpacing:"0.06em", color:T.textMuted, borderBottom:`1px solid ${T.border}`, whiteSpace:"nowrap" }}>{h.toUpperCase()}</th>
+                          ))}
+                        </tr></thead>
+                        <tbody>
+                          {r.rows.map((e,j)=>(
+                            <tr key={j} style={{ background: j%2?T.bgStripe:"transparent" }}>
+                              <td style={{ padding:"5px 16px", fontFamily:MONO, fontSize:10, color:T.text }}>{e.c}</td>
+                              <td style={{ padding:"5px 16px", fontFamily:MONO, fontSize:9.5, color:T.textSub, whiteSpace:"nowrap" }}>{e.d}</td>
+                              {(isExit||isIPO) && <td style={{ padding:"5px 16px", textAlign:"right", fontFamily:MONO, fontSize:10, color:isNum(e.s)?T.text:T.textFaint }}>{isNum(e.s)?fmtTV(e.s):"n/d"}</td>}
+                              {(isExit||isIPO) && <td style={{ padding:"5px 16px", whiteSpace:"nowrap" }}>{isIPO ? (() => { const ic=/ipo/i.test(e.t)?T.pos:"#9C6B1A"; return <Badge color={ic} bg={ic+"14"} bd={ic+"44"}>{e.t||"—"}</Badge>; })() : <span style={{ fontFamily:SERIF, fontStyle:"italic", fontSize:10.5, color:T.textSub }}>{e.t||"—"}</span>}</td>}
+                              {isExit && <td style={{ padding:"5px 16px" }}>{e.h==="Min" ? <Badge color={T.neg} bg="#C0392B14" bd="#C0392B44">min</Badge> : e.h==="Maj" ? <span style={{ fontFamily:MONO, fontSize:9, color:T.textMuted }}>maj</span> : <span style={{color:T.textFaint}}>—</span>}</td>}
+                              {isExit && <td style={{ padding:"5px 16px", fontFamily:MONO, fontSize:9.5, color:(e.f&&e.f!=="n/d")?T.text:T.textFaint }}>{(e.f&&e.f!=="n/d")?e.f:"n/d"}</td>}
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                );
+              })()}
+              {isExit && rec && (() => {
+                const vc = vmap[rec.verdict] || T.textMuted; const ro = !!recOpen[tk];
+                return (
+                  <div style={{ borderTop:`1px solid ${T.border}`, background:T.bgStripe }}>
+                    <div onClick={()=>setRecOpen(o=>({ ...o, [tk]: !o[tk] }))} style={{ cursor:"pointer", display:"flex", gap:10, alignItems:"baseline", padding:"9px 16px", flexWrap:"wrap" }}>
+                      <span style={{ fontFamily:MONO, fontSize:7.5, color:T.textMuted, letterSpacing:"0.12em", flexShrink:0 }}>TRANSCRIPT CHECK</span>
+                      <span style={{ flexShrink:0, fontFamily:MONO, fontSize:9, fontWeight:700, color:vc, border:`1px solid ${vc}55`, background:vc+"14", borderRadius:4, padding:"1px 8px" }}>{rec.verdict}</span>
+                      <span style={{ flex:1, minWidth:200, fontSize:10, color:T.textSub, lineHeight:1.5 }}>{rec.note}</span>
+                      <span style={{ flexShrink:0, color:c, fontSize:10 }}>{ro?"▾ hide":"▸ detail"}</span>
+                    </div>
+                    {ro && (
+                      <div style={{ padding:"0 16px 12px 16px" }}>
+                        <div style={{ fontSize:8.5, color:T.textFaint, fontFamily:MONO, marginBottom:7, lineHeight:1.6 }}>Transcripts: {(rec.transcripts||[]).join(" · ")}{rec.pbExits?` · PitchBook in window: ${rec.pbExits}`:""}</div>
+                        <ul style={{ margin:0, paddingLeft:16 }}>
+                          {(rec.points||[]).map((p,k)=>(<li key={k} style={{ fontSize:10, color:T.textSub, lineHeight:1.6, marginBottom:3 }}>{p}</li>))}
+                        </ul>
+                      </div>
+                    )}
+                  </div>
+                );
+              })()}
             </div>
           );
         })}
+        <div style={{ marginTop:6, fontSize:9, color:T.textFaint, fontFamily:MONO, lineHeight:1.7 }}>
+          {isExit
+            ? "Click a quarter column to expand its exits. \"QTD\" = current quarter to date (excluded from 3-yr totals). Source: PitchBook investor-exit feed (investor_status = Former), deduped by company + date. Transcript check = S&P Global last-two-quarters earnings calls vs PitchBook."
+            : isIPO
+            ? "Click a quarter column to expand its IPOs & listings. \"QTD\" = current quarter to date (excluded from 3-yr totals). Source: PitchBook company-deal records — IPOs and post-IPO open-market secondaries; captures listings where the GP retains a stake (which the exit feed omits). Coverage = named/marquee listings + best-effort scan of recent active holdings."
+            : "Click a quarter column to expand its new investments. \"QTD\" = current quarter to date (excluded from 3-yr totals). Source: PitchBook investor-investment feed (entry date = investor_since), deduped by company + date. Entry deal size is not exposed by the feed."}
+        </div>
       </div>
     );
   }
-
   // ── Accrued carry (ported from source dashboard; bottom-up derivation) ──
   const KKR_COMP = 0.25;
   function deriveAccrued() {
@@ -522,67 +675,40 @@
     );
   }
 
-  // ═════════════════════════ IPOs & LISTINGS ═════════════════════════
-  function CarryIPOs({ filter, setFilter }) {
-    const IPOS = window.ALTS_IPOS || {};
-    const firms = shownFirms(filter).filter(tk => IPOS[tk] && IPOS[tk].length > 0);
-    return (
-      <div>
-        <div style={{ background:"#1A7A5A0C", border:`1px solid ${T.pos}44`, borderRadius:8, padding:"10px 14px", marginBottom:18, fontSize:10, color:T.textSub, lineHeight:1.6 }}>
-          <b style={{color:T.pos}}>IPOs & secondary listings</b> — public offerings where the manager's portfolio company (or a company in which the manager holds a stake) accessed public equity markets. Sources: PitchBook Premium + earnings call commentary. Proceeds shown are total offering size, not manager proceeds.
-        </div>
-        <FirmFilter value={filter} onChange={setFilter} only={Object.keys(IPOS).filter(tk=>IPOS[tk]&&IPOS[tk].length>0)} />
-        {firms.length === 0 ? <Empty label="No IPO / listing data for the selected firm." /> : firms.map(tk => {
-          const c = colorOf(tk); const rows = IPOS[tk] || [];
-          return (
-            <div key={tk} style={{ marginBottom:20, background:T.bgCard, border:`1.5px solid ${T.border}`, borderTop:`3px solid ${c}`, borderRadius:10, overflow:"hidden" }}>
-              <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", padding:"10px 16px", borderBottom:`1px solid ${T.border}`, background:c+"08" }}>
-                <FirmTag tk={tk} big /><Badge>PitchBook · public markets</Badge>
-              </div>
-              <div style={{ overflowX:"auto" }}>
-                <table style={{ width:"100%", borderCollapse:"collapse", fontSize:10.5 }}>
-                  <thead><tr style={{ background:T.bgHover }}>
-                    {["Company","Date","Proceeds $M","Type"].map((h,i)=>(
-                      <th key={h} style={{ padding:"6px 12px", textAlign:i===2?"right":"left", fontFamily:MONO, fontSize:8, fontWeight:700, letterSpacing:"0.06em", color:T.textMuted, borderBottom:`2px solid ${T.border}`, whiteSpace:"nowrap" }}>{h.toUpperCase()}</th>
-                    ))}
-                  </tr></thead>
-                  <tbody>
-                    {rows.map((r,i)=>(
-                      <tr key={i} style={{ background:i%2?T.bgStripe:T.bgCard }}>
-                        <td style={{ padding:"6px 12px", fontFamily:MONO, fontSize:10.5, color:T.text, fontWeight:600 }}>{r.c}</td>
-                        <td style={{ padding:"6px 12px", fontFamily:MONO, fontSize:9.5, color:T.textSub, whiteSpace:"nowrap" }}>{r.d}</td>
-                        <td style={{ padding:"6px 12px", textAlign:"right", fontFamily:MONO, fontSize:10, color:r.s!=null?T.text:T.textFaint }}>{r.s!=null?fmtM(r.s):"n/d"}</td>
-                        <td style={{ padding:"6px 12px", fontFamily:SERIF, fontStyle:"italic", fontSize:11, color:T.textSub }}>{r.t}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          );
-        })}
-      </div>
-    );
-  }
-
   function Carry() {
     const [sub,setSub]=useState("exits");
     const [filter,setFilter]=useState("All");
     const acc = window.__ACCRUED__;
     return (
       <div>
-        <SectionTitle kicker="Section 4" title="Carry tracker" sub="Three views: realized-carry activity via PitchBook exits, IPO & listing events, and net accrued (unrealized) carry from fund-level 10-Q disclosure." />
+        <SectionTitle kicker="Section 4" title="Carry tracker" sub="Three lenses on carried interest: realized-carry activity via PitchBook portfolio exits (last 3 years, 12 names — Blue Owl excluded as it earns fees not carry), IPOs & listings (which the exit feed misses when the GP keeps a stake), and net accrued (unrealized) carry from fund-level 10-Q disclosure. Each firm's exit table carries a transcript check — does the last two earnings calls' monetization commentary line up with what PitchBook recorded?" />
         <div style={{ display:"flex", gap:6, marginBottom:18, flexWrap:"wrap" }}>
           {[["exits","Exit activity"],["ipos","IPOs & listings"],["accrued","Net accrued carry"]].map(([id,lab])=>(
             <button key={id} onClick={()=>setSub(id)} style={{ padding:"6px 16px", borderRadius:7, cursor:"pointer", fontFamily:MONO, fontSize:10.5, fontWeight:sub===id?700:500, letterSpacing:"0.05em", border:`1.5px solid ${sub===id?T.accent:T.border}`, background:sub===id?T.accent+"14":T.bgCard, color:sub===id?T.accent:T.textSub }}>{lab.toUpperCase()}</button>
           ))}
         </div>
-        {sub==="exits" ? <CarryExits filter={filter} setFilter={setFilter} /> :
-         sub==="ipos"  ? <CarryIPOs  filter={filter} setFilter={setFilter} /> : (
+        {sub==="exits" && <QuarterPanel kind="exit" filter={filter} setFilter={setFilter} />}
+        {sub==="ipos"  && <QuarterPanel kind="ipo"  filter={filter} setFilter={setFilter} />}
+        {sub==="accrued" && (
           <div>
             <div style={{ marginBottom:14, fontSize:11, color:T.textSub, lineHeight:1.6 }}>
               Net accrued carried interest, bottom-up from fund-level 10-Q data. Currently {acc?acc.firms.length:0} firms disclose at this granularity (KKR, Blackstone, Ares, Carlyle, Apollo, all 1Q26). The remaining names either report differently or do not break carry out by fund — exit activity above is the cross-firm comparable.
             </div>
+            {DATA.accruedFocus && (
+              <div style={{ marginBottom:18, background:T.bgCard, border:`1.5px solid ${T.border}`, borderRadius:10, overflow:"hidden" }}>
+                <div style={{ padding:"9px 14px", borderBottom:`1px solid ${T.border}`, background:T.bgHover, fontFamily:MONO, fontSize:9, letterSpacing:"0.1em", color:T.textMuted, textTransform:"uppercase" }}>★ Key funds to watch for carry — by firm</div>
+                <div style={{ padding:"4px 0" }}>
+                  {Object.keys(DATA.accruedFocus).map((k,i)=>{ const col=(FIRMS[k]&&FIRMS[k].color)||T.accent;
+                    return (
+                      <div key={k} style={{ display:"flex", gap:12, padding:"8px 14px", alignItems:"baseline", borderTop: i>0?`1px solid ${T.border}`:"none" }}>
+                        <div style={{ width:84, flexShrink:0 }}><FirmTag tk={k} /></div>
+                        <div style={{ fontSize:10.5, color:T.textSub, lineHeight:1.6 }}>{DATA.accruedFocus[k]}</div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
             {acc && <div style={{ background:T.bgCard, border:`1.5px solid ${T.border}`, borderRadius:10, padding:"16px 20px", marginBottom:18 }}><AccruedCompChart /></div>}
             <CarryAccrued />
           </div>
@@ -593,45 +719,10 @@
 
   // ═════════════════════════ DEPLOYMENT ═════════════════════════
   function Deployment({ filter, setFilter }) {
-    const DEPLOY = window.ALTS_DEPLOY || {};
     return (
       <div>
-        <SectionTitle kicker="Section 5" title="Deployment — new investments" sub="Recent and pipeline investments by manager, sourced from PitchBook Premium (new investments / lead rounds) and earnings call commentary. Entry sizes are almost never disclosed — use as a directional pipeline-activity indicator only." />
-        <div style={{ background:"#8B5E1A0C", border:`1px solid ${T.accent}55`, borderRadius:8, padding:"10px 14px", marginBottom:18, fontSize:10, color:T.textSub, lineHeight:1.6, fontFamily:MONO }}>
-          <b style={{color:T.accent}}>Note:</b> Deal sizes are null for virtually all new investments (PE managers do not disclose entry price at time of investment). Dates marked <code style={{background:T.bgHover,padding:"1px 3px",borderRadius:2}}>YYYY-QN</code> are quarter-approximate. Entries reflect fund-level activity as reported or PitchBook-sourced; not a complete record.
-        </div>
-        <FirmFilter value={filter} onChange={setFilter} />
-        {shownFirms(filter).map(tk => {
-          const f = FIRMS[tk]; const c = colorOf(tk); const rows = DEPLOY[tk] || [];
-          return (
-            <div key={tk} style={{ marginBottom:22, background:T.bgCard, border:`1.5px solid ${T.border}`, borderTop:`3px solid ${c}`, borderRadius:10, overflow:"hidden" }}>
-              <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", padding:"10px 16px", borderBottom:`1px solid ${T.border}`, background:c+"08" }}>
-                <FirmTag tk={tk} big /><Badge>PitchBook · new investments</Badge>
-              </div>
-              {rows.length === 0 ? <Empty label="Deployment data pending." /> : (
-                <div style={{ overflowX:"auto" }}>
-                  <table style={{ width:"100%", borderCollapse:"collapse", fontSize:10.5 }}>
-                    <thead><tr style={{ background:T.bgHover }}>
-                      {["Company / Asset","Entry date","Size $M","Strategy / Type"].map((h,i)=>(
-                        <th key={h} style={{ padding:"6px 12px", textAlign:i===2?"right":"left", fontFamily:MONO, fontSize:8, fontWeight:700, letterSpacing:"0.06em", color:T.textMuted, borderBottom:`2px solid ${T.border}`, whiteSpace:"nowrap" }}>{h.toUpperCase()}</th>
-                      ))}
-                    </tr></thead>
-                    <tbody>
-                      {rows.map((r,i)=>(
-                        <tr key={i} style={{ background:i%2?T.bgStripe:T.bgCard }}>
-                          <td style={{ padding:"6px 12px", fontFamily:MONO, fontSize:10.5, color:T.text, fontWeight:600 }}>{r.c}</td>
-                          <td style={{ padding:"6px 12px", fontFamily:MONO, fontSize:9.5, color:T.textSub, whiteSpace:"nowrap" }}>{r.d}</td>
-                          <td style={{ padding:"6px 12px", textAlign:"right", fontFamily:MONO, fontSize:10, color:T.textFaint }}>{r.s!=null?fmtM(r.s):"—"}</td>
-                          <td style={{ padding:"6px 12px", fontFamily:SERIF, fontStyle:"italic", fontSize:11, color:T.textSub }}>{r.t}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              )}
-            </div>
-          );
-        })}
+        <SectionTitle kicker="Section 5" title="Deployment — capital put to work" sub="New investments each manager made, by quarter, from PitchBook's investor-investment feed (entry date = investor_since). Quarters run across the top; click any quarter to see the underlying deals. All 13 names, Blue Owl included." />
+        <QuarterPanel kind="deploy" filter={filter} setFilter={setFilter} />
       </div>
     );
   }
@@ -655,7 +746,7 @@
     return (
       <div style={{ minHeight:"100vh", background:T.bg, color:T.text, fontFamily:SANS }}>
         <div style={{ height:4, background:`linear-gradient(90deg, ${FIRM_ORDER.map(colorOf).join(",")})` }} />
-        <div style={{ maxWidth:1280, margin:"0 auto", padding:"24px 22px 70px" }}>
+        <div className="page" style={{ maxWidth:1080, margin:"0 auto", padding:"24px 22px 70px" }}>
           {/* header */}
           <div style={{ display:"flex", flexWrap:"wrap", gap:16, alignItems:"flex-end", marginBottom:22, paddingBottom:18, borderBottom:`1.5px solid ${T.borderFt}` }}>
             <div style={{ flex:1, minWidth:280 }}>
@@ -685,7 +776,7 @@
           {tab==="deployment"  && <Deployment filter={dFilter} setFilter={setDFilter} />}
           {/* footer */}
           <div style={{ marginTop:30, paddingTop:14, borderTop:`1px solid ${T.border}`, fontSize:8.5, color:T.textFaint, lineHeight:1.9, fontFamily:MONO }}>
-            Sources: S&P Global (transcripts, guidance) · PitchBook Premium (investor funds, exits & deployments) · Visible Alpha (consensus — paste into data.js) · company 10-Q/10-K (accrued carry). Exit "size" = total transaction value, not manager proceeds. Reported actuals as stated on each firm's latest call. Not investment advice.
+            Sources: S&P Global (transcripts, guidance, transcript check) · PitchBook Premium (investor funds, exits & new investments) · Visible Alpha (consensus — paste into data.js) · company 10-Q/10-K (accrued carry). Exit/deal "size" = total transaction value, not manager proceeds; PitchBook's investor feed exposes entry dates but not entry deal size. Reported actuals as stated on each firm's latest call. Not investment advice.
           </div>
         </div>
       </div>
