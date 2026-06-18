@@ -408,27 +408,46 @@
   //  kind="exit"   → Carry > Exit activity (window.ALTS_EXITS): # Exits + Disclosed TV + a per-firm transcript check.
   //  kind="deploy" → Deployment tab (window.ALTS_DEPLOY): # New investments. The investor feed gives entry dates but
   //                  not entry deal size, so the $ row auto-hides (hasValue=false) and we show cadence.
-  //  kind="ipo"    → Carry > IPOs & listings (window.ALTS_IPOS): # Events + gross proceeds, from company-deal IPOs and
-  //                  post-IPO open-market secondaries (captures listings even where the GP keeps a stake).
+  //  kind="real"   → Carry > Realizations: exits + retained-stake IPOs/sell-downs merged; full-exit IPOs de-duped.
+  //  kind="ipo"    → (legacy) Carry > IPOs & listings standalone (window.ALTS_IPOS).
+  function buildRealSrc() {
+    const exits = window.ALTS_EXITS || {}, ipos = window.ALTS_IPOS || {};
+    const out = {};
+    CARRY_ORDER.forEach(tk => {
+      const exitRows = (exits[tk] || []).map(e => ({ ...e, _src: "exit" }));
+      // Build a set of (lowered-name, quarter) already covered by full-exit IPO rows
+      const covered = new Set(
+        exitRows.filter(e => /ipo/i.test(e.t || "")).map(e => e.c.toLowerCase().trim() + "|" + quarterOf(e.d))
+      );
+      const ipoRows = (ipos[tk] || [])
+        .filter(e => !covered.has(e.c.toLowerCase().trim() + "|" + quarterOf(e.d)))
+        .map(e => ({ ...e, _src: /ipo/i.test(e.t || "") ? "ipo" : "selldown" }));
+      out[tk] = [...exitRows, ...ipoRows];
+    });
+    return out;
+  }
   function QuarterPanel({ kind, filter, setFilter }) {
-    const isExit = kind === "exit", isIPO = kind === "ipo";
-    const SRC   = (isExit ? window.ALTS_EXITS : isIPO ? window.ALTS_IPOS : window.ALTS_DEPLOY) || {};
-    const ORDER = isExit ? CARRY_ORDER : isIPO ? CARRY_ORDER.filter(tk => Array.isArray(SRC[tk]) && SRC[tk].length) : DEPLOY_ORDER;
+    const isExit = kind === "exit", isIPO = kind === "ipo", isReal = kind === "real";
+    const _realSrc = React.useMemo(() => isReal ? buildRealSrc() : null, [isReal]);
+    const SRC   = (isReal ? _realSrc : isExit ? window.ALTS_EXITS : isIPO ? window.ALTS_IPOS : window.ALTS_DEPLOY) || {};
+    const ORDER = (isExit || isReal) ? CARRY_ORDER : isIPO ? CARRY_ORDER.filter(tk => Array.isArray(SRC[tk]) && SRC[tk].length) : DEPLOY_ORDER;
     const RECON = (isExit && DATA.exitRecon) || {};
     const hasValue = Object.keys(SRC).some(k => Array.isArray(SRC[k]) && SRC[k].some(e => isNum(e.s)));
     const [open, setOpen]       = useState({});   // open[tk]    = quarter column currently expanded
     const [recOpen, setRecOpen] = useState({});   // recOpen[tk] = transcript-check expanded?
-    const countLabel = isExit ? "# Exits" : isIPO ? "# Events" : "# New inv.";
-    const noun       = isExit ? "exits" : isIPO ? "IPO / listing events" : "new investments";
-    const valLabel   = isExit ? "Disclosed TV" : isIPO ? "Proceeds" : "Capital in";
-    const valWord    = isExit ? "disclosed TV" : isIPO ? "gross proceeds" : "deployed";
-    const boxCol     = isExit ? T.neg : isIPO ? T.accent : "#1A7A5A";
+    const countLabel = isReal ? "# Events" : isExit ? "# Exits" : isIPO ? "# Events" : "# New inv.";
+    const noun       = isReal ? "realizations" : isExit ? "exits" : isIPO ? "IPO / listing events" : "new investments";
+    const valLabel   = isReal ? "TV / Proceeds" : isExit ? "Disclosed TV" : isIPO ? "Proceeds" : "Capital in";
+    const valWord    = isReal ? "value" : isExit ? "disclosed TV" : isIPO ? "gross proceeds" : "deployed";
+    const boxCol     = (isExit || isReal) ? T.neg : isIPO ? T.accent : "#1A7A5A";
     const vmap = { "Match":T.pos, "Partial":"#9C6B1A", "Diverge":T.neg };
     const firmsToShow = filter==="All" ? ORDER : (ORDER.includes(filter) ? [filter] : (isIPO ? ORDER : []));
     return (
       <div>
         <div style={{ background: boxCol+"0C", border:`1px solid ${boxCol}44`, borderRadius:8, padding:"11px 15px", marginBottom:18, fontSize:10, color:T.textSub, lineHeight:1.6 }}>
-          {isExit ? (
+          {isReal ? (
+            <span><b style={{color:T.neg}}>Read me — unified realizations.</b> Merges PitchBook's investor-exit feed (<b>exits</b>, sized by total transaction / enterprise value) with company-deal IPO records (<b>IPOs</b> and post-IPO <b>open-market sell-downs</b>, sized by gross offering proceeds). Full-exit IPOs that appear in both feeds are de-duped — shown once, sized by TV. <b>Size is not apples-to-apples</b>: exit TV = whole-deal EV; IPO / sell-down proceeds = the offering size only (the GP's share of either is unlisted). Minority exits flagged <b>min</b>. The <b>Transcript check</b> strip compares the last two earnings calls against PitchBook. Blue Owl excluded (fees, not carry). <b>Quarters run across the top — click any quarter to expand.</b></span>
+          ) : isExit ? (
             <span><b style={{color:T.neg}}>Read me — exit TV ≠ realized carry.</b> PitchBook "exit size" is the <i>total transaction / enterprise value</i> of the deal, not the manager's equity proceeds (stakes range ~15–100%; minority deals flagged <b>min</b>). Per the KKR exit-pull study, exit TV is a <i>weak</i> predictor of realized performance income (r&lt;0.35): fund-level crystallizations, open-market sales and clawbacks are invisible, and bankruptcies show as exits with zero carry. Many exits have no disclosed size, so TV is a partial minimum. <b>Quarters run across the top — click any quarter to expand its individual exits.</b> Cells are shaded per firm (darker = larger). The <b>Transcript check</b> strip under each firm compares the last two earnings calls' monetization commentary against what PitchBook recorded. Blue Owl is excluded (fees, not carry). <b>Fund</b> reads <i>n/d</i> — the feed doesn't name the selling fund.</span>
           ) : isIPO ? (
             <span><b style={{color:T.accent}}>Read me — IPOs &amp; listings.</b> Built from PitchBook <i>company-deal</i> records — the <b>IPO</b> itself plus any post-IPO <b>open-market secondary</b> sell-downs (the actual realization events). This is the gap the exit feed misses: when a sponsor lists a company but keeps a stake, PitchBook keeps the holding <i>Active</i> (no "exit"), so the IPO never shows in Exit activity. Proceeds = total offering / transaction size, not the manager's take. <b>Quarters run across the top — click any quarter to see the listings.</b> Coverage = marquee/named listings plus a best-effort scan of each firm's recent active holdings, so very old holdings that listed may be missed. Blue Owl excluded.</span>
@@ -458,7 +477,7 @@
                 <FirmTag tk={tk} big />
                 <span style={{ fontFamily:MONO, fontSize:9.5, color:T.textMuted }}>last 3 yrs · <b style={{color:T.text}}>{totN}</b> {noun}{hasValue?<span> · <b style={{color:T.text}}>{fmtTV(totTV)}</b> {valWord}</span>:null}</span>
               </div>
-              {list.length===0 ? <Empty label={isExit?"Exit detail not loaded (exits.js).":isIPO?"IPO detail not loaded (ipos.js).":"Deployment detail not loaded (deploy.js)."} /> : (
+              {list.length===0 ? <Empty label={isReal?"Realizations not loaded (exits.js / ipos.js).":isExit?"Exit detail not loaded (exits.js).":isIPO?"IPO detail not loaded (ipos.js).":"Deployment detail not loaded (deploy.js)."} /> : (
               <div style={{ overflowX:"auto" }}>
                 <table style={{ borderCollapse:"collapse", fontSize:10, minWidth:"100%" }}>
                   <thead>
@@ -497,7 +516,9 @@
               )}
               {openQ && b[openQ] && b[openQ].rows.length>0 && (() => {
                 const r = b[openQ];
-                const cols = isExit
+                const cols = isReal
+                  ? [["Company","left"],["Date","left"],["Size","right"],["Type","left"],["Hold","left"],["Fund / vehicle","left"]]
+                  : isExit
                   ? [["Company","left"],["Exit date","left"],["Exit TV","right"],["Type","left"],["Hold","left"],["Fund / vehicle","left"]]
                   : isIPO
                   ? [["Company","left"],["Date","left"],["Proceeds","right"],["Type","left"]]
@@ -519,10 +540,15 @@
                             <tr key={j} style={{ background: j%2?T.bgStripe:"transparent" }}>
                               <td style={{ padding:"5px 16px", fontFamily:MONO, fontSize:10, color:T.text }}>{e.c}</td>
                               <td style={{ padding:"5px 16px", fontFamily:MONO, fontSize:9.5, color:T.textSub, whiteSpace:"nowrap" }}>{e.d}</td>
-                              {(isExit||isIPO) && <td style={{ padding:"5px 16px", textAlign:"right", fontFamily:MONO, fontSize:10, color:isNum(e.s)?T.text:T.textFaint }}>{isNum(e.s)?fmtTV(e.s):"n/d"}</td>}
-                              {(isExit||isIPO) && <td style={{ padding:"5px 16px", whiteSpace:"nowrap" }}>{isIPO ? (() => { const ic=/ipo/i.test(e.t)?T.pos:"#9C6B1A"; return <Badge color={ic} bg={ic+"14"} bd={ic+"44"}>{e.t||"—"}</Badge>; })() : <span style={{ fontFamily:SERIF, fontStyle:"italic", fontSize:10.5, color:T.textSub }}>{e.t||"—"}</span>}</td>}
-                              {isExit && <td style={{ padding:"5px 16px" }}>{e.h==="Min" ? <Badge color={T.neg} bg="#C0392B14" bd="#C0392B44">min</Badge> : e.h==="Maj" ? <span style={{ fontFamily:MONO, fontSize:9, color:T.textMuted }}>maj</span> : <span style={{color:T.textFaint}}>—</span>}</td>}
-                              {isExit && <td style={{ padding:"5px 16px", fontFamily:MONO, fontSize:9.5, color:(e.f&&e.f!=="n/d")?T.text:T.textFaint }}>{(e.f&&e.f!=="n/d")?e.f:"n/d"}</td>}
+                              {(isReal||isExit||isIPO) && <td style={{ padding:"5px 16px", textAlign:"right", fontFamily:MONO, fontSize:10, color:isNum(e.s)?T.text:T.textFaint }}>{isNum(e.s)?fmtTV(e.s):"n/d"}</td>}
+                              {(isReal||isExit||isIPO) && <td style={{ padding:"5px 16px", whiteSpace:"nowrap" }}>{isReal ? (() => {
+                                if (e._src==="ipo")      return <Badge color={T.pos} bg={T.pos+"14"} bd={T.pos+"44"}>IPO</Badge>;
+                                if (e._src==="selldown") return <Badge color="#9C6B1A" bg="#9C6B1A14" bd="#9C6B1A44">Sell-Down</Badge>;
+                                if (/ipo/i.test(e.t||"")) return <Badge color={T.pos} bg={T.pos+"14"} bd={T.pos+"44"}>IPO · Exit</Badge>;
+                                return <span style={{ fontFamily:SERIF, fontStyle:"italic", fontSize:10.5, color:T.textSub }}>{e.t||"—"}</span>;
+                              })() : isIPO ? (() => { const ic=/ipo/i.test(e.t)?T.pos:"#9C6B1A"; return <Badge color={ic} bg={ic+"14"} bd={ic+"44"}>{e.t||"—"}</Badge>; })() : <span style={{ fontFamily:SERIF, fontStyle:"italic", fontSize:10.5, color:T.textSub }}>{e.t||"—"}</span>}</td>}
+                              {(isReal||isExit) && <td style={{ padding:"5px 16px" }}>{e.h==="Min" ? <Badge color={T.neg} bg="#C0392B14" bd="#C0392B44">min</Badge> : e.h==="Maj" ? <span style={{ fontFamily:MONO, fontSize:9, color:T.textMuted }}>maj</span> : <span style={{color:T.textFaint}}>—</span>}</td>}
+                              {(isReal||isExit) && <td style={{ padding:"5px 16px", fontFamily:MONO, fontSize:9.5, color:(e.f&&e.f!=="n/d")?T.text:T.textFaint }}>{(e.f&&e.f!=="n/d")?e.f:"n/d"}</td>}
                             </tr>
                           ))}
                         </tbody>
@@ -556,7 +582,9 @@
           );
         })}
         <div style={{ marginTop:6, fontSize:9, color:T.textFaint, fontFamily:MONO, lineHeight:1.7 }}>
-          {isExit
+          {isReal
+            ? "Click a quarter column to expand. \"QTD\" = current quarter to date (excluded from 3-yr totals). Sources: PitchBook investor-exit feed (Exit rows) + company-deal records (IPO / Sell-Down rows). Full-exit IPOs are de-duped — shown once, sized by TV. Size is mixed: exit TV = whole-deal EV; IPO / sell-down = gross offering proceeds. Transcript check = S&P Global last-two-quarters earnings calls vs PitchBook."
+            : isExit
             ? "Click a quarter column to expand its exits. \"QTD\" = current quarter to date (excluded from 3-yr totals). Source: PitchBook investor-exit feed (investor_status = Former), deduped by company + date. Transcript check = S&P Global last-two-quarters earnings calls vs PitchBook."
             : isIPO
             ? "Click a quarter column to expand its IPOs & listings. \"QTD\" = current quarter to date (excluded from 3-yr totals). Source: PitchBook company-deal records — IPOs and post-IPO open-market secondaries; captures listings where the GP retains a stake (which the exit feed omits). Coverage = named/marquee listings + best-effort scan of recent active holdings."
@@ -681,14 +709,15 @@
     const acc = window.__ACCRUED__;
     return (
       <div>
-        <SectionTitle kicker="Section 4" title="Carry tracker" sub="Three lenses on carried interest: realized-carry activity via PitchBook portfolio exits (last 3 years, 12 names — Blue Owl excluded as it earns fees not carry), IPOs & listings (which the exit feed misses when the GP keeps a stake), and net accrued (unrealized) carry from fund-level 10-Q disclosure. Each firm's exit table carries a transcript check — does the last two earnings calls' monetization commentary line up with what PitchBook recorded?" />
+        <SectionTitle kicker="Section 4" title="Carry tracker" sub="Two lenses on carried interest: unified realizations (PitchBook portfolio exits + retained-stake IPOs & sell-downs merged, last 3 years, 12 names — Blue Owl excluded as it earns fees not carry) and net accrued (unrealized) carry from fund-level 10-Q disclosure. Each firm's realization table carries a transcript check — does the last two earnings calls' monetization commentary line up with what PitchBook recorded?" />
         <div style={{ display:"flex", gap:6, marginBottom:18, flexWrap:"wrap" }}>
-          {[["exits","Exit activity"],["ipos","IPOs & listings"],["accrued","Net accrued carry"]].map(([id,lab])=>(
+          {[["real","Realizations"],["accrued","Net accrued carry"]].map(([id,lab])=>(
             <button key={id} onClick={()=>setSub(id)} style={{ padding:"6px 16px", borderRadius:7, cursor:"pointer", fontFamily:MONO, fontSize:10.5, fontWeight:sub===id?700:500, letterSpacing:"0.05em", border:`1.5px solid ${sub===id?T.accent:T.border}`, background:sub===id?T.accent+"14":T.bgCard, color:sub===id?T.accent:T.textSub }}>{lab.toUpperCase()}</button>
           ))}
         </div>
-        {sub==="exits" && <QuarterPanel kind="exit" filter={filter} setFilter={setFilter} />}
-        {sub==="ipos"  && <QuarterPanel kind="ipo"  filter={filter} setFilter={setFilter} />}
+        {sub==="real" && <QuarterPanel kind="real" filter={filter} setFilter={setFilter} />}
+        {/* legacy sub-tab names — redirect to unified realizations */}
+        {(sub==="exits"||sub==="ipos") && <QuarterPanel kind="real" filter={filter} setFilter={setFilter} />}
         {sub==="accrued" && (
           <div>
             <div style={{ marginBottom:14, fontSize:11, color:T.textSub, lineHeight:1.6 }}>
