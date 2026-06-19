@@ -346,7 +346,7 @@
   function Consensus({ filter, setFilter }) {
     return (
       <div>
-        <SectionTitle kicker="Section 3" title="Consensus — Visible Alpha tearsheets" sub="Scaffold wired to the data layer. Paste Visible Alpha consensus into data.js (firms[TK].consensus); reported actuals are pre-filled from the transcripts where stated, and surprise is computed automatically." />
+        <SectionTitle kicker="Section 3" title="Consensus — Visible Alpha tearsheets" sub="Sell-side consensus vs. reported, with surprise computed automatically. Currently loaded: 2Q-26E (US) / 1H-26E (European) pre-earnings Visible Alpha consensus — so the Reported and Surprise columns stay blank until each firm prints, then light up. Paste consensus into data.js (firms[TK].consensus)." />
         <div style={{ background:"#8B5E1A0C", border:`1px solid ${T.accent}55`, borderRadius:8, padding:"11px 15px", marginBottom:18, fontSize:10.5, color:T.textSub, lineHeight:1.6, fontFamily:MONO }}>
           <b style={{color:T.accent}}>How to populate:</b> In <code style={{background:T.bgHover, padding:"1px 4px", borderRadius:3}}>data.js</code>, set <code style={{background:T.bgHover, padding:"1px 4px", borderRadius:3}}>firms.&lt;TK&gt;.consensus = {`{ FRE:{cons:464, n:11, act:464}, DE_ps:{cons:1.20, n:12, act:1.24}, … }`}</code> for the 7 metrics below. <code>cons</code>=VA mean · <code>n</code>=# estimates · <code>act</code>=reported. Leave a metric out if N/A.
         </div>
@@ -354,6 +354,8 @@
         <div style={{ display:"grid", gridTemplateColumns: filter==="All"?"repeat(auto-fill, minmax(430px, 1fr))":"1fr", gap:16 }}>
           {shownFirms(filter).map(tk => {
             const f = FIRMS[tk]; const c = colorOf(tk); const cons = f.consensus || {};
+            const hasAnyCons = CONS_METRICS.some(m => isNum((cons[m.key]||{}).cons));
+            const hasAnyAct  = CONS_METRICS.some(m => isNum((cons[m.key]||{}).act));
             return (
               <div key={tk} style={{ background:T.bgCard, border:`1.5px solid ${T.border}`, borderTop:`3px solid ${c}`, borderRadius:10, overflow:"hidden" }}>
                 <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", padding:"10px 14px", borderBottom:`1px solid ${T.border}`, background:c+"08" }}>
@@ -386,7 +388,7 @@
                     })}
                   </tbody>
                 </table>
-                <div style={{ padding:"6px 12px", background:T.bgHover, fontSize:8, color:T.textFaint, fontFamily:MONO }}>· = awaiting Visible Alpha · reported actuals from {f.period} transcript where stated</div>
+                <div style={{ padding:"6px 12px", background:T.bgHover, fontSize:8, color:T.textFaint, fontFamily:MONO }}>{hasAnyCons ? (hasAnyAct ? <span>· = no data · reported actuals from {f.period} transcript where stated</span> : <span>VA consensus = next period (2Q/1H-26E, pre-earnings) · Reported &amp; Surprise populate once {f.name} reports</span>) : <span>· = awaiting Visible Alpha consensus · reported actuals from {f.period} where stated</span>}</div>
               </div>
             );
           })}
