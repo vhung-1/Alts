@@ -403,6 +403,7 @@
   }
 
   const CONS_ANNUAL = ["2026E","2027E","2028E"];
+  const CONS_QTR = ["2Q26E","3Q26E","4Q26E","1H26E","2H26E"];   // US quarters + EU half-years (each firm fills its own)
   function ConsCompare() {
     const OPTS = [
       { id:"FRE_g",    lab:"FRE growth %",      kind:"yoy",  key:"FRE"    },
@@ -416,8 +417,10 @@
       { id:"flow",     lab:"Net flow % (ann.)", kind:"flow"  },
     ];
     const [sel,setSel] = useState("FRE_g");
+    const [gran,setGran] = useState("annual");
     const met = OPTS.find(o=>o.id===sel);
     const pct = met.kind==="yoy" || met.kind==="flow";
+    const cols = gran==="annual" ? CONS_ANNUAL : CONS_QTR;
     const cell = (f, per) => {
       const i = f.periods.indexOf(per); if (i<0) return null;
       if (met.kind==="flow") return cFlow(f,i);
@@ -425,8 +428,15 @@
       if (met.kind==="yoy") return cYoY(mo,i);
       return mo.v[i];
     };
+    const divCol = (per) => gran!=="annual" && per==="1H26E";   // visual divider before EU half-years
     return (
       <div>
+        <div style={{ display:"flex", gap:6, alignItems:"center", marginBottom:10 }}>
+          <span style={{ fontFamily:MONO, fontSize:8.5, color:T.textMuted, letterSpacing:"0.08em" }}>PERIOD</span>
+          {[["annual","Annual (FY)"],["quarter","Quarterly"]].map(([id,lab])=>(
+            <button key={id} onClick={()=>setGran(id)} style={{ padding:"4px 12px", borderRadius:6, cursor:"pointer", fontFamily:MONO, fontSize:9.5, fontWeight:gran===id?700:500, border:`1.5px solid ${gran===id?T.text:T.border}`, background:gran===id?T.text+"0E":T.bgCard, color:gran===id?T.text:T.textSub }}>{lab}</button>
+          ))}
+        </div>
         <div style={{ display:"flex", gap:6, flexWrap:"wrap", marginBottom:14 }}>
           {OPTS.map(o=>(
             <button key={o.id} onClick={()=>setSel(o.id)} style={{ padding:"5px 12px", borderRadius:6, cursor:"pointer", fontFamily:MONO, fontSize:9.5, fontWeight:sel===o.id?700:500, border:`1.5px solid ${sel===o.id?T.accent:T.border}`, background:sel===o.id?T.accent+"14":T.bgCard, color:sel===o.id?T.accent:T.textSub }}>{o.lab}</button>
@@ -436,17 +446,17 @@
           <table style={{ borderCollapse:"collapse", fontSize:10.5, minWidth:"100%" }}>
             <thead><tr style={{ background:T.bgHover }}>
               <th style={{ ...cStick, background:T.bgHover, textAlign:"left", padding:"8px 14px", fontFamily:MONO, fontSize:8, fontWeight:700, letterSpacing:"0.05em", color:T.textMuted, borderBottom:`2px solid ${T.border}` }}>FIRM</th>
-              {CONS_ANNUAL.map(p=>(<th key={p} style={{ padding:"8px 14px", textAlign:"right", fontFamily:MONO, fontSize:9, fontWeight:700, color:T.textSub, borderBottom:`2px solid ${T.border}`, borderLeft:`1px solid ${T.border}` }}>{p}</th>))}
+              {cols.map(p=>(<th key={p} style={{ padding:"8px 14px", textAlign:"right", fontFamily:MONO, fontSize:9, fontWeight:700, color:T.textSub, borderBottom:`2px solid ${T.border}`, borderLeft:`${divCol(p)?2:1}px solid ${T.border}` }}>{p}</th>))}
             </tr></thead>
             <tbody>
               {CONS_ORDER.map((tk,ri)=>{ const f=CONS.firms[tk]; if(!f) return null; const c=colorOf(tk); const bg=ri%2?T.bgStripe:T.bgCard;
                 return (
                   <tr key={tk} style={{ background:bg }}>
                     <td style={{ ...cStick, background:bg, padding:"7px 14px", borderLeft:`3px solid ${c}` }}><FirmTag tk={tk} /></td>
-                    {CONS_ANNUAL.map(per=>{ const v=cell(f,per);
-                      const disp = v==null ? "·" : pct ? ((v>=0?"+":"−")+Math.abs(v*100).toFixed(pct&&met.kind==="flow"?1:0)+"%") : cNum(v,met.dp);
+                    {cols.map(per=>{ const v=cell(f,per);
+                      const disp = v==null ? "·" : pct ? ((v>=0?"+":"−")+Math.abs(v*100).toFixed(met.kind==="flow"?1:0)+"%") : cNum(v,met.dp);
                       const col = v==null ? T.textFaint : pct ? cGrowC(v) : T.text;
-                      return <td key={per} style={{ padding:"7px 14px", textAlign:"right", fontFamily:MONO, fontSize:10.5, fontWeight:pct?700:500, color:col, borderLeft:`1px solid ${T.border}` }}>{disp}</td>;
+                      return <td key={per} style={{ padding:"7px 14px", textAlign:"right", fontFamily:MONO, fontSize:10.5, fontWeight:pct?700:500, color:col, borderLeft:`${divCol(per)?2:1}px solid ${T.border}` }}>{disp}</td>;
                     })}
                   </tr>
                 );
@@ -454,7 +464,9 @@
             </tbody>
           </table>
         </div>
-        <div style={{ marginTop:8, fontSize:9, color:T.textFaint, fontFamily:MONO, lineHeight:1.7 }}>Cross-firm comparison uses the full-year consensus (FY26E–FY28E), comparable across all managers. Quarterly / half-year detail is in the By-company view. Growth = y/y; net flow % = net flows ÷ BoP AUM (annualized), shown where the AUM roll-forward is disclosed.</div>
+        <div style={{ marginTop:8, fontSize:9, color:T.textFaint, fontFamily:MONO, lineHeight:1.7 }}>{gran==="annual"
+          ? "Full-year consensus (FY26E–FY28E), comparable across all managers. Switch to Quarterly for sub-annual detail. Growth = y/y; net flow % = net flows ÷ BoP AUM (annualized), shown where the AUM roll-forward is disclosed."
+          : "Quarterly columns (2Q26E–4Q26E) are the US managers' quarters; European managers (EQT, CVC) report half-years (1H26E, 2H26E) — shown in the two right-hand columns. Each firm populates only its native periods. Growth = y/y vs the same quarter/half a year earlier."}</div>
       </div>
     );
   }
