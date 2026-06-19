@@ -89,7 +89,7 @@ window.ALTS = {
         { metric:"Inflows / AUM", period:"FY2026", value:"Continued growth (AUM $1.34T)", source:"transcript", comment:"'Greater firepower than ever.'" },
       ],
       guidanceSummary:"No quantitative FRE guidance via the S&P tool (none returned). From the call: H2'26 management-fee acceleration as new drawdown funds (SP X, BETP V, BCP Asia III, BCP IX) come off fee holidays, partly offset by near-term BDC/wealth softness and RE headwinds. Realization pipeline strong but contingent on a Middle East resolution.",
-      consensus:{ FRE:{act:1501}, PFRE:{act:448}, FRE_ps:{act:1.26}, DE_ps:{act:1.36} },
+      consensus:{ FRE:{cons:1564,n:15}, PFRE:{cons:484,n:15}, FRE_ps:{cons:1.27,n:15}, DE_ps:{cons:1.39,n:15}, netFlowsTotal:{cons:30.7,n:15}, netFlowsCredit:{cons:12.9,n:15} },  // 2Q26E VA cons (10-Jun-26); PFRE=net realizations
       exits:{ quarterly:{
         "2023 Q2":{count:13,totalTV:822}, "2023 Q3":{count:12,totalTV:1183}, "2023 Q4":{count:2,totalTV:0}, "2024 Q1":{count:9,totalTV:1305},
         "2024 Q2":{count:9,totalTV:1133}, "2024 Q3":{count:9,totalTV:3925}, "2024 Q4":{count:8,totalTV:1135}, "2025 Q1":{count:8,totalTV:1946},
@@ -133,7 +133,7 @@ window.ALTS = {
         { metric:"Total Operating Earnings", period:"FY2026", value:"Exceed target", source:"transcript", comment:"TOE $1.47/sh in Q1 (+18%); ~85% recurring." },
       ],
       guidanceSummary:"Held FRE and fundraising guidance but cut ANI below the initial $7/share target on delayed exits (volatility), with carry shifting to 2027+. Flagged a record >$1.2B forward-monetization pipeline (OneStream, CoolIT, Hyundai Marine, infra/PE). Strategic Holdings (>$350M) and insurance (~$300M+/qtr) maintained. (S&P guidance tool not used; transcript-sourced.)",
-      consensus:{ FRE:{act:981}, PFRE:{act:720}, FRE_ps:{act:1.13}, DE_ps:{act:1.39} },
+      consensus:{ FRE:{cons:1070,n:12}, PFRE:{cons:184,n:12}, FRE_ps:{cons:1.17,n:12}, DE_ps:{cons:1.39,n:12} },  // 2Q26E VA cons (10-Jun-26); DE_ps=ANI/adj sh; net flows n/a in export
       exits:{ quarterly:{
         "2023 Q2":{count:12,totalTV:8719}, "2023 Q3":{count:16,totalTV:3711}, "2023 Q4":{count:7,totalTV:2731}, "2024 Q1":{count:9,totalTV:3138},
         "2024 Q2":{count:7,totalTV:339}, "2024 Q3":{count:4,totalTV:0}, "2024 Q4":{count:6,totalTV:8038}, "2025 Q1":{count:7,totalTV:15368},
@@ -178,7 +178,7 @@ window.ALTS = {
         { metric:"2029 plan", period:"FY2029", value:"Unchanged; no M&A required", source:"transcript", comment:"$40B Athene cash/treasury dry powder for opportunistic deployment." },
       ],
       guidanceSummary:"The clearest quantitative guide of the group: 20%+ FRE growth and 10% SRE growth (at 11% alts return) both reaffirmed; net spread 120–125bps. Q2 origination expected even stronger than Q1's $71B (toward the $97B record); PIC contributes from Q2 at ~20bps on ~$125B AUM. 2029 targets unchanged and achievable without acquisitions.",
-      consensus:{ FRE:{act:728}, FRE_ps:{act:1.17}, SRE_ps:{act:1.15}, DE_ps:{act:1.94} },
+      consensus:{ FRE:{cons:768,n:13}, PFRE:{cons:62,n:13}, FRE_ps:{cons:1.23,n:13}, SRE_ps:{cons:1.43,n:13}, DE_ps:{cons:2.21,n:13}, netFlowsTotal:{cons:19.2,n:13}, netFlowsCredit:{cons:15.5,n:13} },  // 2Q26E VA cons (10-Jun-26); SRE per sh (RS, operating)
       exits:{ quarterly:{
         "2023 Q2":{count:5,totalTV:414}, "2023 Q3":{count:2,totalTV:0}, "2023 Q4":{count:2,totalTV:108}, "2024 Q1":{count:2,totalTV:0},
         "2024 Q2":{count:5,totalTV:63665}, "2024 Q3":{count:2,totalTV:2047}, "2024 Q4":{count:4,totalTV:0}, "2025 Q1":{count:3,totalTV:4011},
@@ -224,7 +224,7 @@ window.ALTS = {
         { metric:"Tax rate", period:"FY2026", value:"11–15%", source:"transcript", comment:"Q1 was 13.5%." },
       ],
       guidanceSummary:"Reaffirmed all long-term targets: 16–20% FRE CAGR, 20–25% realized-income CAGR, ~20% annual dividend growth. For 2026 expects FRE margin expansion toward the top of the 0–150bps range; $125B cumulative fundraising target through 2028 explicitly reaffirmed.",
-      consensus:{ FRE:{act:464}, PFRE:{act:75}, DE_ps:{act:1.24} },
+      consensus:{ FRE:{cons:485,n:10}, PFRE:{cons:67,n:10}, FRE_ps:{cons:1.40,n:10}, DE_ps:{cons:1.38,n:10} },  // 2Q26E VA cons (10-Jun-26); DE_ps=after-tax realized inc/sh; net flows n/a in export
       exits:{ quarterly:{
         "2023 Q2":{count:6,totalTV:1663}, "2023 Q3":{count:3,totalTV:232}, "2023 Q4":{count:7,totalTV:3302}, "2024 Q1":{count:3,totalTV:8},
         "2024 Q2":{count:3,totalTV:411}, "2024 Q3":{count:2,totalTV:25}, "2024 Q4":{count:2,totalTV:0}, "2025 Q1":{count:5,totalTV:2814},
@@ -268,7 +268,7 @@ window.ALTS = {
         { metric:"DE growth", period:"Q1'26 YoY", value:"+7% (DE $702M)", source:"transcript", comment:"Tracking FRE." },
       ],
       guidanceSummary:"Formal S&P guidance limited to DPS ($0.5025). Management reaffirmed exceeding Investor-Day FRE targets for 2026 with outperformance 'largely secured'; step-changes from flagship PE fees turning on, flagship infra first close, the $40B Just Group mandate, and full Oaktree consolidation (Q2'26).",
-      consensus:{ FRE:{act:772}, FRE_ps:{act:0.48}, DE_ps:{act:0.43} },
+      consensus:{ FRE:{cons:819,n:11}, PFRE:{cons:129,n:11}, FRE_ps:{cons:0.50,n:11}, DE_ps:{cons:0.44,n:11} },  // 2Q26E VA cons (20-May-26); PFRE=perf fees+incentive distributions; net flows n/a
       exits:{ quarterly:{
         "2023 Q2":{count:0,totalTV:0}, "2023 Q3":{count:0,totalTV:0}, "2023 Q4":{count:0,totalTV:0}, "2024 Q1":{count:0,totalTV:0},
         "2024 Q2":{count:1,totalTV:0}, "2024 Q3":{count:0,totalTV:0}, "2024 Q4":{count:0,totalTV:0}, "2025 Q1":{count:1,totalTV:1249},
@@ -307,7 +307,7 @@ window.ALTS = {
         { metric:"Buyback", period:"Ongoing", value:"$1.9B left of $2B", source:"transcript", comment:"$205M repurchased/withheld in Q1." },
       ],
       guidanceSummary:"Reiterated Feb-2026 targets: $1.9B FRE, $6+ DE/share and $200B inflows by end-2028, with full confidence in achieving/exceeding each. For 2026: mid-to-high-single-digit FRE growth and accelerating management-fee growth as GPE/AlpInvest/Credit ramp. $0.35/qtr dividend maintained.",
-      consensus:{ FRE:{act:300}, PFRE:{act:21}, DE_ps:{act:0.89} },
+      consensus:{ FRE:{cons:320,n:10}, PFRE:{cons:74,n:10}, FRE_ps:{cons:0.89,n:10}, DE_ps:{cons:0.91,n:10}, netFlowsTotal:{cons:2.2,n:10}, netFlowsCredit:{cons:1.2,n:10} },  // 2Q26E VA cons (10-Jun-26); netFlowsCredit=Global Credit seg
       exits:{ quarterly:{
         "2023 Q2":{count:3,totalTV:0}, "2023 Q3":{count:6,totalTV:49}, "2023 Q4":{count:5,totalTV:1768}, "2024 Q1":{count:5,totalTV:1804},
         "2024 Q2":{count:2,totalTV:50}, "2024 Q3":{count:6,totalTV:3061}, "2024 Q4":{count:4,totalTV:2105}, "2025 Q1":{count:5,totalTV:647},
@@ -349,7 +349,7 @@ window.ALTS = {
         { metric:"DPS", period:"Q1 2026", value:"$0.59 declared", source:"transcript", comment:"S&P tool shows $0.24 mid (classification); use transcript." },
       ],
       guidanceSummary:"Key 2026 targets: 47% FRE margin (vs 44.3% in Q1), $50B+ raised, continued double-digit FRE growth (LTM FRE >$1B). $140M of latent management fees embedded in $33B undeployed credit dry powder. No change to fundraising guidance despite macro volatility.",
-      consensus:{ FRE:{act:247}, PFRE:{act:68}, DE_ps:{act:0.70} },
+      consensus:{ FRE:{cons:254,n:8}, PFRE:{cons:49,n:8}, FRE_ps:{cons:0.66,n:8}, DE_ps:{cons:0.60,n:8} },  // 2Q26E VA cons (10-Jun-26); operating basis; net flows n/a in export
       exits:{ quarterly:{
         "2023 Q2":{count:7,totalTV:2172}, "2023 Q3":{count:3,totalTV:7274}, "2023 Q4":{count:8,totalTV:1837}, "2024 Q1":{count:4,totalTV:141},
         "2024 Q2":{count:3,totalTV:292}, "2024 Q3":{count:8,totalTV:2522}, "2024 Q4":{count:6,totalTV:2483}, "2025 Q1":{count:3,totalTV:191},
@@ -476,7 +476,7 @@ window.ALTS = {
         { metric:"Coller combination", period:"Q3 2026 close", value:"Combined AUM ~€312B", source:"transcript", comment:"Adds ~€28B FAUM secondaries; Coller FRE ~$350–375M, ~50% margin." },
       ],
       guidanceSummary:"Three pillars for 2026: (1) FRE margin toward the ≥55% medium-term target (52% in FY2025) on flat headcount + AI efficiency; (2) exit volumes ~in line with the record FY2025 (~€19B+/~30 events) with carry from four carry-mode funds (notably EQT VIII), but explicitly excluding Infra IV and EQT IX; (3) evergreen net inflows well above the €4B run-rate, plus the Coller combination (Q3'26) taking combined AUM to ~€312B. (S&P guidance tool: no data.)",
-      consensus:{},
+      consensus:{ FRE:{cons:585,n:10}, PFRE:{cons:136,n:10}, FRE_ps:{cons:0.49,n:10}, netFlowsTotal:{cons:3.8,n:10} },  // 1H26E VA cons (19-Jun-26), €M/€/€B; PFRE=carried interest (operating); no credit seg
       exits:{ quarterly:{
         "2023 Q2":{count:4,totalTV:1568}, "2023 Q3":{count:2,totalTV:480}, "2023 Q4":{count:2,totalTV:1503}, "2024 Q1":{count:2,totalTV:2062},
         "2024 Q2":{count:1,totalTV:2101}, "2024 Q3":{count:3,totalTV:322}, "2024 Q4":{count:5,totalTV:0}, "2025 Q1":{count:2,totalTV:1500},
@@ -518,7 +518,7 @@ window.ALTS = {
         { metric:"Dividend + buyback", period:"FY2025", value:"€500M div + €350M buyback", source:"transcript", comment:"Progressive dividend." },
       ],
       guidanceSummary:"Central target: €200B FPAUM by end-2028 at 10%+ CAGR. Near-term PRE flat in 2026 (carry recognition slips on macro/exit timing), stepping to ~€400M in 2027 (Asia V) and €1.2–1.5B combined in 2028–29 (Fund VIII). Cost discipline mid-to-high single digit; €850M dividend+buyback for 2025. (S&P guidance tool: no data.)",
-      consensus:{},
+      consensus:{ FRE:{cons:520,n:6}, PFRE:{cons:97,n:6} },  // 1H26E VA cons (18-Jun-26), €M; FRE=mgmt EBITDA (operating, FRE-equiv); PFRE incl. investment income
       exits:{ quarterly:{
         "2023 Q2":{count:3,totalTV:428}, "2023 Q3":{count:0,totalTV:0}, "2023 Q4":{count:0,totalTV:0}, "2024 Q1":{count:2,totalTV:2786},
         "2024 Q2":{count:1,totalTV:220}, "2024 Q3":{count:2,totalTV:2000}, "2024 Q4":{count:1,totalTV:0}, "2025 Q1":{count:5,totalTV:250},
