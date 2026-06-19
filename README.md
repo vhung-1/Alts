@@ -4,7 +4,7 @@ An interactive, single-page dashboard tracking the listed alternative-asset mana
 
 1. **Fundraising** — the funds each manager flagged as *in market* on its latest earnings call, augmented with PitchBook fund data (target / hard cap, prior-fund size, amount raised, expected first & final close).
 2. **Guidance** — forward earnings guidance pulled from each company's latest transcript (S&P Global) plus structured company-issued guidance, one table per firm.
-3. **Consensus** — a Visible Alpha tearsheet scaffold for the 7 KPIs (FRE, perf fees/PRE, FRE/sh, SRE/sh, DE/sh, net flows to fee-paying AUM total & credit). Reported actuals are pre-filled from the transcripts; **paste the VA consensus into `data.js`** and the dashboard computes the surprise.
+3. **Consensus** — multi-period Visible Alpha consensus for the carry managers, in three views: **By company** (per-firm metric build — FRE, PRE/carry, DE, DE/sh, FRE/sh — across 2Q26E→FY28E with y/y growth and net-flow %), **Compare** (any metric or growth rate side-by-side across all managers, full-year basis), and **Valuation** (forward P / DE-per-share). Forward estimates only; loaded from `consensus.js`.
 4. **Carry** — three views: **Exit activity** (PitchBook portfolio exits by quarter, 12 firms — Blue Owl excluded as it earns fees not carry), **IPOs & listings** (IPO and post-IPO open-market secondary deals — captures listings the exit feed misses when the GP keeps a stake), and **Net accrued carry** (fund-level, bottom-up from 10-Q disclosure for the 5 US firms that report it). The exit and IPO tables are laid out **transposed** — quarters run across the top, metrics down the side, click a quarter column to expand its detail — and each firm's exit table carries a **transcript check** reconciling its last two earnings calls' monetization commentary against what PitchBook recorded (verdict: Match / Partial / Diverge).
 5. **Deployment** — new investments each manager made, by quarter, from PitchBook's investor-investment feed (all 13 firms, Blue Owl included). Same transposed, click-to-expand layout as the exit table. PitchBook's investor feed exposes entry dates but **not** entry deal sizes, so this tab tracks deployment *cadence* (number of new investments per quarter) rather than dollars.
 
@@ -18,7 +18,7 @@ There is also an **Overview** tab with a per-firm snapshot and the cross-firm ac
 |---|---|
 | **S&P Global** (MCP) | latest earnings transcripts, company guidance, reported actuals, transcript-vs-exit check |
 | **PitchBook Premium** (MCP) | investor funds (fundraising), portfolio exits, and new investments (deployment), by investor PBID |
-| **Visible Alpha** | consensus (Section 3) — pasted into `data.js` by the user |
+| **Visible Alpha** | consensus (Section 3) — multi-period estimates in `consensus.js` |
 | **Company 10-Q / 10-K** | fund-level net accrued carry (KKR, BX, ARES, CG, APO) |
 
 Data as of **2026-06-17** (`window.ALTS.meta.asOf`).
@@ -51,6 +51,10 @@ ipos.js                  IPO & public-listing events (window.ALTS_IPOS) for Carr
                          event: {c,d,s,t} = company, deal date, gross proceeds $M, type (IPO or post-IPO open-market
                          secondary). From PitchBook company-deal records — captures listings where the GP keeps a stake
                          (which the exit feed omits). 9 PE firms with captured events.
+consensus.js             Multi-period Visible Alpha consensus (window.ALTS_CONSENSUS) for the Consensus tab. Per firm:
+                         {cur, periods[], basis[], price, m:{FRE,PRE,DE,DE_ps,FRE_ps:{v[],pp[]}}, flow:{net[],bop[]}}.
+                         v = period values, pp = prior-period values (y/y computed in-UI). 9 carry managers (US quarterly
+                         2Q26E→FY28E, European half-year 1H26E→FY28E). Generated from VA pre-earnings tearsheets.
 VISIBLE_ALPHA_TEMPLATE.md  Prompt + JSON template to compile Visible Alpha consensus from a tearsheet (Section 3).
 .github/workflows/       GitHub Pages deploy workflow (auto-deploys main → vhung-1.github.io/Alts on every push).
 README.md                This file.
@@ -72,7 +76,7 @@ All data lives in `data.js` under `window.ALTS`.
   fundraisingSummary: "…",
   guidance: [ { metric, period, value, source:"transcript"|"guidance tool", comment } ],
   guidanceSummary: "…",
-  consensus: { <metricKey>: { cons, n, act } },
+  consensus: { … },                         // legacy/unused — the Consensus tab now reads consensus.js
   exits: {
     quarterly: { "2026 Q1": { count, totalTV }, … },   // totalTV in $M; null → "n/d"
     notable:   [ { company, exitDate, exitSize, type, investorSince, flag } ],
@@ -83,23 +87,33 @@ All data lives in `data.js` under `window.ALTS`.
 
 Use `"N/A"` (string) for unknown fundraising fields and `null` for unknown numeric exit TV.
 
-### Pasting Visible Alpha consensus (Section 3)
+### Visible Alpha consensus (Section 3) — `window.ALTS_CONSENSUS` (`consensus.js`)
 
-For each firm, set the `consensus` object keyed by the 7 metric keys. `cons` = VA mean, `n` = number of estimates, `act` = reported actual. The dashboard computes the surprise (Act − Cons, absolute and %) automatically and leaves a `·` where VA data is absent.
+The Consensus tab reads `consensus.js` (multi-period), not `data.js`. Each firm carries forward consensus across its periods, with a prior-period array so the dashboard can compute y/y growth in the UI:
 
 ```js
-window.ALTS.firms.BX.consensus = {
-  FRE:            { cons: 1480, n: 12, act: 1501 },   // $M
-  PFRE:           { cons: 470,  n: 9,  act: 448  },   // $M
-  FRE_ps:         { cons: 1.24, n: 12, act: 1.26 },   // $
-  SRE_ps:         { cons: null, n: 0,  act: null },   // $ (Apollo-type only)
-  DE_ps:          { cons: 1.33, n: 13, act: 1.36 },   // $
-  netFlowsTotal:  { cons: 70,   n: 8,  act: null },   // $B
-  netFlowsCredit: { cons: 40,   n: 6,  act: null },   // $B
+window.ALTS_CONSENSUS = {
+  asOf: "2026-06-18", fx: { EURSEK: 11.0 }, order: ["BX","KKR", …],
+  firms: {
+    BX: {
+      cur: "USD",
+      periods: ["2Q26E","3Q26E","4Q26E","2026E","2027E","2028E"],  // EU firms: half-year (1H26E,2H26E,…)
+      basis:   [4,4,4,1,1,1],                                       // flow-% annualization multiplier per period
+      price:   123.79,                                              // in DE/sh currency (EQT: SEK→EUR @ fx.EURSEK)
+      m: {
+        FRE:    { v:[…6 values…], pp:[…prior-period values for y/y…] },   // $M (€M for EU)
+        PRE:    { v:[…], pp:[…] },   // net realized performance / carry, $M
+        DE:     { v:[…], pp:[…] },   // distributable earnings, $M (EU: net profit, operating)
+        DE_ps:  { v:[…], pp:[…] },   // DE per share, $ (EU: diluted EPS, operating)
+        FRE_ps: { v:[…], pp:[…] },   // FRE per share, $
+      },
+      flow: { net:[…], bop:[…] }     // optional — net flows & BoP AUM for the flow-% row (where disclosed)
+    }, …
+  }
 };
 ```
 
-Metric keys (and units): `FRE` ($M), `PFRE` ($M), `FRE_ps` ($), `SRE_ps` ($), `DE_ps` ($), `netFlowsTotal` ($B), `netFlowsCredit` ($B). Reported actuals are already pre-filled from each firm's latest transcript where stated.
+`v[i]` is the value for `periods[i]`; `pp[i]` is the prior-period value used for y/y (`v[i]/pp[i] − 1`). **Net flow %** = `net ÷ bop × basis` (annualized) and renders only where the AUM roll-forward is disclosed (BX, KKR, APO, EQT). **P/DE** = `price ÷ DE_ps` and is currency-neutral. Generated from the VA pre-earnings tearsheets (one `.xlsx` per firm); re-export and regenerate to refresh.
 
 ### Net accrued carry — `window.ALTS.accrued`
 
