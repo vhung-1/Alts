@@ -429,6 +429,14 @@
       return mo.v[i];
     };
     const divCol = (per) => gran!=="annual" && per==="1H26E";   // visual divider before EU half-years
+    // CAGR of the selected metric's underlying LEVEL (FY25 actual sits in pp[] of FY26E).
+    const cagrVals = (f) => {
+      const mo = met.key && f.m[met.key]; if (!mo) return null;
+      const fy = f.periods.map((p,i)=>/^20\d\dE$/.test(p)?i:-1).filter(i=>i>=0);  // [FY26E,FY27E,FY28E] indices
+      return { fy25: mo.pp[fy[0]], fy26: mo.v[fy[0]], fy27: mo.v[fy[1]], fy28: mo.v[fy[2]] };
+    };
+    const cagr2 = (a,b) => (isNum(a)&&isNum(b)&&a>0&&b>0) ? Math.pow(b/a,0.5)-1 : null;   // 2-yr CAGR
+    const CAGRS = [["25–27E","fy25","fy27"],["26–28E","fy26","fy28"]];
     return (
       <div>
         <div style={{ display:"flex", gap:6, alignItems:"center", marginBottom:10 }}>
@@ -447,6 +455,7 @@
             <thead><tr style={{ background:T.bgHover }}>
               <th style={{ ...cStick, background:T.bgHover, textAlign:"left", padding:"8px 14px", fontFamily:MONO, fontSize:8, fontWeight:700, letterSpacing:"0.05em", color:T.textMuted, borderBottom:`2px solid ${T.border}` }}>FIRM</th>
               {cols.map(p=>(<th key={p} style={{ padding:"8px 14px", textAlign:"right", fontFamily:MONO, fontSize:9, fontWeight:700, color:T.textSub, borderBottom:`2px solid ${T.border}`, borderLeft:`${divCol(p)?2:1}px solid ${T.border}` }}>{p}</th>))}
+              {CAGRS.map(([lab],j)=>(<th key={lab} style={{ padding:"8px 14px", textAlign:"right", fontFamily:MONO, fontSize:9, fontWeight:700, color:T.accent, borderBottom:`2px solid ${T.border}`, borderLeft:`${j===0?2.5:1}px solid ${T.border}`, whiteSpace:"nowrap" }}>{lab}<div style={{ fontSize:6.5, fontWeight:700, color:T.textFaint, letterSpacing:"0.08em" }}>CAGR</div></th>))}
             </tr></thead>
             <tbody>
               {CONS_ORDER.map((tk,ri)=>{ const f=CONS.firms[tk]; if(!f) return null; const c=colorOf(tk); const bg=ri%2?T.bgStripe:T.bgCard;
@@ -458,6 +467,9 @@
                       const col = v==null ? T.textFaint : pct ? cGrowC(v) : T.text;
                       return <td key={per} style={{ padding:"7px 14px", textAlign:"right", fontFamily:MONO, fontSize:10.5, fontWeight:pct?700:500, color:col, borderLeft:`${divCol(per)?2:1}px solid ${T.border}` }}>{disp}</td>;
                     })}
+                    {(()=>{ const av=cagrVals(f); return CAGRS.map(([lab,a,b],j)=>{ const g=av?cagr2(av[a],av[b]):null;
+                      return <td key={lab} style={{ padding:"7px 14px", textAlign:"right", fontFamily:MONO, fontSize:10.5, fontWeight:700, color:g==null?T.textFaint:cGrowC(g), borderLeft:`${j===0?2.5:1}px solid ${T.border}`, background:T.accent+"08" }}>{g==null?"·":(g>=0?"+":"−")+Math.abs(g*100).toFixed(1)+"%"}</td>;
+                    }); })()}
                   </tr>
                 );
               })}
@@ -466,7 +478,8 @@
         </div>
         <div style={{ marginTop:8, fontSize:9, color:T.textFaint, fontFamily:MONO, lineHeight:1.7 }}>{gran==="annual"
           ? "Full-year consensus (FY26E–FY28E), comparable across all managers. Switch to Quarterly for sub-annual detail. Growth = y/y; net flow % = net flows ÷ BoP AUM (annualized), shown where the AUM roll-forward is disclosed."
-          : "Quarterly columns (2Q26E–4Q26E) are the US managers' quarters; European managers (EQT, CVC) report half-years (1H26E, 2H26E) — shown in the two right-hand columns. Each firm populates only its native periods. Growth = y/y vs the same quarter/half a year earlier."}</div>
+          : "Quarterly columns (2Q26E–4Q26E) are the US managers' quarters; European managers (EQT, CVC) report half-years (1H26E, 2H26E) — shown in the two right-hand columns. Each firm populates only its native periods. Growth = y/y vs the same quarter/half a year earlier."}
+          {" "}CAGR columns are 2-yr compound growth of the selected metric's level — 25–27E = (FY27E/FY25)^½−1, 26–28E = (FY28E/FY26E)^½−1; shown for level/growth metrics (not net-flow %).</div>
       </div>
     );
   }
