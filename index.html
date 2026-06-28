@@ -273,6 +273,10 @@
       if(cMetric==='fpaum') return fi.fpaum[i];
       if(cMetric==='inflows') return fi.inflows[i];
       if(cMetric==='net') return fi.net[i];
+      if(cMetric==='redem'){
+        const infl=fi.inflows[i], net=fi.net[i];
+        return (infl!=null&&net!=null) ? infl-net : null;
+      }
       if(cMetric==='rate'){
         if(i===0||(i>=fi.histN+3)||!fi.fpaum[i-1]) return null;
         return fi.net[i]/fi.fpaum[i-1]*4*100;
@@ -280,7 +284,7 @@
       return null;
     };
     const metricFmt = (v) => v==null?'—':cMetric==='rate'?(v>=0?'+':'')+v.toFixed(1)+'%':fmtB(v);
-    const metricColor = (tk,v) => v==null?T.textFaint:cMetric==='rate'?rateColor(v):cMetric==='net'?netColor(v):colorOf(tk);
+    const metricColor = (tk,v) => v==null?T.textFaint:cMetric==='rate'?rateColor(v):cMetric==='net'?netColor(v):cMetric==='redem'?'#A05010':colorOf(tk);
     // Column-level max/min row index for compare table highlighting
     const colStats = allPeriods.map((p,ci) => {
       const rows = FLOWS.order.map((tk,ri) => ({ri, v:metricGet(tk,ci)})).filter(x => x.v!=null);
@@ -335,7 +339,7 @@
         {viewMode==='compare' && (
           <div>
             <div style={{ display:'flex', gap:6, flexWrap:'wrap', marginBottom:12 }}>
-              {[['inflows','Gross Inflows'],['net','Net Flows'],['rate','Flow Rate (ann.)'],['fpaum','FPAUM EOP']].map(([m,l])=>(
+              {[['inflows','Gross Inflows'],['net','Net Flows'],['redem','Outflows'],['rate','Flow Rate (ann.)'],['fpaum','FPAUM EOP']].map(([m,l])=>(
                 <button key={m} onClick={()=>setCMetric(m)} style={{
                   padding:'3px 10px', fontFamily:MONO, fontSize:9, fontWeight:600,
                   border:`1.5px solid ${cMetric===m?T.accent:T.border}`, borderRadius:4,
@@ -350,7 +354,7 @@
                   <tr style={{ background:T.bgHover }}>
                     <th style={{ padding:'8px 12px', textAlign:'left', fontFamily:MONO, fontSize:8, letterSpacing:'0.07em',
                       color:T.textMuted, borderBottom:`2px solid ${T.border}`, minWidth:72 }}>
-                      {({'inflows':'GROSS INFLOWS ($B)','net':'NET FLOWS ($B)','rate':'NET FLOW RATE (ANN.)','fpaum':'FPAUM EOP ($B)'})[cMetric]}
+                      {({'inflows':'GROSS INFLOWS ($B)','net':'NET FLOWS ($B)','redem':'GROSS OUTFLOWS ($B)','rate':'NET FLOW RATE (ANN.)','fpaum':'FPAUM EOP ($B)'})[cMetric]}
                     </th>
                     {allPeriods.map((p,ci)=>React.createElement('th',{key:ci,style:{
                       padding:'7px 8px',textAlign:'right',fontFamily:MONO,fontSize:8,letterSpacing:'0.06em',
