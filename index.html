@@ -281,6 +281,14 @@
     };
     const metricFmt = (v) => v==null?'—':cMetric==='rate'?(v>=0?'+':'')+v.toFixed(1)+'%':fmtB(v);
     const metricColor = (tk,v) => v==null?T.textFaint:cMetric==='rate'?rateColor(v):cMetric==='net'?netColor(v):colorOf(tk);
+    // Column-level max/min row index for compare table highlighting
+    const colStats = allPeriods.map((p,ci) => {
+      const rows = FLOWS.order.map((tk,ri) => ({ri, v:metricGet(tk,ci)})).filter(x => x.v!=null);
+      if (!rows.length) return {maxRi:-1,minRi:-1};
+      const maxRi = rows.reduce((a,b)=>b.v>a.v?b:a).ri;
+      const minRi = rows.reduce((a,b)=>b.v<a.v?b:a).ri;
+      return { maxRi, minRi: maxRi===minRi ? -1 : minRi };
+    });
     // QoQ change in gross inflows (quarterly periods only, no crossing from/to annual)
     const qoqDelta = (i) => {
       if (i===0||isAnn(i)||!f.inflows[i-1]||isAnn(i-1)) return null;
@@ -367,10 +375,12 @@
                       }},tk)}
                       {allPeriods.map((p,ci)=>{
                         const v=metricGet(tk,ci);
+                        const isMax=ri===colStats[ci].maxRi&&v!=null;
+                        const isMin=ri===colStats[ci].minRi&&v!=null;
                         return React.createElement('td',{key:ci,style:{
                           padding:'7px 8px',textAlign:'right',fontFamily:MONO,fontSize:11,
                           borderBottom:`1px solid ${T.border}`,borderLeft:BL(ci),
-                          background:isHist(ci)?'rgba(0,0,0,.025)':isAnn(ci)?colorOf(tk)+'06':'transparent',
+                          background:isMax?'#2B7A4B18':isMin?'#B9404015':isHist(ci)?'rgba(0,0,0,.025)':isAnn(ci)?colorOf(tk)+'06':'transparent',
                           color:metricColor(tk,v),fontWeight:v!=null?600:400
                         }},metricFmt(v));
                       })}
