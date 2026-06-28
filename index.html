@@ -243,6 +243,7 @@
   function AumFlows() {
     const [flowTk, setFlowTk] = useState('BX');
     const [expanded, setExpanded] = useState({inflows:false, net:false});
+    const [showChart, setShowChart] = useState(true);
     const FLOWS = window.ALTS_FLOWS;
     if (!FLOWS) return <Empty label="AUM flow data not loaded (flows.js)." />;
     const f = FLOWS.firms[flowTk];
@@ -255,6 +256,14 @@
     const isHist = (i) => i < histN;
     const isAnn  = (i) => i >= histN + 3;
     const BL = (i) => (i===histN||i===histN+3) ? `2px solid ${T.borderFt}` : `1px solid ${T.border}`;
+    // Net Flow Rate: annualized net / prior-period FPAUM (quarterly periods only, skip i=0 and annual)
+    const flowRate = (i) => {
+      if (i === 0 || isAnn(i) || !f.fpaum[i-1]) return null;
+      return f.net[i] / f.fpaum[i-1] * 4 * 100;
+    };
+    const rateColor = (v) => v==null?T.textFaint:v>=15?'#1A7A3A':v>=8?'#2B7A4B':v>=3?'#4A9B6A':v>=0?T.textMuted:'#B94040';
+    const segPct = (sv, i) => { const t=f.inflows[i]; return (!t||sv==null)?null:sv/t*100; };
+    const maxQtrInf = Math.max(...f.inflows.slice(0, histN+3).filter(v=>v!=null));
     // Deployment counts from deploy.js
     const DEP_RAW = (window.ALTS_DEPLOY||{})[flowTk] || [];
     const depByQtr = {};
@@ -282,19 +291,69 @@
     return (
       <div>
         {/* Firm selector */}
-        <div style={{ display:'flex', gap:6, flexWrap:'wrap', marginBottom:14, alignItems:'center' }}>
+        <div style={{ display:'flex', gap:6, flexWrap:'wrap', marginBottom:6, alignItems:'center' }}>
           {FLOWS.order.map(tk=>(
-            <button key={tk} onClick={()=>setFlowTk(tk)} style={{
+            <button key={tk} onClick={()=>{ setFlowTk(tk); setExpanded({inflows:false,net:false}); }} style={{
               padding:'4px 12px', fontFamily:MONO, fontSize:10, fontWeight:700, letterSpacing:'0.06em',
               border:`1.5px solid ${tk===flowTk?colorOf(tk):T.border}`, borderRadius:20,
               background:tk===flowTk?colorOf(tk):T.bgCard, color:tk===flowTk?'#fff':T.text,
               cursor:'pointer', transition:'all .15s'
             }}>{tk}</button>
           ))}
-          <span style={{ fontSize:9, fontFamily:MONO, color:T.textMuted, marginLeft:4 }}>
-            Visible Alpha · {FLOWS.asOf} · {f.cur} · {f.label}
-          </span>
         </div>
+        <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:14 }}>
+          <span style={{ fontSize:9, fontFamily:MONO, color:T.textMuted }}>
+            VA · {FLOWS.asOf} · {f.cur} · {f.label}
+          </span>
+          <button onClick={()=>setShowChart(c=>!c)} style={{
+            padding:'3px 10px', fontFamily:MONO, fontSize:9, border:`1px solid ${T.border}`, borderRadius:4,
+            background:showChart?T.bgHover:T.bgCard, color:T.textMuted, cursor:'pointer'
+          }}>{showChart?'Hide':'▼'} Mix Chart</button>
+        </div>
+        {/* Stacked gross inflow mix chart — quarterly periods only */}
+        {showChart && (
+          <div style={{ marginBottom:14, padding:'10px 10px 6px', background:T.bgCard, borderRadius:8, border:`1px solid ${T.border}` }}>
+            <div style={{ fontSize:7.5, fontFamily:MONO, color:T.textMuted, marginBottom:8, letterSpacing:'0.06em' }}>GROSS INFLOW MIX BY SEGMENT · QUARTERLY PERIODS · $B</div>
+            <div style={{ display:'flex', alignItems:'flex-end', gap:3, height:104 }}>
+              {periods.map((p,i) => {
+                if (isAnn(i)) return null;
+                const tot = f.inflows[i] || 0;
+                const barPx = maxQtrInf > 0 ? Math.round(tot / maxQtrInf * 96) : 0;
+                return (
+                  <div key={p} style={{ flex:1, display:'flex', flexDirection:'column', alignItems:'stretch', height:'100%', justifyContent:'flex-end' }}>
+                    <div style={{ height:barPx, display:'flex', flexDirection:'column',
+                      borderRadius:'2px 2px 0 0', overflow:'hidden', opacity:isHist(i)?1:0.65,
+                      border:`1px solid ${T.border}`, borderBottom:'none' }}>
+                      {f.segs.map((seg,si) => {
+                        const sv = (seg.inflows||[])[i] || 0;
+                        const pct = tot > 0 ? sv/tot*100 : 0;
+                        return pct >= 0.5 ? (
+                          <div key={seg.name}
+                            title={`${seg.short}: $${fmtB(sv)}B (${pct.toFixed(0)}%)`}
+                            style={{ flex:`0 0 ${pct}%`, background:SEG_COLORS[si%SEG_COLORS.length] }} />
+                        ) : null;
+                      })}
+                    </div>
+                    <div style={{ textAlign:'center', fontSize:6.5, fontFamily:MONO,
+                      color:isHist(i)?T.textMuted:T.textFaint, paddingTop:2, lineHeight:1.3,
+                      whiteSpace:'nowrap', overflow:'hidden', textOverflow:'ellipsis' }}>
+                      {p.replace(/[AE]$/,'')}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+            <div style={{ display:'flex', gap:10, flexWrap:'wrap', marginTop:6, paddingTop:5, borderTop:`1px solid ${T.border}` }}>
+              {f.segs.map((seg,si) => (
+                <span key={seg.name} style={{ fontSize:7.5, fontFamily:MONO, color:T.textMuted, display:'flex', alignItems:'center', gap:3 }}>
+                  <span style={{ width:7, height:7, background:SEG_COLORS[si%SEG_COLORS.length], display:'inline-block', borderRadius:1, flexShrink:0 }} />
+                  {seg.name}
+                </span>
+              ))}
+              <span style={{ fontSize:7, fontFamily:MONO, color:T.textFaint, marginLeft:4 }}>Solid = actual · faded = estimate · hover for values</span>
+            </div>
+          </div>
+        )}
         {/* Table */}
         <div style={{ overflowX:'auto', borderRadius:8, border:`1.5px solid ${T.border}` }}>
           <table style={{ width:'100%', borderCollapse:'collapse', fontSize:11 }}>
@@ -337,7 +396,16 @@
                   <td style={{ padding:'5px 12px 5px 26px', fontFamily:MONO, fontSize:9.5, color:SEG_COLORS[si%SEG_COLORS.length], borderBottom:`1px solid ${T.border}` }}>
                     {seg.name}
                   </td>
-                  {(seg.inflows||[]).map((v,i)=>tdCell(i,v,undefined,{fontSize:10,color:v!=null&&v>0?SEG_COLORS[si%SEG_COLORS.length]:T.textFaint}))}
+                  {(seg.inflows||[]).map((v,i)=>{
+                    const pct=segPct(v,i);
+                    return tdCell(i,null,
+                      <span>
+                        <span style={{color:v!=null&&v>0?SEG_COLORS[si%SEG_COLORS.length]:T.textFaint}}>{fmtB(v)}</span>
+                        {pct!=null&&<span style={{fontSize:7,color:T.textFaint,marginLeft:2}}>{pct.toFixed(0)}%</span>}
+                      </span>,
+                      {fontSize:10}
+                    );
+                  })}
                 </tr>
               ))}
               {expanded.inflows && f.special && f.special.items.map((item,ii)=>(
@@ -363,8 +431,18 @@
                   {(seg.net||[]).map((v,i)=>tdCell(i,v,undefined,{fontSize:10,color:v==null?T.textFaint:v>=0?'#2B7A4B':'#B94040'}))}
                 </tr>
               ))}
-              {/* Deployment count */}
+              {/* Net Flow Rate (annualized, quarterly periods only) */}
               <tr style={{ background:T.bgStripe }}>
+                <td style={{ padding:'6px 12px', fontFamily:MONO, fontSize:9.5, color:T.textSub, borderBottom:`1px solid ${T.border}` }}>
+                  Net Flow Rate (ann.)
+                </td>
+                {periods.map((p,i)=>{
+                  const r=flowRate(i);
+                  return tdCell(i,null,r==null?'—':(r>=0?'+':'')+r.toFixed(1)+'%',{color:rateColor(r),fontSize:9.5,fontStyle:'italic'});
+                })}
+              </tr>
+              {/* Deployment count */}
+              <tr style={{ background:T.bgCard }}>
                 <td style={{ padding:'7px 12px', fontFamily:MONO, fontSize:10, color:T.textSub, borderBottom:`1px solid ${T.border}` }}>
                   Deployment (# deals)
                 </td>
@@ -377,7 +455,7 @@
           </table>
         </div>
         <div style={{ marginTop:8, fontSize:9, color:T.textFaint, fontFamily:MONO, lineHeight:1.6 }}>
-          <b>A</b> = VA actuals (historical) · <b>EST</b> = Visible Alpha consensus estimate · Net Flows excludes market appreciation & FX · FPAUM label varies by firm (see header) · Deployment count from PitchBook (entry date, count only — no entry sizes). Annual periods show full-year totals. Not investment advice.
+          <b>A</b> = VA actuals · <b>EST</b> = VA consensus · Net Flow Rate = annualized (net / prior-period FPAUM × 4), quarterly only · Segment % = share of gross inflows · Deployment count from PitchBook. Annual cols = FY totals. Not investment advice.
         </div>
       </div>
     );
