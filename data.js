@@ -93,7 +93,7 @@ window.ALTS = {
       exits:{ quarterly:{
         "2023 Q2":{count:13,totalTV:822}, "2023 Q3":{count:12,totalTV:1183}, "2023 Q4":{count:2,totalTV:0}, "2024 Q1":{count:9,totalTV:1305},
         "2024 Q2":{count:9,totalTV:1133}, "2024 Q3":{count:9,totalTV:3925}, "2024 Q4":{count:8,totalTV:1135}, "2025 Q1":{count:8,totalTV:1946},
-        "2025 Q2":{count:10,totalTV:3469}, "2025 Q3":{count:7,totalTV:11101}, "2025 Q4":{count:10,totalTV:10178}, "2026 Q1":{count:9,totalTV:34579} },
+        "2025 Q2":{count:10,totalTV:3469}, "2025 Q3":{count:7,totalTV:11101}, "2025 Q4":{count:10,totalTV:10178}, "2026 Q1":{count:9,totalTV:34579}, "2026 Q2":{count:15,totalTV:24910} },
         notable:[
           { company:"Wiz", exitDate:"2026-03-11", exitSize:"$32,000M", type:"M&A", investorSince:"2021", flag:"minority" },
           { company:"Resolution Life", exitDate:"2025-10-31", exitSize:"$8,200M", type:"M&A", investorSince:"2023", flag:"minority" },
@@ -136,7 +136,7 @@ window.ALTS = {
       exits:{ quarterly:{
         "2023 Q2":{count:12,totalTV:8719}, "2023 Q3":{count:16,totalTV:3711}, "2023 Q4":{count:7,totalTV:2731}, "2024 Q1":{count:9,totalTV:3138},
         "2024 Q2":{count:7,totalTV:339}, "2024 Q3":{count:4,totalTV:0}, "2024 Q4":{count:6,totalTV:8038}, "2025 Q1":{count:7,totalTV:15368},
-        "2025 Q2":{count:7,totalTV:642}, "2025 Q3":{count:6,totalTV:11646}, "2025 Q4":{count:6,totalTV:9743}, "2026 Q1":{count:4,totalTV:6300} },
+        "2025 Q2":{count:7,totalTV:642}, "2025 Q3":{count:6,totalTV:11646}, "2025 Q4":{count:6,totalTV:9743}, "2026 Q1":{count:4,totalTV:6300}, "2026 Q2":{count:9,totalTV:9433} },
         notable:[
           { company:"WME Group", exitDate:"2025-03-24", exitSize:"$13,000M", type:"Buyout", investorSince:"2021", flag:"minority — not PE seller" },
           { company:"Colonial Pipeline", exitDate:"2025-07-31", exitSize:"$9,000M", type:"Buyout", investorSince:"2010", flag:"~15% minority" },
@@ -180,7 +180,7 @@ window.ALTS = {
       exits:{ quarterly:{
         "2023 Q2":{count:5,totalTV:414}, "2023 Q3":{count:2,totalTV:0}, "2023 Q4":{count:2,totalTV:108}, "2024 Q1":{count:2,totalTV:0},
         "2024 Q2":{count:5,totalTV:63665}, "2024 Q3":{count:2,totalTV:2047}, "2024 Q4":{count:4,totalTV:0}, "2025 Q1":{count:3,totalTV:4011},
-        "2025 Q2":{count:2,totalTV:0}, "2025 Q3":{count:5,totalTV:833}, "2025 Q4":{count:7,totalTV:6262}, "2026 Q1":{count:7,totalTV:7153} },
+        "2025 Q2":{count:2,totalTV:0}, "2025 Q3":{count:5,totalTV:833}, "2025 Q4":{count:7,totalTV:6262}, "2026 Q1":{count:7,totalTV:7153}, "2026 Q2":{count:9,totalTV:8252} },
         notable:[
           { company:"Pioneer Natural Resources", exitDate:"2024-05-03", exitSize:"$63,000M", type:"M&A", investorSince:"N/A", flag:"minority — whole Exxon deal TV" },
           { company:"MEG Energy", exitDate:"2025-11-13", exitSize:"$5,090M", type:"M&A", investorSince:"2006", flag:"minority" },
@@ -225,7 +225,7 @@ window.ALTS = {
       exits:{ quarterly:{
         "2023 Q2":{count:6,totalTV:1663}, "2023 Q3":{count:3,totalTV:232}, "2023 Q4":{count:7,totalTV:3302}, "2024 Q1":{count:3,totalTV:8},
         "2024 Q2":{count:3,totalTV:411}, "2024 Q3":{count:2,totalTV:25}, "2024 Q4":{count:2,totalTV:0}, "2025 Q1":{count:5,totalTV:2814},
-        "2025 Q2":{count:5,totalTV:1100}, "2025 Q3":{count:6,totalTV:7441}, "2025 Q4":{count:6,totalTV:705}, "2026 Q1":{count:12,totalTV:19046} },
+        "2025 Q2":{count:5,totalTV:1100}, "2025 Q3":{count:6,totalTV:7441}, "2025 Q4":{count:6,totalTV:705}, "2026 Q1":{count:12,totalTV:19046}, "2026 Q2":{count:4,totalTV:4497} },
         notable:[
           { company:"Clario", exitDate:"2026-03-24", exitSize:"$8,875M", type:"M&A", investorSince:"2019", flag:"" },
           { company:"Global Healthcare Exchange", exitDate:"2026-02-05", exitSize:"$5,000M", type:"Buyout", investorSince:"2014", flag:"" },
@@ -268,7 +268,7 @@ window.ALTS = {
       exits:{ quarterly:{
         "2023 Q2":{count:0,totalTV:0}, "2023 Q3":{count:0,totalTV:0}, "2023 Q4":{count:0,totalTV:0}, "2024 Q1":{count:0,totalTV:0},
         "2024 Q2":{count:1,totalTV:0}, "2024 Q3":{count:0,totalTV:0}, "2024 Q4":{count:0,totalTV:0}, "2025 Q1":{count:1,totalTV:1249},
-        "2025 Q2":{count:0,totalTV:0}, "2025 Q3":{count:0,totalTV:0}, "2025 Q4":{count:0,totalTV:0}, "2026 Q1":{count:0,totalTV:0} },
+        "2025 Q2":{count:0,totalTV:0}, "2025 Q3":{count:0,totalTV:0}, "2025 Q4":{count:0,totalTV:0}, "2026 Q1":{count:0,totalTV:0}, "2026 Q2":{count:0,totalTV:0} },
         notable:[
           { company:"Aveo Group", exitDate:"2025-07-21", exitSize:"$2,515M", type:"Buyout", investorSince:"2019", flag:"parent entity" },
           { company:"Fundamental Income Properties", exitDate:"2025-07-23", exitSize:"$2,200M", type:"Buyout", investorSince:"2020", flag:"parent entity" },
@@ -306,7 +306,7 @@ window.ALTS = {
       exits:{ quarterly:{
         "2023 Q2":{count:3,totalTV:0}, "2023 Q3":{count:6,totalTV:49}, "2023 Q4":{count:5,totalTV:1768}, "2024 Q1":{count:5,totalTV:1804},
         "2024 Q2":{count:2,totalTV:50}, "2024 Q3":{count:6,totalTV:3061}, "2024 Q4":{count:4,totalTV:2105}, "2025 Q1":{count:5,totalTV:647},
-        "2025 Q2":{count:7,totalTV:426}, "2025 Q3":{count:4,totalTV:1183}, "2025 Q4":{count:6,totalTV:1969}, "2026 Q1":{count:2,totalTV:126} },
+        "2025 Q2":{count:7,totalTV:426}, "2025 Q3":{count:4,totalTV:1183}, "2025 Q4":{count:6,totalTV:1969}, "2026 Q1":{count:2,totalTV:126}, "2026 Q2":{count:11,totalTV:5526} },
         notable:[
           { company:"Cogentrix Energy", exitDate:"2024-08-05", exitSize:"$3,000M", type:"Buyout", investorSince:"2012", flag:"" },
           { company:"Forgital Group", exitDate:"2024-12-17", exitSize:"$2,105M", type:"Buyout", investorSince:"2019", flag:"" },
@@ -347,7 +347,7 @@ window.ALTS = {
       exits:{ quarterly:{
         "2023 Q2":{count:7,totalTV:2172}, "2023 Q3":{count:3,totalTV:7274}, "2023 Q4":{count:8,totalTV:1837}, "2024 Q1":{count:4,totalTV:141},
         "2024 Q2":{count:3,totalTV:292}, "2024 Q3":{count:8,totalTV:2522}, "2024 Q4":{count:6,totalTV:2483}, "2025 Q1":{count:3,totalTV:191},
-        "2025 Q2":{count:8,totalTV:1449}, "2025 Q3":{count:3,totalTV:843}, "2025 Q4":{count:5,totalTV:1976}, "2026 Q1":{count:1,totalTV:1675} },
+        "2025 Q2":{count:8,totalTV:1449}, "2025 Q3":{count:3,totalTV:843}, "2025 Q4":{count:5,totalTV:1976}, "2026 Q1":{count:1,totalTV:1675}, "2026 Q2":{count:4,totalTV:864} },
         notable:[
           { company:"Creative Artists Agency", exitDate:"2023-09-27", exitSize:"$7,000M", type:"Buyout", investorSince:"2010", flag:"" },
           { company:"Intersect Power (digital power)", exitDate:"2026-Q1", exitSize:"$5,000M", type:"Asset sale (to Google)", investorSince:"N/A", flag:"Rise Climate" },
@@ -390,7 +390,7 @@ window.ALTS = {
       consensus:{ FRE_ps:{act:0.25}, DE_ps:{act:0.19} },
       exits:{ quarterly:{
         "2024 Q4":{count:1,totalTV:null}, "2025 Q2":{count:1,totalTV:30}, "2025 Q3":{count:2,totalTV:12221},
-        "2025 Q4":{count:4,totalTV:2083}, "2026 Q1":{count:3,totalTV:30} },
+        "2025 Q4":{count:4,totalTV:2083}, "2026 Q1":{count:3,totalTV:30}, "2026 Q2":{count:4,totalTV:91440} },
         notable:[
           { company:"SpaceX", exitDate:"2026-06-12", exitSize:"$75,000M", type:"IPO (valuation)", investorSince:"2024", flag:"Q2'26; ~10x; sold ~half" },
           { company:"HPS Investment Partners", exitDate:"2025-07-01", exitSize:"$12,221M", type:"M&A", investorSince:"2018", flag:"GP stake; to BlackRock" },
@@ -400,7 +400,7 @@ window.ALTS = {
           { company:"EnGene", exitDate:"2025-11-14", exitSize:"$107M", type:"Public 2nd offering", investorSince:"2024", flag:"" },
           { company:"Stonepeak (GP stake)", exitDate:"2026-01-28", exitSize:"N/A", type:"Buyout", investorSince:"2023", flag:"GP stake" },
         ],
-        summary:"PitchBook returned 31 of 343 records; ~12 unique exits. SpaceX ($75B valuation, Q2'26) and HPS ($12.2B) dominate — but exit sizes are deal valuations, not Blue Owl's minority proceeds. No clean 2025 Q1 data in the pull." },
+        summary:"PitchBook returned 31 of 343 records; ~12 unique exits. The Q2'26 total is 94% one line — the SpaceX listing, recorded at an $86.25B deal value — and HPS ($12.2B) dominates Q3'25. Exit sizes here are whole-deal valuations, NOT Blue Owl's minority proceeds, so OWL's TV is not comparable to the buyout managers' (and is excluded from the Overview exit-TV roll-up, since Blue Owl earns fees rather than carry). No clean 2025 Q1 data in the pull." },
     },
 
     // ───────────────────────── PGHN ─────────────────────────
@@ -430,7 +430,7 @@ window.ALTS = {
       exits:{ quarterly:{
         "2023 Q2":{count:1,totalTV:0}, "2023 Q3":{count:5,totalTV:0}, "2023 Q4":{count:2,totalTV:0}, "2024 Q1":{count:3,totalTV:967},
         "2024 Q2":{count:3,totalTV:2625}, "2024 Q3":{count:3,totalTV:0}, "2024 Q4":{count:2,totalTV:786}, "2025 Q1":{count:4,totalTV:2074},
-        "2025 Q2":{count:4,totalTV:5626}, "2025 Q3":{count:3,totalTV:1532}, "2025 Q4":{count:6,totalTV:4539}, "2026 Q1":{count:3,totalTV:4000} },
+        "2025 Q2":{count:4,totalTV:5626}, "2025 Q3":{count:3,totalTV:1532}, "2025 Q4":{count:6,totalTV:4539}, "2026 Q1":{count:3,totalTV:4000}, "2026 Q2":{count:1,totalTV:3900} },
         notable:[
           { company:"atNorth", exitDate:"2026-02-26", exitSize:"$4,000M", type:"M&A", investorSince:"2021", flag:"data centers/AI" },
           { company:"AmSurg", exitDate:"2025-06-17", exitSize:"$3,900M", type:"M&A", investorSince:"2023", flag:"" },
@@ -473,7 +473,7 @@ window.ALTS = {
       exits:{ quarterly:{
         "2023 Q2":{count:4,totalTV:1568}, "2023 Q3":{count:2,totalTV:480}, "2023 Q4":{count:2,totalTV:1503}, "2024 Q1":{count:2,totalTV:2062},
         "2024 Q2":{count:1,totalTV:2101}, "2024 Q3":{count:3,totalTV:322}, "2024 Q4":{count:5,totalTV:0}, "2025 Q1":{count:2,totalTV:1500},
-        "2025 Q2":{count:2,totalTV:0}, "2025 Q3":{count:3,totalTV:1075}, "2025 Q4":{count:2,totalTV:338}, "2026 Q1":{count:4,totalTV:7510} },
+        "2025 Q2":{count:2,totalTV:0}, "2025 Q3":{count:3,totalTV:1075}, "2025 Q4":{count:2,totalTV:338}, "2026 Q1":{count:4,totalTV:7510}, "2026 Q2":{count:3,totalTV:521} },
         notable:[
           { company:"Galderma", exitDate:"2026-03-13", exitSize:"$6,325M", type:"Secondary (block trade)", investorSince:"2019", flag:"~$20B gain; largest sponsor block trade ever" },
           { company:"O2 Power", exitDate:"2025-01-10", exitSize:"$1,500M", type:"M&A", investorSince:"2019", flag:"India renewables" },
@@ -515,7 +515,7 @@ window.ALTS = {
       exits:{ quarterly:{
         "2023 Q2":{count:3,totalTV:428}, "2023 Q3":{count:0,totalTV:0}, "2023 Q4":{count:0,totalTV:0}, "2024 Q1":{count:2,totalTV:2786},
         "2024 Q2":{count:1,totalTV:220}, "2024 Q3":{count:2,totalTV:2000}, "2024 Q4":{count:1,totalTV:0}, "2025 Q1":{count:5,totalTV:250},
-        "2025 Q2":{count:1,totalTV:0}, "2025 Q3":{count:1,totalTV:0}, "2025 Q4":{count:3,totalTV:3514}, "2026 Q1":{count:2,totalTV:7623} },
+        "2025 Q2":{count:1,totalTV:0}, "2025 Q3":{count:1,totalTV:0}, "2025 Q4":{count:3,totalTV:3514}, "2026 Q1":{count:2,totalTV:7623}, "2026 Q2":{count:7,totalTV:16493} },
         notable:[
           { company:"Pension Insurance Corporation", exitDate:"2026-03-27", exitSize:"$7,623M", type:"Buyout", investorSince:"2017", flag:"minority" },
           { company:"Worldwide Express", exitDate:"2026-06-01", exitSize:"$5,000M", type:"Buyout", investorSince:"2021", flag:"minority; Q2'26" },
@@ -558,7 +558,7 @@ window.ALTS = {
       exits:{ quarterly:{
         "2023 Q2":{count:1,totalTV:0}, "2023 Q3":{count:2,totalTV:0}, "2023 Q4":{count:1,totalTV:0}, "2024 Q1":{count:0,totalTV:0},
         "2024 Q2":{count:2,totalTV:398}, "2024 Q3":{count:3,totalTV:1107}, "2024 Q4":{count:2,totalTV:0}, "2025 Q1":{count:1,totalTV:0},
-        "2025 Q2":{count:1,totalTV:0}, "2025 Q3":{count:2,totalTV:796}, "2025 Q4":{count:1,totalTV:1800}, "2026 Q1":{count:1,totalTV:544} },
+        "2025 Q2":{count:1,totalTV:0}, "2025 Q3":{count:2,totalTV:796}, "2025 Q4":{count:1,totalTV:1800}, "2026 Q1":{count:1,totalTV:544}, "2026 Q2":{count:1,totalTV:0} },
         notable:[
           { company:"With Intelligence", exitDate:"2025-11-25", exitSize:"$1,800M", type:"M&A", investorSince:"2020", flag:"minority" },
           { company:"Akuo Energy", exitDate:"2025-07-04", exitSize:"$731M", type:"Buyout", investorSince:"N/A", flag:"minority" },
@@ -599,7 +599,7 @@ window.ALTS = {
       exits:{ quarterly:{
         "2023 Q2":{count:2,totalTV:2664}, "2023 Q3":{count:1,totalTV:0}, "2023 Q4":{count:1,totalTV:0}, "2024 Q1":{count:1,totalTV:0},
         "2024 Q2":{count:1,totalTV:0}, "2024 Q3":{count:2,totalTV:0}, "2024 Q4":{count:3,totalTV:0}, "2025 Q1":{count:0,totalTV:0},
-        "2025 Q2":{count:1,totalTV:0}, "2025 Q3":{count:2,totalTV:4000}, "2025 Q4":{count:4,totalTV:5475}, "2026 Q1":{count:2,totalTV:1425} },
+        "2025 Q2":{count:1,totalTV:0}, "2025 Q3":{count:2,totalTV:4000}, "2025 Q4":{count:4,totalTV:5475}, "2026 Q1":{count:2,totalTV:1425}, "2026 Q2":{count:1,totalTV:475} },
         notable:[
           { company:"Dorna Sports (MotoGP)", exitDate:"2025-07-03", exitSize:"$3,659M", type:"M&A", investorSince:"2006", flag:"minority" },
           { company:"Kereis", exitDate:"2025-10-27", exitSize:"$2,332M", type:"Buyout", investorSince:"2020", flag:"" },
