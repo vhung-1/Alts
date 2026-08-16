@@ -41,6 +41,9 @@
   <script src="consensus.js"></script>
   <!-- AUM / FPAUM flow analytics for the Fundraising > AUM Flows tab (window.ALTS_FLOWS). -->
   <script src="flows.js"></script>
+  <!-- Reported net realized perf fees / transaction fees / capital deployed — the fee "ground truth"
+       the Carry & Deployment activity proxies anticipate (window.ALTS_REPORTED). -->
+  <script src="reported.js"></script>
 
   <script type="text/plain" id="appsrc">
   const { useState, useMemo } = React;
@@ -920,8 +923,8 @@
   }
 
   // ═════════════════════════ CARRY ═════════════════════════
-  const QUARTERS = ["2023 Q2","2023 Q3","2023 Q4","2024 Q1","2024 Q2","2024 Q3","2024 Q4","2025 Q1","2025 Q2","2025 Q3","2025 Q4","2026 Q1"];
-  const QEX = QUARTERS.concat(["2026 Q2"]);                     // 12 complete quarters + current quarter-to-date
+  const QUARTERS = ["2023 Q3","2023 Q4","2024 Q1","2024 Q2","2024 Q3","2024 Q4","2025 Q1","2025 Q2","2025 Q3","2025 Q4","2026 Q1","2026 Q2"];  // trailing 12 complete quarters, through the last reported quarter (2026 Q2)
+  const QEX = QUARTERS;                                          // no separate QTD column: 2026 Q2 is now fully reported and the PitchBook deal feed runs through mid-Jun 2026
   const CARRY_ORDER  = FIRM_ORDER.filter(tk => tk !== "OWL");   // Blue Owl earns fees, not carry — excluded from Carry
   const DEPLOY_ORDER = FIRM_ORDER;                             // deployment applies to every manager (Blue Owl included)
   const fmtTV = (m) => !isNum(m) ? "n/d" : (Math.abs(m) >= 1000 ? fmtB(m) : `$${Math.round(m)}M`);
@@ -951,7 +954,7 @@
     return out;
   }
   function QuarterPanel({ kind, filter, setFilter }) {
-    const isExit = kind === "exit", isIPO = kind === "ipo", isReal = kind === "real";
+    const isExit = kind === "exit", isIPO = kind === "ipo", isReal = kind === "real", isDeploy = kind === "deploy";
     const _realSrc = React.useMemo(() => isReal ? buildRealSrc() : null, [isReal]);
     const SRC   = (isReal ? _realSrc : isExit ? window.ALTS_EXITS : isIPO ? window.ALTS_IPOS : window.ALTS_DEPLOY) || {};
     const ORDER = (isExit || isReal) ? CARRY_ORDER : isIPO ? CARRY_ORDER.filter(tk => Array.isArray(SRC[tk]) && SRC[tk].length) : DEPLOY_ORDER;
@@ -970,13 +973,13 @@
       <div>
         <div style={{ background: boxCol+"0C", border:`1px solid ${boxCol}44`, borderRadius:8, padding:"11px 15px", marginBottom:18, fontSize:10, color:T.textSub, lineHeight:1.6 }}>
           {isReal ? (
-            <span><b style={{color:T.neg}}>Read me — unified realizations.</b> Merges PitchBook's investor-exit feed (<b>exits</b>, sized by total transaction / enterprise value) with company-deal IPO records (<b>IPOs</b> and post-IPO <b>open-market sell-downs</b>, sized by gross offering proceeds). Full-exit IPOs that appear in both feeds are de-duped — shown once, sized by TV. <b>Size is not apples-to-apples</b>: exit TV = whole-deal EV; IPO / sell-down proceeds = the offering size only (the GP's share of either is unlisted). Minority exits flagged <b>min</b>. The <b>Transcript check</b> strip compares the last two earnings calls against PitchBook. Blue Owl excluded (fees, not carry). <b>Quarters run across the top — click any quarter to expand.</b></span>
+            <span><b style={{color:T.neg}}>Read me — realizations as a proxy for realized performance fees.</b> The top rows are <i>activity</i> — leading, observable intra-quarter: PitchBook portfolio exits + retained-stake IPOs / sell-downs, merged and de-duped, sized by transaction value. The <b style={{color:T.accent}}>REPORTED</b> rows beneath are the <i>ground truth</i> that activity anticipates — each firm's net realized performance fees and disclosed realizations, lifted from the earnings supplement (core US names, trailing 6 quarters). Size is <b>not apples-to-apples</b>: exit TV = whole-deal EV, IPO / sell-down = offering proceeds, and neither is the GP's share — so read activity as <i>direction and tempo</i>, not a dollar forecast. Minority exits flagged <b>min</b>. The <b>Transcript check</b> strip compares the last two earnings calls against PitchBook. Blue Owl excluded (fees, not carry). <b>Quarters run across the top — click any quarter to expand the underlying deals.</b></span>
           ) : isExit ? (
             <span><b style={{color:T.neg}}>Read me — exit TV ≠ realized carry.</b> PitchBook "exit size" is the <i>total transaction / enterprise value</i> of the deal, not the manager's equity proceeds (stakes range ~15–100%; minority deals flagged <b>min</b>). Per the KKR exit-pull study, exit TV is a <i>weak</i> predictor of realized performance income (r&lt;0.35): fund-level crystallizations, open-market sales and clawbacks are invisible, and bankruptcies show as exits with zero carry. Many exits have no disclosed size, so TV is a partial minimum. <b>Quarters run across the top — click any quarter to expand its individual exits.</b> Cells are shaded per firm (darker = larger). The <b>Transcript check</b> strip under each firm compares the last two earnings calls' monetization commentary against what PitchBook recorded. Blue Owl is excluded (fees, not carry). <b>Fund</b> reads <i>n/d</i> — the feed doesn't name the selling fund.</span>
           ) : isIPO ? (
             <span><b style={{color:T.accent}}>Read me — IPOs &amp; listings.</b> Built from PitchBook <i>company-deal</i> records — the <b>IPO</b> itself plus any post-IPO <b>open-market secondary</b> sell-downs (the actual realization events). This is the gap the exit feed misses: when a sponsor lists a company but keeps a stake, PitchBook keeps the holding <i>Active</i> (no "exit"), so the IPO never shows in Exit activity. Proceeds = total offering / transaction size, not the manager's take. <b>Quarters run across the top — click any quarter to see the listings.</b> Coverage = marquee/named listings plus a best-effort scan of each firm's recent active holdings, so very old holdings that listed may be missed. Blue Owl excluded.</span>
           ) : (
-            <span><b style={{color:"#1A7A5A"}}>Read me — deployment cadence.</b> New investments are dated by PitchBook entry date (<code>investor_since</code>) and counted per quarter — a clean read on <i>deployment pace</i>. PitchBook's investor-investment feed exposes the company and entry date but <b>not the entry deal size</b> (only exits carry a size), so this tab tracks the <b>number</b> of new investments rather than dollars; click any quarter to see which companies. Counts reflect what PitchBook surfaces in-window and can understate very active managers. All 13 names, Blue Owl included.</span>
+            <span><b style={{color:"#1A7A5A"}}>Read me — deployment as a proxy for transaction fees.</b> The <b>#&nbsp;New&nbsp;inv.</b> row is <i>activity</i> — leading, observable intra-quarter: new investments dated by PitchBook entry date (<code>investor_since</code>). The feed exposes the company and date but <b>not the entry deal size</b> (only exits carry a size), so activity here is a <b>count</b>, not dollars. The <b style={{color:T.accent}}>REPORTED</b> rows beneath are the <i>ground truth</i> the cadence anticipates — each firm's transaction / capital-markets fees and capital deployed, from the earnings supplement (core US names, trailing 6 quarters); the reported <i>Capital deployed</i> row supplies the dollar dimension the feed can't. Counts can understate very active managers. <b>Quarters run across the top — click any quarter to see the companies.</b> All 13 names, Blue Owl included.</span>
           )}
         </div>
         <FirmFilter value={filter} onChange={setFilter} only={ORDER} />
@@ -992,6 +995,11 @@
           const totTV = QUARTERS.reduce((s,qq)=>s+b[qq].tv, 0);
           const openQ = open[tk] || null;
           const rec = RECON[tk];
+          // Reported "ground-truth" rows: the fees each activity proxy is meant to anticipate.
+          const repKind = isReal ? "carry" : isDeploy ? "deploy" : null;
+          const repFirm = (repKind && window.ALTS_REPORTED && window.ALTS_REPORTED[repKind]) ? window.ALTS_REPORTED[repKind][tk] : null;
+          const repRows = isReal ? [["perf","Net realized perf fees"],["real","Realizations"]] : isDeploy ? [["fees","Transaction fees"],["deployed","Capital deployed"]] : [];
+          const showRep = !!repFirm && repRows.length>0;
           const heat = (val,max)=>{ if(!(val>0)||!(max>0)) return "transparent"; const a=Math.round(Math.min(1,val/max)*0.5*255); return c + a.toString(16).padStart(2,"0"); };
           const stick = { position:"sticky", left:0, zIndex:2 };
           const toggle = (qq) => b[qq].n && setOpen(o=>({ ...o, [tk]: o[tk]===qq?null:qq }));
@@ -1007,7 +1015,7 @@
                   <thead>
                     <tr style={{ background:T.bgHover }}>
                       <th style={{ ...stick, background:T.bgHover, padding:"6px 12px", textAlign:"left", fontFamily:MONO, fontSize:7.5, fontWeight:700, letterSpacing:"0.06em", color:T.textMuted, borderBottom:`2px solid ${T.border}`, borderRight:`1px solid ${T.border}`, whiteSpace:"nowrap" }}>QUARTER ▸</th>
-                      {QEX.map(qq => { const r=b[qq]; const sel=openQ===qq; const partial=qq==="2026 Q2";
+                      {QEX.map(qq => { const r=b[qq]; const sel=openQ===qq; const partial=false;
                         return (
                           <th key={qq} onClick={()=>toggle(qq)} title={partial?"current quarter to date":""}
                               style={{ padding:"6px 9px", textAlign:"center", fontFamily:MONO, fontSize:8.5, fontWeight:700, letterSpacing:"0.02em", color: sel?"#fff":(r.n?c:T.textFaint), background: sel?c:(partial?T.bgStripe:T.bgHover), borderBottom:`2px solid ${sel?c:T.border}`, borderLeft:`1px solid ${T.border}`, cursor:r.n?"pointer":"default", whiteSpace:"nowrap" }}>
@@ -1034,6 +1042,17 @@
                       })}
                     </tr>
                     )}
+                    {showRep && repRows.map(([rk,rlab],ri) => (
+                      <tr key={"rep-"+rk}>
+                        <td style={{ ...stick, background:T.bgCard, padding:"7px 12px", fontFamily:MONO, fontSize:8.5, fontWeight:700, color:T.accent, borderTop: ri===0?`2px solid ${T.accent}55`:"none", borderBottom: ri<repRows.length-1?`1px solid ${T.border}`:"none", borderRight:`1px solid ${T.border}`, whiteSpace:"nowrap" }}>
+                          {ri===0 && <div style={{ fontSize:6.5, color:T.textFaint, letterSpacing:"0.14em", fontWeight:700 }}>REPORTED ▾</div>}
+                          {rlab}<span style={{ color:T.textFaint, fontWeight:400 }}> $</span>
+                        </td>
+                        {QEX.map(qq => { const v = repFirm[qq] ? repFirm[qq][rk] : null;
+                          return <td key={qq} style={{ padding:"7px 9px", textAlign:"center", fontFamily:MONO, fontSize:9.5, fontWeight:700, color: isNum(v)?T.text:T.textFaint, background:T.accent+"0C", borderTop: ri===0?`2px solid ${T.accent}55`:"none", borderBottom: ri<repRows.length-1?`1px solid ${T.border}`:"none", borderLeft:`1px solid ${T.border}` }}>{isNum(v)?fmtTV(v):"—"}</td>;
+                        })}
+                      </tr>
+                    ))}
                   </tbody>
                 </table>
               </div>
@@ -1050,7 +1069,7 @@
                 return (
                   <div style={{ borderTop:`1px solid ${T.border}`, background:c+"06" }}>
                     <div style={{ padding:"7px 16px", fontFamily:MONO, fontSize:9, color:c, background:c+"10", borderBottom:`1px solid ${T.border}` }}>
-                      {qLabel(openQ)}{openQ==="2026 Q2"?" ·QTD":""} — <b>{r.n}</b> {isExit?("exit"+(r.n>1?"s":"")):isIPO?("event"+(r.n>1?"s":"")):("new investment"+(r.n>1?"s":""))}{hasValue?<span> · <b>{r.tv>0?fmtTV(r.tv):"n/d"}</b> {valWord}</span>:null}
+                      {qLabel(openQ)} — <b>{r.n}</b> {isExit?("exit"+(r.n>1?"s":"")):isIPO?("event"+(r.n>1?"s":"")):("new investment"+(r.n>1?"s":""))}{hasValue?<span> · <b>{r.tv>0?fmtTV(r.tv):"n/d"}</b> {valWord}</span>:null}
                     </div>
                     <div style={{ overflowX:"auto" }}>
                       <table style={{ width:"100%", borderCollapse:"collapse", fontSize:10 }}>
@@ -1107,12 +1126,12 @@
         })}
         <div style={{ marginTop:6, fontSize:9, color:T.textFaint, fontFamily:MONO, lineHeight:1.7 }}>
           {isReal
-            ? "Click a quarter column to expand. \"QTD\" = current quarter to date (excluded from 3-yr totals). Sources: PitchBook investor-exit feed (Exit rows) + company-deal records (IPO / Sell-Down rows). Full-exit IPOs are de-duped — shown once, sized by TV. Size is mixed: exit TV = whole-deal EV; IPO / sell-down = gross offering proceeds. Transcript check = S&P Global last-two-quarters earnings calls vs PitchBook."
+            ? "Trailing 12 quarters through 2026 Q2 (last reported); PitchBook deal feed runs through mid-Jun 2026. Click a quarter to expand the underlying deals. Activity rows = PitchBook investor-exit feed (Exit rows) + company-deal records (IPO / Sell-Down rows), de-duped, sized by TV (exit) or gross proceeds (IPO/sell-down). REPORTED rows = net realized performance fees + disclosed realizations from S&P Global transcripts / SEC 8-K earnings supplements (core US names, 2025 Q1–2026 Q2). Transcript check = S&P Global last-two-quarters calls vs PitchBook."
             : isExit
-            ? "Click a quarter column to expand its exits. \"QTD\" = current quarter to date (excluded from 3-yr totals). Source: PitchBook investor-exit feed (investor_status = Former), deduped by company + date. Transcript check = S&P Global last-two-quarters earnings calls vs PitchBook."
+            ? "Trailing 12 quarters through 2026 Q2. Click a quarter column to expand its exits. Source: PitchBook investor-exit feed (investor_status = Former), deduped by company + date. Transcript check = S&P Global last-two-quarters earnings calls vs PitchBook."
             : isIPO
-            ? "Click a quarter column to expand its IPOs & listings. \"QTD\" = current quarter to date (excluded from 3-yr totals). Source: PitchBook company-deal records — IPOs and post-IPO open-market secondaries; captures listings where the GP retains a stake (which the exit feed omits). Coverage = named/marquee listings + best-effort scan of recent active holdings."
-            : "Click a quarter column to expand its new investments. \"QTD\" = current quarter to date (excluded from 3-yr totals). Source: PitchBook investor-investment feed (entry date = investor_since), deduped by company + date. Entry deal size is not exposed by the feed."}
+            ? "Trailing 12 quarters through 2026 Q2. Click a quarter column to expand its IPOs & listings. Source: PitchBook company-deal records — IPOs and post-IPO open-market secondaries; captures listings where the GP retains a stake (which the exit feed omits). Coverage = named/marquee listings + best-effort scan of recent active holdings."
+            : "Trailing 12 quarters through 2026 Q2 (last reported); PitchBook deal feed runs through mid-Jun 2026. Click a quarter to see the new investments. Activity row = PitchBook investor-investment feed (entry date = investor_since), deduped by company + date; entry deal size is not exposed, so activity is a count. REPORTED rows = transaction / capital-markets fees + capital deployed from S&P Global transcripts / SEC 8-K earnings supplements (core US names, 2025 Q1–2026 Q2)."}
         </div>
       </div>
     );
@@ -1233,7 +1252,7 @@
     const acc = window.__ACCRUED__;
     return (
       <div>
-        <SectionTitle kicker="Section 4" title="Carry tracker" sub="Two lenses on carried interest: unified realizations (PitchBook portfolio exits + retained-stake IPOs & sell-downs merged, last 3 years, 12 names — Blue Owl excluded as it earns fees not carry) and net accrued (unrealized) carry from fund-level 10-Q disclosure. Each firm's realization table carries a transcript check — does the last two earnings calls' monetization commentary line up with what PitchBook recorded?" />
+        <SectionTitle kicker="Section 4" title="Carry — realizations as a fee proxy" sub="Realization activity is observable deal-by-deal intra-quarter (PitchBook exits + retained-stake IPOs & sell-downs, merged, 12 quarters, 12 names — Blue Owl excluded as it earns fees not carry); the net realized performance fees it generates only print weeks later on the call. So the activity rows are a leading proxy and the REPORTED rows beneath (net realized perf fees + disclosed realizations, core US names, trailing 6 qtrs) are the ground truth. Second lens: net accrued (unrealized) carry from fund-level 10-Q disclosure. Each realization table also carries a transcript check vs the last two calls." />
         <div style={{ display:"flex", gap:6, marginBottom:18, flexWrap:"wrap" }}>
           {[["real","Realizations"],["accrued","Net accrued carry"]].map(([id,lab])=>(
             <button key={id} onClick={()=>setSub(id)} style={{ padding:"6px 16px", borderRadius:7, cursor:"pointer", fontFamily:MONO, fontSize:10.5, fontWeight:sub===id?700:500, letterSpacing:"0.05em", border:`1.5px solid ${sub===id?T.accent:T.border}`, background:sub===id?T.accent+"14":T.bgCard, color:sub===id?T.accent:T.textSub }}>{lab.toUpperCase()}</button>
@@ -1274,7 +1293,7 @@
   function Deployment({ filter, setFilter }) {
     return (
       <div>
-        <SectionTitle kicker="Section 5" title="Deployment — capital put to work" sub="New investments each manager made, by quarter, from PitchBook's investor-investment feed (entry date = investor_since). Quarters run across the top; click any quarter to see the underlying deals. All 13 names, Blue Owl included." />
+        <SectionTitle kicker="Section 5" title="Deployment — deals as a transaction-fee proxy" sub="Deployment cadence is observable intra-quarter (new investments by PitchBook entry date = investor_since); the transaction / capital-markets fees it drives print later on the call. So the count row is a leading proxy and the REPORTED rows beneath (transaction fees + capital deployed, core US names, trailing 6 qtrs) are the ground truth. The feed exposes entry dates but not deal size, so activity is a count; the reported Capital-deployed row supplies the dollar dimension. Quarters run across the top; click any quarter to see the deals. All 13 names, Blue Owl included." />
         <QuarterPanel kind="deploy" filter={filter} setFilter={setFilter} />
       </div>
     );
