@@ -901,13 +901,58 @@
     );
   }
 
+  // ── 2Q'26 print vs the 2Q26E consensus that preceded it (realized perf fees) ──
+  function ConsPrint() {
+    const C = window.ALTS_CONSENSUS, R = window.ALTS_REPORTED;
+    if (!C || !R) return null;
+    const rows = Object.keys(R.carry).map(tk => {
+      const f = C.firms && C.firms[tk]; if (!f || !f.m || !f.m.PRE) return null;
+      const i = (f.periods||[]).indexOf("2Q26E"); if (i < 0) return null;
+      const est = f.m.PRE.v[i], act = (R.carry[tk]["2026 Q2"]||{}).perf;
+      if (!isNum(est) || !isNum(act)) return null;
+      return { tk, est, act, d: (act-est)/Math.abs(est)*100 };
+    }).filter(Boolean).sort((a,b)=>b.d-a.d);
+    if (!rows.length) return null;
+    const beats = rows.filter(r=>r.d>=0).length;
+    return (
+      <div>
+        <div style={{ background:T.bgCard, border:`1.5px solid ${T.border}`, borderLeft:`3px solid ${T.accent}`, borderRadius:8, padding:"11px 15px", marginBottom:14, fontSize:10.5, color:T.textSub, lineHeight:1.6 }}>
+          <b style={{ color:T.accent, fontFamily:MONO, fontSize:9.5, letterSpacing:"0.06em" }}>2Q'26 PRINT vs 2Q26E CONSENSUS · REALIZED PERFORMANCE FEES</b><br/>
+          The Visible Alpha estimate was set <b>before</b> the quarter printed ({C.asOf}); the actual is the reported figure from the earnings supplement. <b>{beats} of {rows.length}</b> core names beat on realized carry — the rest missed, several badly. This is the scorecard the Carry tab's activity rows are ultimately trying to anticipate.
+        </div>
+        <div style={{ overflowX:"auto" }}>
+          <table style={{ borderCollapse:"collapse", fontSize:11, minWidth:"100%", background:T.bgCard, border:`1px solid ${T.border}`, borderRadius:8 }}>
+            <thead><tr style={{ background:T.bgHover }}>
+              {["FIRM","2Q26E CONS.","2Q26 ACTUAL","SURPRISE"].map((h,i)=>(
+                <th key={h} style={{ padding:"7px 14px", textAlign:i?"right":"left", fontFamily:MONO, fontSize:8, fontWeight:700, letterSpacing:"0.06em", color:T.textMuted, borderBottom:`2px solid ${T.border}`, whiteSpace:"nowrap" }}>{h}</th>
+              ))}
+            </tr></thead>
+            <tbody>
+              {rows.map((r,i)=>(
+                <tr key={r.tk} style={{ borderTop:i?`1px solid ${T.border}`:"none" }}>
+                  <td style={{ padding:"8px 14px" }}><FirmTag tk={r.tk} /></td>
+                  <td style={{ padding:"8px 14px", textAlign:"right", fontFamily:MONO, color:T.textSub }}>{fmtTV(r.est)}</td>
+                  <td style={{ padding:"8px 14px", textAlign:"right", fontFamily:MONO, fontWeight:700, color:T.text }}>{fmtTV(r.act)}</td>
+                  <td style={{ padding:"8px 14px", textAlign:"right", fontFamily:MONO, fontWeight:700, color:r.d>=0?T.pos:T.neg }}>{(r.d>=0?"▲ +":"▼ ")+r.d.toFixed(0)+"%"}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        <div style={{ marginTop:8, fontSize:9, color:T.textFaint, fontFamily:MONO, lineHeight:1.7 }}>
+          Consensus = Visible Alpha PRE (realized performance revenue) for 2Q26E. Actual = each firm's reported net realized performance fees (see Carry tab · definitions differ by firm). Prior-period VA actuals reconcile to the reported series for all six names.
+        </div>
+      </div>
+    );
+  }
+
   function Consensus({ filter, setFilter }) {
     const [view,setView] = useState("company");
-    const VIEWS = [["company","By company"],["compare","Compare"],["valuation","Valuation (P/DE)"]];
+    const VIEWS = [["company","By company"],["print","2Q'26 vs cons."],["compare","Compare"],["valuation","Valuation (P/DE)"]];
     const list = filter==="All" ? CONS_ORDER : CONS_ORDER.filter(tk=>tk===filter);
     return (
       <div>
-        <SectionTitle kicker="Section 3" title="Consensus — Visible Alpha estimates" sub="Multi-period sell-side consensus (Visible Alpha) for the carry managers: per-firm metric build with y/y growth, a cross-firm comparison, and a P/DE valuation screen. Forward estimates only — 2Q26E→FY28E (US, quarterly) / 1H26E→FY28E (European, half-year)." />
+        <SectionTitle kicker="Section 3" title="Consensus — Visible Alpha estimates" sub="Multi-period sell-side consensus (Visible Alpha) for the carry managers: per-firm metric build with y/y growth, a cross-firm comparison, and a P/DE valuation screen. Estimates run 2Q26E→FY28E (US, quarterly) / 1H26E→FY28E (European, half-year) — and the 2Q'26 vs cons. view scores the estimate that has since printed against the reported actual." />
         <div style={{ display:"flex", gap:6, marginBottom:16, flexWrap:"wrap" }}>
           {VIEWS.map(([id,lab])=>(
             <button key={id} onClick={()=>setView(id)} style={{ padding:"6px 16px", borderRadius:7, cursor:"pointer", fontFamily:MONO, fontSize:10.5, fontWeight:view===id?700:500, letterSpacing:"0.05em", border:`1.5px solid ${view===id?T.accent:T.border}`, background:view===id?T.accent+"14":T.bgCard, color:view===id?T.accent:T.textSub }}>{lab.toUpperCase()}</button>
@@ -919,6 +964,7 @@
             ? <Empty label={`No Visible Alpha consensus loaded for ${filter}.`} />
             : <div style={{ display:"grid", gridTemplateColumns: filter==="All"?"repeat(auto-fill, minmax(440px, 1fr))":"1fr", gap:16 }}>{list.map(tk=><ConsCompanyCard key={tk} tk={tk} />)}</div>}
         </div>)}
+        {view==="print"     && <ConsPrint />}
         {view==="compare"   && <ConsCompare />}
         {view==="valuation" && <ConsValuation />}
       </div>
