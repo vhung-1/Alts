@@ -953,6 +953,47 @@
     });
     return out;
   }
+  // ── 2Q'26 reported readout: surfaces the fee the tab's activity is a proxy for, per core firm, QoQ ──
+  function ProxyReadout({ kind }) {
+    const REP = window.ALTS_REPORTED;
+    if (!REP || (kind !== "real" && kind !== "deploy")) return null;
+    const isC = kind === "real";
+    const box = isC ? REP.carry : REP.deploy;
+    if (!box) return null;
+    const QS = REP.quarters; const LQ = QS[QS.length-1], PQ = QS[QS.length-2];
+    const mk = isC ? "perf" : "fees";
+    const lab = isC ? "Net realized performance fees" : "Transaction / capital-markets fees";
+    const rows = Object.keys(box).map(tk => ({ tk, v2:(box[tk][LQ]||{})[mk], v1:(box[tk][PQ]||{})[mk] })).filter(r => isNum(r.v2));
+    if (!rows.length) return null;
+    const up = rows.filter(r => isNum(r.v1) && r.v2 > r.v1).length;
+    const dn = rows.filter(r => isNum(r.v1) && r.v2 < r.v1).length;
+    const qoq = (v2,v1) => (isNum(v2) && isNum(v1) && v1 !== 0) ? (v2-v1)/Math.abs(v1)*100 : null;
+    return (
+      <div style={{ marginBottom:16, background:T.bgCard, border:`1.5px solid ${T.border}`, borderLeft:`3px solid ${T.accent}`, borderRadius:8, padding:"11px 15px" }}>
+        <div style={{ fontFamily:MONO, fontSize:9, letterSpacing:"0.08em", color:T.accent, fontWeight:700, marginBottom:9 }}>
+          {qLabel(LQ)} REPORTED · {lab.toUpperCase()} <span style={{ color:T.textFaint, fontWeight:400, letterSpacing:0 }}>— the fee this tab's deal activity is a proxy for (core names)</span>
+        </div>
+        <div style={{ display:"flex", flexWrap:"wrap", gap:7 }}>
+          {rows.map(r => { const p = qoq(r.v2,r.v1); const cc = p==null?T.textMuted:p>=0?T.pos:T.neg;
+            return (
+              <div key={r.tk} style={{ flex:"1 1 88px", minWidth:88, border:`1px solid ${T.border}`, borderRadius:6, padding:"6px 9px", background:T.bgStripe }}>
+                <div style={{ fontFamily:MONO, fontSize:9, fontWeight:700, color:colorOf(r.tk) }}>{r.tk}</div>
+                <div style={{ fontFamily:MONO, fontSize:13.5, fontWeight:700, color:T.text, lineHeight:1.2 }}>{fmtTV(r.v2)}</div>
+                <div style={{ fontFamily:MONO, fontSize:8.5, color:cc }}>{p==null?"— q/q":(p>=0?"▲ ":"▼ ")+Math.abs(p).toFixed(0)+"% q/q"}</div>
+              </div>
+            );
+          })}
+        </div>
+        <div style={{ marginTop:9, fontSize:9.5, color:T.textSub, lineHeight:1.55 }}>
+          {isC
+            ? `Net realized carry rose q/q at ${up} of ${rows.length} core names and fell at ${dn}. `
+            : `Transaction fees rose q/q at ${up} of ${rows.length} core names and fell at ${dn}${up>=rows.length-1?" — a broad capital-markets fee surge (BX, CG and APO each set records)":""}. `}
+          <b style={{ color:T.textMuted }}>Proxy caveat:</b> the PitchBook deal activity below is a <i>weak, noisy</i> lead for these fees — the feed lags by weeks and undercounts the newest quarters, and transaction value ≠ realized carry while entry-count ≠ fee dollars. Read activity for tempo; the REPORTED rows are the truth.
+        </div>
+      </div>
+    );
+  }
+
   function QuarterPanel({ kind, filter, setFilter }) {
     const isExit = kind === "exit", isIPO = kind === "ipo", isReal = kind === "real", isDeploy = kind === "deploy";
     const _realSrc = React.useMemo(() => isReal ? buildRealSrc() : null, [isReal]);
@@ -982,6 +1023,7 @@
             <span><b style={{color:"#1A7A5A"}}>Read me — deployment as a proxy for transaction fees.</b> The <b>#&nbsp;New&nbsp;inv.</b> row is <i>activity</i> — leading, observable intra-quarter: new investments dated by PitchBook entry date (<code>investor_since</code>). The feed exposes the company and date but <b>not the entry deal size</b> (only exits carry a size), so activity here is a <b>count</b>, not dollars. The <b style={{color:T.accent}}>REPORTED</b> rows beneath are the <i>ground truth</i> the cadence anticipates — each firm's transaction / capital-markets fees and capital deployed, from the earnings supplement (core US names, trailing 6 quarters); the reported <i>Capital deployed</i> row supplies the dollar dimension the feed can't. Counts can understate very active managers. <b>Quarters run across the top — click any quarter to see the companies.</b> All 13 names, Blue Owl included.</span>
           )}
         </div>
+        {(isReal || isDeploy) && <ProxyReadout kind={kind} />}
         <FirmFilter value={filter} onChange={setFilter} only={ORDER} />
         {firmsToShow.map(tk => {
           const f = FIRMS[tk]; const c = colorOf(tk);
