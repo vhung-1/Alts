@@ -1043,7 +1043,9 @@
           {isC
             ? `Net realized carry rose q/q at ${up} of ${rows.length} core names and fell at ${dn}. `
             : `Transaction fees rose q/q at ${up} of ${rows.length} core names and fell at ${dn}${up>=rows.length-1?" — a broad capital-markets fee surge (BX, CG and APO each set records)":""}. `}
-          <b style={{ color:T.textMuted }}>Proxy caveat:</b> the PitchBook deal activity below is a <i>weak, noisy</i> lead for these fees — the feed lags by weeks and undercounts the newest quarters, and transaction value ≠ realized carry while entry-count ≠ fee dollars. Read activity for tempo; the REPORTED rows are the truth.
+          <b style={{ color:T.textMuted }}>Proxy strength (measured, 12 qtrs):</b> {isC
+            ? <span>exit TV vs reported net carry runs at a median <b>r ≈ 0.20</b> across the six names (range −0.39 to +0.34) — a <i>weak</i> lead, consistent with the KKR exit-pull study's r&lt;0.35.</span>
+            : <span>new-investment count vs reported transaction fees runs at a median <b>r ≈ 0.09</b> (range −0.22 to +0.65) — effectively <i>no</i> linear lead.</span>} The feed also lags by weeks and undercounts the newest quarters, and transaction value ≠ realized carry while entry-count ≠ fee dollars. Read activity for tempo and for <i>which</i> deals; the REPORTED rows are the truth{isC ? null : <span>, and the <b>fee drivers</b> below are the size signal that actually moves the fee line</span>}.
         </div>
       </div>
     );
