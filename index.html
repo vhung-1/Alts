@@ -1007,7 +1007,7 @@
       <div style={{ marginTop:22 }}>
         <div style={{ fontFamily:MONO, fontSize:10, fontWeight:700, letterSpacing:"0.06em", color:T.text, marginBottom:4 }}>◆ FEE DRIVERS — MARQUEE SIZED DEALS (2026 H1)</div>
         <div style={{ fontSize:10, color:T.textSub, marginBottom:12, lineHeight:1.55, maxWidth:940 }}>
-          The <b>#&nbsp;New&nbsp;inv.</b> count can't see deal <i>size</i>, but transaction &amp; capital-markets fees scale with it — this is the missing size signal. The large sponsor-led buyouts / take-privates / carve-outs / platforms each firm led, sized from PitchBook (deal size · debt raised). Top deals per quarter, not exhaustive. <span style={{color:T.textFaint}}>ARES omitted (no transaction-fee line); APO pending refresh.</span>
+          The <b>#&nbsp;New&nbsp;inv.</b> count can't see deal <i>size</i>, but transaction &amp; capital-markets fees scale with it — this is the missing size signal. The large sponsor-led buyouts / take-privates / carve-outs / platforms each firm led, sized from PitchBook (deal size · debt raised). Top deals per quarter, not exhaustive. Size is the <i>whole-deal</i> value (consortium deals include partners' capital) — read it as fee-driving deal scale, not the manager's own check. <span style={{color:T.textFaint}}>ARES omitted (no transaction-fee line).</span>
         </div>
         {firms.map(tk => {
           const deals = (FIN.deals[tk] || []).slice().sort((a,b)=>((b.size||b.debt||0)-(a.size||a.debt||0)));
