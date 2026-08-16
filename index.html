@@ -1046,6 +1046,11 @@
           <b style={{ color:T.textMuted }}>Proxy strength (measured, 12 qtrs):</b> {isC
             ? <span>exit TV vs reported net carry runs at a median <b>r ≈ 0.20</b> across the six names (range −0.39 to +0.34) — a <i>weak</i> lead, consistent with the KKR exit-pull study's r&lt;0.35.</span>
             : <span>new-investment count vs reported transaction fees runs at a median <b>r ≈ 0.09</b> (range −0.22 to +0.65) — effectively <i>no</i> linear lead.</span>} The feed also lags by weeks and undercounts the newest quarters, and transaction value ≠ realized carry while entry-count ≠ fee dollars. Read activity for tempo and for <i>which</i> deals; the REPORTED rows are the truth{isC ? null : <span>, and the <b>fee drivers</b> below are the size signal that actually moves the fee line</span>}.
+          <div style={{ marginTop:7 }}>
+            <b style={{ color:T.textMuted }}>Take-rate row:</b> the third REPORTED row is {isC ? <span><i>net realized perf fees ÷ disclosed realizations</i></span> : <span><i>transaction fees ÷ capital deployed</i></span>}, shaded against that firm's own 12-quarter mean. It strips out volume, so a <b>stable</b> rate means the P&amp;L line is mechanically tied to the volume, while a <b>drifting</b> one means mix or pricing is doing the work. {isC
+              ? <span>Only BX, CG and TPG disclose a realization volume, so the other three read “—”. BX is the steadiest (avg 1.67%, 1.0–2.7%); CG swings 16× (0.17–2.68%) — its realized proceeds and its carry crystallizations simply aren't the same quarter's events.</span>
+              : <span>Ares has no deal-fee line, so it reads “—”. APO (avg 0.25%) and KKR (1.09%) are the steadiest. <b>BX is the standout</b>: ~0.17–0.36% through 2023–24 rising to <b>0.94% in 2Q26</b> on roughly flat deployment — the record fee quarter came from a richer take per dollar, not more dollars.</span>}
+          </div>
         </div>
       </div>
     );
@@ -1143,7 +1148,17 @@
           // Reported "ground-truth" rows: the fees each activity proxy is meant to anticipate.
           const repKind = isReal ? "carry" : isDeploy ? "deploy" : null;
           const repFirm = (repKind && window.ALTS_REPORTED && window.ALTS_REPORTED[repKind]) ? window.ALTS_REPORTED[repKind][tk] : null;
-          const repRows = isReal ? [["perf","Net realized perf fees"],["real","Realizations"]] : isDeploy ? [["fees","Transaction fees"],["deployed","Capital deployed"]] : [];
+          // two $ rows + a derived TAKE-RATE row (P&L line as % of the volume that drove it).
+          // A stable take rate ⇒ the P&L item is mechanically tied to the volume; a wild one ⇒ it isn't.
+          const rateNum = isReal ? "perf" : "fees", rateDen = isReal ? "real" : "deployed";
+          const rateLab = isReal ? "Perf / realizations" : "Fees / deployed";
+          const repRows = isReal ? [{k:"perf",lab:"Net realized perf fees"},{k:"real",lab:"Realizations"},{k:"__rate",lab:rateLab,rate:true}]
+                        : isDeploy ? [{k:"fees",lab:"Transaction fees"},{k:"deployed",lab:"Capital deployed"},{k:"__rate",lab:rateLab,rate:true}] : [];
+          const rateAt = (qq) => { const r = repFirm && repFirm[qq]; if (!r) return null;
+            const n = r[rateNum], d = r[rateDen];
+            return (isNum(n) && isNum(d) && d > 0) ? n/d*100 : null; };
+          const rateVals = repFirm ? QEX.map(rateAt).filter(isNum) : [];
+          const rateAvg = rateVals.length ? rateVals.reduce((s,x)=>s+x,0)/rateVals.length : null;
           const showRep = !!repFirm && repRows.length>0;
           const heat = (val,max)=>{ if(!(val>0)||!(max>0)) return "transparent"; const a=Math.round(Math.min(1,val/max)*0.5*255); return c + a.toString(16).padStart(2,"0"); };
           const stick = { position:"sticky", left:0, zIndex:2 };
@@ -1187,17 +1202,29 @@
                       })}
                     </tr>
                     )}
-                    {showRep && repRows.map(([rk,rlab],ri) => (
-                      <tr key={"rep-"+rk}>
-                        <td style={{ ...stick, background:T.bgCard, padding:"7px 12px", fontFamily:MONO, fontSize:8.5, fontWeight:700, color:T.accent, borderTop: ri===0?`2px solid ${T.accent}55`:"none", borderBottom: ri<repRows.length-1?`1px solid ${T.border}`:"none", borderRight:`1px solid ${T.border}`, whiteSpace:"nowrap" }}>
+                    {showRep && repRows.map((row,ri) => {
+                      const isRate = !!row.rate;
+                      const tint = isRate ? T.accent+"14" : T.accent+"0C";
+                      return (
+                      <tr key={"rep-"+row.k}>
+                        <td style={{ ...stick, background:T.bgCard, padding:"7px 12px", fontFamily:MONO, fontSize:8.5, fontWeight:700, color:T.accent, borderTop: ri===0?`2px solid ${T.accent}55`:(isRate?`1px dashed ${T.accent}55`:"none"), borderBottom: ri<repRows.length-1?`1px solid ${T.border}`:"none", borderRight:`1px solid ${T.border}`, whiteSpace:"nowrap" }}>
                           {ri===0 && <div style={{ fontSize:6.5, color:T.textFaint, letterSpacing:"0.14em", fontWeight:700 }}>REPORTED ▾</div>}
-                          {rlab}<span style={{ color:T.textFaint, fontWeight:400 }}> $</span>
+                          {row.lab}<span style={{ color:T.textFaint, fontWeight:400 }}>{isRate?" %":" $"}</span>
+                          {isRate && isNum(rateAvg) && <span style={{ color:T.textFaint, fontWeight:400, fontSize:7.5 }}> avg {rateAvg.toFixed(2)}</span>}
                         </td>
-                        {QEX.map(qq => { const v = repFirm[qq] ? repFirm[qq][rk] : null;
-                          return <td key={qq} style={{ padding:"7px 9px", textAlign:"center", fontFamily:MONO, fontSize:9.5, fontWeight:700, color: isNum(v)?T.text:T.textFaint, background:T.accent+"0C", borderTop: ri===0?`2px solid ${T.accent}55`:"none", borderBottom: ri<repRows.length-1?`1px solid ${T.border}`:"none", borderLeft:`1px solid ${T.border}` }}>{isNum(v)?fmtTV(v):"—"}</td>;
+                        {QEX.map(qq => {
+                          const v = isRate ? rateAt(qq) : (repFirm[qq] ? repFirm[qq][row.k] : null);
+                          // shade the take rate vs its own 12-qtr mean: darker = richer take
+                          let bg = tint;
+                          if (isRate && isNum(v) && isNum(rateAvg) && rateAvg > 0) {
+                            const a = Math.round(Math.min(1, Math.max(0, (v/rateAvg-0.5)/1.5)) * 0.45 * 255);
+                            bg = c + a.toString(16).padStart(2,"0");
+                          }
+                          return <td key={qq} style={{ padding:"7px 9px", textAlign:"center", fontFamily:MONO, fontSize: isRate?9:9.5, fontWeight:700, color: isNum(v)?T.text:T.textFaint, background:bg, borderTop: ri===0?`2px solid ${T.accent}55`:(isRate?`1px dashed ${T.accent}55`:"none"), borderBottom: ri<repRows.length-1?`1px solid ${T.border}`:"none", borderLeft:`1px solid ${T.border}` }}>
+                            {isNum(v) ? (isRate ? v.toFixed(2) : fmtTV(v)) : "—"}</td>;
                         })}
                       </tr>
-                    ))}
+                    );})}
                   </tbody>
                 </table>
               </div>
