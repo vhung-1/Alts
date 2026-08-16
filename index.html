@@ -44,6 +44,9 @@
   <!-- Reported net realized perf fees / transaction fees / capital deployed — the fee "ground truth"
        the Carry & Deployment activity proxies anticipate (window.ALTS_REPORTED). -->
   <script src="reported.js"></script>
+  <!-- Marquee SIZED fee-driving deals (window.ALTS_FINANCINGS) — the deal-size signal behind the
+       transaction/capital-markets fee line that a bare deal count can't capture. -->
+  <script src="financings.js"></script>
 
   <script type="text/plain" id="appsrc">
   const { useState, useMemo } = React;
@@ -994,6 +997,52 @@
     );
   }
 
+  // ── Fee drivers: marquee SIZED deals behind the transaction/capital-markets fee line ──
+  function FeeDriverDeals({ filter, ORDER }) {
+    const FIN = window.ALTS_FINANCINGS;
+    if (!FIN || !FIN.deals) return null;
+    const firms = Object.keys(FIN.deals).filter(tk => (filter === "All" || filter === tk) && (!ORDER || ORDER.includes(tk)));
+    if (!firms.length) return null;
+    return (
+      <div style={{ marginTop:22 }}>
+        <div style={{ fontFamily:MONO, fontSize:10, fontWeight:700, letterSpacing:"0.06em", color:T.text, marginBottom:4 }}>◆ FEE DRIVERS — MARQUEE SIZED DEALS (2026 H1)</div>
+        <div style={{ fontSize:10, color:T.textSub, marginBottom:12, lineHeight:1.55, maxWidth:940 }}>
+          The <b>#&nbsp;New&nbsp;inv.</b> count can't see deal <i>size</i>, but transaction &amp; capital-markets fees scale with it — this is the missing size signal. The large sponsor-led buyouts / take-privates / carve-outs / platforms each firm led, sized from PitchBook (deal size · debt raised). Top deals per quarter, not exhaustive. <span style={{color:T.textFaint}}>ARES omitted (no transaction-fee line); APO pending refresh.</span>
+        </div>
+        {firms.map(tk => {
+          const deals = (FIN.deals[tk] || []).slice().sort((a,b)=>((b.size||b.debt||0)-(a.size||a.debt||0)));
+          if (!deals.length) return null;
+          const c = colorOf(tk);
+          const totSize = deals.reduce((s,d)=>s+(isNum(d.size)?d.size:0), 0);
+          return (
+            <div key={tk} style={{ marginBottom:14, border:`1px solid ${T.border}`, borderLeft:`3px solid ${c}`, borderRadius:8, background:T.bgCard, overflow:"hidden" }}>
+              <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", padding:"7px 13px", background:c+"08", borderBottom:`1px solid ${T.border}`, flexWrap:"wrap", gap:6 }}>
+                <FirmTag tk={tk} />
+                <span style={{ fontFamily:MONO, fontSize:9, color:T.textMuted }}>{deals.length} deals · <b style={{color:T.text}}>{fmtTV(totSize)}</b> sized</span>
+              </div>
+              <div style={{ overflowX:"auto" }}>
+                <table style={{ borderCollapse:"collapse", fontSize:10, minWidth:"100%" }}>
+                  <tbody>
+                    {deals.map((d,i)=>(
+                      <tr key={i} style={{ borderTop: i ? `1px solid ${T.border}` : "none" }}>
+                        <td style={{ padding:"6px 13px", fontWeight:600, color:T.text, whiteSpace:"nowrap" }}>{d.company}</td>
+                        <td style={{ padding:"6px 8px", fontFamily:MONO, fontSize:8.5, color:T.textFaint, whiteSpace:"nowrap" }}>{qLabel(d.q)}</td>
+                        <td style={{ padding:"6px 8px", fontSize:8.5, color:T.textSub, whiteSpace:"nowrap" }}>{d.type}</td>
+                        <td style={{ padding:"6px 10px", textAlign:"right", fontFamily:MONO, fontWeight:700, color:c, whiteSpace:"nowrap" }}>{isNum(d.size)?fmtTV(d.size):"n/d"}</td>
+                        <td style={{ padding:"6px 10px 6px 4px", textAlign:"right", fontFamily:MONO, fontSize:8.5, color:T.textFaint, whiteSpace:"nowrap" }}>{isNum(d.debt)?"+"+fmtTV(d.debt)+" debt":""}</td>
+                        <td style={{ padding:"6px 13px 6px 6px", fontSize:8.5, color:T.textMuted }}>{d.note}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    );
+  }
+
   function QuarterPanel({ kind, filter, setFilter }) {
     const isExit = kind === "exit", isIPO = kind === "ipo", isReal = kind === "real", isDeploy = kind === "deploy";
     const _realSrc = React.useMemo(() => isReal ? buildRealSrc() : null, [isReal]);
@@ -1166,6 +1215,7 @@
             </div>
           );
         })}
+        {isDeploy && <FeeDriverDeals filter={filter} ORDER={ORDER} />}
         <div style={{ marginTop:6, fontSize:9, color:T.textFaint, fontFamily:MONO, lineHeight:1.7 }}>
           {isReal
             ? "Trailing 12 quarters through 2026 Q2 (last reported); PitchBook deal feed runs through mid-Jun 2026. Click a quarter to expand the underlying deals. Activity rows = PitchBook investor-exit feed (Exit rows) + company-deal records (IPO / Sell-Down rows), de-duped, sized by TV (exit) or gross proceeds (IPO/sell-down). REPORTED rows = net realized performance fees + disclosed realizations from S&P Global transcripts / SEC 8-K earnings supplements (core US names, 2025 Q1–2026 Q2). Transcript check = S&P Global last-two-quarters calls vs PitchBook."
