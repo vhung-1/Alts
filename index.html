@@ -148,7 +148,13 @@
   // ═════════════════════════ OVERVIEW ═════════════════════════
   function Overview({ go }) {
     // KPI roll-ups
-    const lastQ = "2026 Q1";
+    // latest quarter for which PitchBook exit aggregates exist (auto-rolls as data.js is refreshed)
+    const lastQ = (() => {
+      const seen = {};
+      FIRM_ORDER.forEach(tk => { const qq = FIRMS[tk] && FIRMS[tk].exits && FIRMS[tk].exits.quarterly; if (qq) Object.keys(qq).forEach(k => seen[k]=1); });
+      const all = Object.keys(seen).sort();
+      return all.length ? all[all.length-1] : "2026 Q1";
+    })();
     let fundsInMarket = 0, exitTVsum = 0, exitCount = 0;
     FIRM_ORDER.forEach(tk => {
       const f = FIRMS[tk];
@@ -183,7 +189,7 @@
         <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill, minmax(225px, 1fr))", gap:12 }}>
           {FIRM_ORDER.map(tk => {
             const f = FIRMS[tk]; const c = colorOf(tk);
-            const q = (f.exits && f.exits.quarterly && f.exits.quarterly["2026 Q1"]) || null;
+            const q = (f.exits && f.exits.quarterly && f.exits.quarterly[lastQ]) || null;
             const r = f.reported || {};
             return (
               <div key={tk} onClick={()=>go("fundraising", tk)} style={{ cursor:"pointer", background:T.bgCard, border:`1.5px solid ${T.border}`, borderTop:`3px solid ${c}`, borderRadius:10, padding:"12px 14px", transition:"box-shadow .15s" }}
@@ -197,7 +203,7 @@
                   <span>Funds in mkt: <b style={{color:T.text}}>{(f.fundraising||[]).length||"—"}</b></span>
                   <span>FRE: <b style={{color:T.text}}>{r.FRE || "—"}</b></span>
                   <span>FPAUM: <b style={{color:T.text}}>{r.fpAUM || "—"}</b></span>
-                  <span>Exits Q1'26: <b style={{color:T.text}}>{q&&isNum(q.count)?q.count:"—"}</b></span>
+                  <span>Exits {qLabel(lastQ)}: <b style={{color:T.text}}>{q&&isNum(q.count)?q.count:"—"}</b></span>
                 </div>
                 <div style={{ marginTop:6, fontSize:8, color:T.textFaint, fontFamily:MONO }}>{f.exchange} · {f.country} · rpt {f.reportDate||"—"}</div>
               </div>

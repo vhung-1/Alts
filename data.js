@@ -30,7 +30,7 @@
 
 window.ALTS = {
   meta: {
-    asOf: "2026-06-17",
+    asOf: "2026-08-16",
     note: "US large-caps at Q1 2026 (Mar 31); European names on semi-annual/annual cadence (FY2025 or FYE Mar-26).",
   },
 
@@ -69,8 +69,8 @@ window.ALTS = {
     // ───────────────────────── BX (pending agent) ─────────────────────────
     BX: {
       ticker:"BX", name:"Blackstone", longName:"Blackstone Inc.", exchange:"NYSE", country:"US",
-      color:"#6D28D9", cadence:"quarterly", period:"Q1 2026", periodEnd:"2026-03-31", reportDate:"2026-04-23",
-      reported:{ FRE:"$1,501M", FRE_ps:"$1.26", fpAUM:"$938B", DE_ps:"$1.36", comment:"FRE $1.5B (+23% YoY, top-3 quarter ever); DE $1.8B; net realizations $448M (+26%); total AUM $1.34T; $69B inflows in Q1 (~$250B LTM)." },
+      color:"#6D28D9", cadence:"quarterly", period:"Q2 2026", periodEnd:"2026-06-30", reportDate:"2026-07-23",
+      reported:{ FRE:"$1,783M", FRE_ps:"$1.43", fpAUM:"$962B", DE_ps:"$1.52", comment:"FRE $1.78B (+22% YoY, $1.43/sh); DE $2.0B (+26%); $68.3B inflows in Q2 / $262.5B LTM lifted AUM 11% to a record $1.35T; net realizations $414M (+27%)." },
       fundraising:[
         { name:"BCP Asia III", strategy:"Asia PE", status:"Final close (Jun'26)", target:"$13B", hardCap:"$13B", prevFund:"$6B (Asia II)", raisedToDate:"$13.1B", firstClose:"N/A", finalClose:"2026-06", pb:"26168-32F", comment:"~2x prior vintage; ~$12B raised incl. April closings, at hard cap." },
         { name:"Strategic Partners X", strategy:"PE Secondaries", status:"In market", target:">$22B", hardCap:"N/A", prevFund:"$22B (SP IX)", raisedToDate:"$11B", firstClose:"Q1 2026", finalClose:"N/A", pb:"N/A", comment:"+$6B in Q1 to $11B (~halfway); fee holiday until later 2026." },
@@ -81,14 +81,14 @@ window.ALTS = {
       ],
       fundraisingSummary:"Strong Q1'26 cycle: two flagships reached final close (BXLS VI at its $6.3B hard cap, COF V at >$10B), BCP Asia III hit its $13B hard cap by June. SP X is at $11B of a >$22B target and BETP V launched at $1.7B. Total inflows $69B in Q1 (~$250B LTM); management guided base-fee acceleration into H2'26 as drawdown funds come off fee holidays.",
       guidance:[
-        { metric:"FRE growth", period:"FY2026", value:"Continued momentum", source:"transcript", comment:"Q1 FRE +23% YoY; sequential acceleration expected in H2 as drawdown funds activate." },
-        { metric:"Management fees", period:"FY2026", value:"Bottom mid-year, accelerate to Q4", source:"transcript", comment:"+15% YoY combined ex-real-estate; RE segment declining modestly." },
-        { metric:"Realizations", period:"H2 2026", value:"Robust if Middle East resolves", source:"transcript", comment:"IPO pipeline intact; recent volatility pushes exits out near-term." },
-        { metric:"BCRED net flows", period:"Near-term", value:"Negative (−$1.4B Q1)", source:"transcript", comment:"Repurchases elevated; institutional/insurance (75% of credit) strong." },
-        { metric:"Stock-based comp", period:"FY2026", value:"Materially lower than Q1 rate", source:"transcript", comment:"Seasonal pattern." },
-        { metric:"Inflows / AUM", period:"FY2026", value:"Continued growth (AUM $1.34T)", source:"transcript", comment:"'Greater firepower than ever.'" },
+        { metric:"Base management fees", period:"Q3 2026", value:"Similar YoY growth to Q2", source:"transcript", comment:"Base fees grew mid-single-digit in Q2; same YoY pace expected in 3Q." },
+        { metric:"Base management fees", period:"FY2027", value:"Return to double-digit growth", source:"transcript", comment:"PE drawdown activations, perpetual/infra scaling, $84B credit dry powder, RE base-fee stabilization." },
+        { metric:"Net realizations", period:"H2 2026", value:"3Q down seq., 4Q robust", source:"transcript", comment:"Net accrued perf revenue $7.5B ($6.00/sh), a 4-year high." },
+        { metric:"Transaction & advisory fees", period:"H2 2026", value:"Considerable pipeline", source:"transcript", comment:"Record $321M in 2Q; variable but rising baseline." },
+        { metric:"BCRED redemptions", period:"Q3 2026", value:"Down materially", source:"transcript", comment:"After 2Q net outflows of $1.2B." },
+        { metric:"Data center platform", period:"Next few years", value:"Could double from $185B", source:"transcript", comment:"Expects to lease 3x more capacity in 2026 than any prior year; 15GW of powered sites." },
       ],
-      guidanceSummary:"No quantitative FRE guidance via the S&P tool (none returned). From the call: H2'26 management-fee acceleration as new drawdown funds (SP X, BETP V, BCP Asia III, BCP IX) come off fee holidays, partly offset by near-term BDC/wealth softness and RE headwinds. Realization pipeline strong but contingent on a Middle East resolution.",
+      guidanceSummary:"2026 framed as a bridge year on base fees — mid-single-digit YoY growth in 3Q before double-digit growth returns in 2027 — while total fee revenue compounds via record transaction fees and fee-related performance revenues. Realizations dip sequentially in 3Q then step up in 4Q and 2027, supported by 8 IPOs on file and a 4-year-high stored value.",
       consensus:{ FRE:{cons:1564,n:15}, PFRE:{cons:484,n:15}, FRE_ps:{cons:1.27,n:15}, DE_ps:{cons:1.39,n:15}, netFlowsTotal:{cons:30.7,n:15}, netFlowsCredit:{cons:12.9,n:15} },  // 2Q26E VA cons (10-Jun-26); PFRE=net realizations
       exits:{ quarterly:{
         "2023 Q2":{count:13,totalTV:822}, "2023 Q3":{count:12,totalTV:1183}, "2023 Q4":{count:2,totalTV:0}, "2024 Q1":{count:9,totalTV:1305},
@@ -112,8 +112,8 @@ window.ALTS = {
     // ───────────────────────── KKR (pending agent) ─────────────────────────
     KKR: {
       ticker:"KKR", name:"KKR", longName:"KKR & Co. Inc.", exchange:"NYSE", country:"US",
-      color:"#B45309", cadence:"quarterly", period:"Q1 2026", periodEnd:"2026-03-31", reportDate:"2026-05-05",
-      reported:{ FRE:"$981M", FRE_ps:"$1.13", fpAUM:"—", DE_ps:"$1.39", comment:"FRE/sh $1.13 (+23%); realized carry $720M (+120%); ANI $1.39/sh; TOE $1.47/sh; mgmt-fee base +30% YoY; insurance op earnings $260M." },
+      color:"#B45309", cadence:"quarterly", period:"Q2 2026", periodEnd:"2026-06-30", reportDate:"2026-07-30",
+      reported:{ FRE:"$1,214M", FRE_ps:"$1.32", fpAUM:"$638B", DE_ps:"$1.63", comment:"ANI/sh $1.63 (+40%, KKR's headline); record FRE (+37%), TOE and ANI; largest monetization quarter in KKR history; AUM $796B (+16%); $34B raised." },
       fundraising:[
         { name:"North America Fund XIV", strategy:"Americas PE", status:"Final close (Q1'26)", target:"$22B", hardCap:"N/A", prevFund:"$19B (NA XIII)", raisedToDate:"$23B", firstClose:"N/A", finalClose:"Q1 2026", pb:"25953-04F", comment:"Record PE close; combined PE vintage (Americas+Europe+Asia) ~$46B to invest." },
         { name:"Asia Pacific Fund V", strategy:"Asia PE", status:"In market", target:"N/A", hardCap:"N/A", prevFund:"N/A", raisedToDate:"N/A", firstClose:"~mid-2026", finalClose:"N/A", pb:"N/A", comment:"CFO: 'on track for a strong first close around midyear'." },
@@ -124,15 +124,14 @@ window.ALTS = {
       ],
       fundraisingSummary:"KKR raised $28B in Q1'26, led by credit ($15B; ABF AUM >$90B). North America XIV closed at a record $23B; the Americas+Europe+Asia PE vintage is ~$46B to invest. K-Series wealth AUM hit $38B (+80% YoY). LTM raises ~$127B. Broad pipeline across PE (Asia/Europe/tech & healthcare growth), real assets (global/core/Asia infra, climate) and credit (ABF, direct lending, CLOs).",
       guidance:[
-        { metric:"FRE per share", period:"FY2026", value:"Exceed target", source:"transcript", comment:"'Very confident' in exceeding FRE/sh targets; Q1 FRE/sh $1.13." },
-        { metric:"Adjusted Net Income / sh", period:"FY2026", value:"Below $7.00", source:"transcript", comment:"Entered year targeting $7+ (45% growth); now likely below on delayed exits; carry shifts to 2027+." },
-        { metric:"Forward monetization", period:"Q2–Q4 2026", value:">$1.2B gross", source:"transcript", comment:"Largest forward-monetization figure in KKR history (signed/expected to close)." },
-        { metric:"Strategic Holdings op. earnings", period:"FY2026", value:">$350M", source:"transcript", comment:"$48M in Q1; back-end weighted." },
-        { metric:"Insurance (GA) op. earnings", period:"FY2026", value:"~$300M+/qtr run-rate", source:"transcript", comment:"$260M in Q1; ~low-double-digit ROE target." },
-        { metric:"Fundraising", period:"FY2026", value:"Exceed target", source:"transcript", comment:"Broad pipeline across strategies/geographies." },
-        { metric:"Total Operating Earnings", period:"FY2026", value:"Exceed target", source:"transcript", comment:"TOE $1.47/sh in Q1 (+18%); ~85% recurring." },
+        { metric:"Monetization visibility", period:"Q3 2026", value:"~$700M", source:"transcript", comment:"~80% realized perf revenue / 20% realized investment income, off a record 2Q." },
+        { metric:"Strategic Holdings op. earnings", period:"FY2026", value:"$350M+, back-end weighted", source:"transcript", comment:"$37M in 2Q, $85M YTD; path to $1.1B+ by 2030 reaffirmed." },
+        { metric:"Insurance op. earnings", period:"Per quarter", value:"~$250M +/-", source:"transcript", comment:"2Q $288M incl. ~$40M alts realizations, not a run-rate." },
+        { metric:"Fundraising", period:"FY2026", value:"Record year expected", source:"transcript", comment:"$305B raised vs $300B 3-yr target in 2.5 yrs." },
+        { metric:"FRE margin", period:"Ongoing", value:"70%, not a ceiling", source:"transcript", comment:"Above 65% for 10 straight quarters." },
+        { metric:"ANI per share target", period:"2026", value:"$7 guide withdrawn", source:"transcript", comment:"Removed as a distraction; could land modestly above or below." },
       ],
-      guidanceSummary:"Held FRE and fundraising guidance but cut ANI below the initial $7/share target on delayed exits (volatility), with carry shifting to 2027+. Flagged a record >$1.2B forward-monetization pipeline (OneStream, CoolIT, Hyundai Marine, infra/PE). Strategic Holdings (>$350M) and insurance (~$300M+/qtr) maintained. (S&P guidance tool not used; transcript-sourced.)",
+      guidanceSummary:"Guided to ~$700M of Q3 monetizations after a record Q2, reaffirmed $350M+ of 2026 Strategic Holdings operating earnings (heavily back-end weighted) and ~$250M/qtr insurance operating earnings. Record firm-wide and third-party credit fundraising expected in 2026; $72B of committed capital not yet earning fees at ~90bps is the forward management-fee driver.",
       consensus:{ FRE:{cons:1070,n:12}, PFRE:{cons:184,n:12}, FRE_ps:{cons:1.17,n:12}, DE_ps:{cons:1.39,n:12} },  // 2Q26E VA cons (10-Jun-26); DE_ps=ANI/adj sh; net flows n/a in export
       exits:{ quarterly:{
         "2023 Q2":{count:12,totalTV:8719}, "2023 Q3":{count:16,totalTV:3711}, "2023 Q4":{count:7,totalTV:2731}, "2024 Q1":{count:9,totalTV:3138},
@@ -157,8 +156,8 @@ window.ALTS = {
     // ───────────────────────── APO (pending agent) ─────────────────────────
     APO: {
       ticker:"APO", name:"Apollo", longName:"Apollo Global Management, Inc.", exchange:"NYSE", country:"US",
-      color:"#DB2777", cadence:"quarterly", period:"Q1 2026", periodEnd:"2026-03-31", reportDate:"2026-05-06",
-      reported:{ FRE:"$728M", FRE_ps:"$1.17", fpAUM:"—", DE_ps:"$1.94", SRE_ps:"$1.15", comment:"Record FRE $728M (+30%); SRE $719M ($1.15/sh); ANI $1.94/sh; AUM ~$1T; fee-gen AUM +40% YoY; $115B inflows incl. PIC." },
+      color:"#DB2777", cadence:"quarterly", period:"Q2 2026", periodEnd:"2026-06-30", reportDate:"2026-08-04",
+      reported:{ FRE:"$785M", FRE_ps:"$1.26", fpAUM:"$858B", DE_ps:"$2.11", comment:"ANI/sh $2.11 (Apollo's headline; no DE reported). Record FRE $785M (+25%) and record SRE $877M; $60B inflows; $74B origination; FGAUM +34%; FRE margin 58.5%." },
       fundraising:[
         { name:"Apollo Investment Fund XI", strategy:"Corporate PE", status:"In market", target:"N/A", hardCap:"N/A", prevFund:"$25B (Fund X)", raisedToDate:"N/A", firstClose:"N/A", finalClose:"N/A", pb:"27053-11F", comment:"Flagship corp PE; Fund X 20% net IRR, 0.4 DPI; equity took ~25% of $30B AM inflows." },
         { name:"Hybrid Value Fund III", strategy:"Hybrid Equity", status:"Final close (Q1'26)", target:"$6.5B", hardCap:"N/A", prevFund:"N/A", raisedToDate:"$6.5B", firstClose:"N/A", finalClose:"Q1 2026", pb:"18055-81F", comment:"Closed above target; +$1.5B in Q1; ~1/3 from new investors." },
@@ -169,15 +168,14 @@ window.ALTS = {
       ],
       fundraisingSummary:"Apollo generated $115B inflows in Q1'26 ($65B from the Athora/PIC close, $50B organic — AM $30B [~75% credit] + Athene $20B). HVF III closed at $6.5B (above target); Accord VII at $1.9B. The new AMAPS product added $5B. Origination $71B in Q1 (+25% YoY), with Q2 guided potentially near the $97B record; LTM origination ~$325B.",
       guidance:[
-        { metric:"FRE growth", period:"FY2026", value:"20%+", source:"transcript", comment:"Reaffirmed; Q1 FRE +30% YoY (~$2.9B annualized run-rate)." },
-        { metric:"SRE growth", period:"FY2026", value:"10% (at 11% alts return)", source:"transcript", comment:"Net spread guided 120–125bps; Q1 97bps depressed by Atlas impairment + Athora raise (non-recurring)." },
-        { metric:"Origination", period:"Q2 2026", value:"Stronger than $71B (toward $97B record)", source:"transcript", comment:"Rowan: 'expect origination in Q2 to be even stronger'." },
-        { metric:"Athora/PIC mgmt fee", period:"FY2026 (from Q2)", value:"~20bps on PIC AUM", source:"transcript", comment:"Minimal incremental expense; PIC ~$125B AUM." },
-        { metric:"New Markets volume", period:"FY2026", value:">$5B (vs <$1B in 2025)", source:"transcript", comment:"Stable value, structured settlements; ultimately ~half of Athene new business." },
-        { metric:"Total AUM", period:"FY2026", value:"~$1T+ (credit ~$800B; ~$600B IG)", source:"transcript", comment:"AM AUM +31% YoY; fee-gen AUM +40%." },
-        { metric:"2029 plan", period:"FY2029", value:"Unchanged; no M&A required", source:"transcript", comment:"$40B Athene cash/treasury dry powder for opportunistic deployment." },
+        { metric:"FRE growth", period:"FY2026", value:"20%+", source:"transcript", comment:"Pipelines, committed capital not yet fee-paying and signed originations underpin the outlook." },
+        { metric:"SRE growth", period:"FY2026", value:"10% (at 11% alts return)", source:"transcript", comment:"Full-year target maintained." },
+        { metric:"Athene net spread", period:"FY2026", value:"120-125 bps", source:"transcript", comment:"2Q 114bps reported, ~124bps adjusted to an 11% alts return." },
+        { metric:"Athene inflows", period:"FY2026", value:"$85B, on track", source:"transcript", comment:"$42B in 1H; also the through-cycle anchor for 2027." },
+        { metric:"FRE margin expansion", period:"FY2026", value:"~100 bps", source:"transcript", comment:"2Q margin 58.5%; YTD expansion ~90bps." },
+        { metric:"Broadcom ACS fees", period:"Q4 2026 - Q3 2027", value:"Recognized as $35B draws", source:"transcript", comment:"Fees booked as the facility funds, weighted to 4Q26 and first three quarters of 2027." },
       ],
-      guidanceSummary:"The clearest quantitative guide of the group: 20%+ FRE growth and 10% SRE growth (at 11% alts return) both reaffirmed; net spread 120–125bps. Q2 origination expected even stronger than Q1's $71B (toward the $97B record); PIC contributes from Q2 at ~20bps on ~$125B AUM. 2029 targets unchanged and achievable without acquisitions.",
+      guidanceSummary:"Reaffirmed every headline 2026 target: 20%+ FRE growth, ~10% SRE growth on an 11% alts return, ~100bps FRE margin expansion, $85B Athene inflows and a 120-125bps net spread. Forward indicators are the build story - $82B dry powder ($62B carrying ~$400M of future annual management fees), Fund XI past $12B with fee activation late in 1H27, and Broadcom's $35B facility recognizing fees from 4Q26 through 3Q27.",
       consensus:{ FRE:{cons:768,n:13}, PFRE:{cons:62,n:13}, FRE_ps:{cons:1.23,n:13}, SRE_ps:{cons:1.43,n:13}, DE_ps:{cons:2.21,n:13}, netFlowsTotal:{cons:19.2,n:13}, netFlowsCredit:{cons:15.5,n:13} },  // 2Q26E VA cons (10-Jun-26); SRE per sh (RS, operating)
       exits:{ quarterly:{
         "2023 Q2":{count:5,totalTV:414}, "2023 Q3":{count:2,totalTV:0}, "2023 Q4":{count:2,totalTV:108}, "2024 Q1":{count:2,totalTV:0},
@@ -203,8 +201,8 @@ window.ALTS = {
     // ───────────────────────── ARES ─────────────────────────
     ARES: {
       ticker:"ARES", name:"Ares", longName:"Ares Management Corporation", exchange:"NYSE", country:"US",
-      color:"#2563EB", cadence:"quarterly", period:"Q1 2026", periodEnd:"2026-03-31", reportDate:"2026-05-01",
-      reported:{ FRE:"$464M", fpAUM:"$400B", DE_ps:"$1.24", comment:"Mgmt fees >$1B first time (+22% YoY); realized income $503M; total AUM $644B." },
+      color:"#2563EB", cadence:"quarterly", period:"Q2 2026", periodEnd:"2026-06-30", reportDate:"2026-07-31",
+      reported:{ FRE:"$491M", FRE_ps:null, fpAUM:"$410B", DE_ps:"$1.29", comment:"FRE $491M +20% YoY; record $36.4B gross fundraising and $35.9B deployment; FPAUM $410B +17%; record $170B dry powder." },
       fundraising:[
         { name:"ASOF III", strategy:"Opportunistic Credit", status:"Final close (Q1'26)", target:"$6–7B", hardCap:"N/A", prevFund:"$7.1B (ASOF II)", raisedToDate:"$8.3B eq / ~$10B incl co-invest", firstClose:"N/A", finalClose:"Q1 2026", pb:"N/A", comment:"Closed well above target; timing called compelling given large pipeline." },
         { name:"Ares Alternative Credit Fund III (ACF III)", strategy:"Asset-Backed Finance", status:"In market — oversubscribed", target:"$6.5B", hardCap:"$6.5B", prevFund:"$6.6B (ACF II)", raisedToDate:"N/A", firstClose:"Jan 2026 (launch)", finalClose:"Q2 2026 (exp.)", pb:"N/A", comment:"Third ABF vintage; already meaningfully oversubscribed; closes at hard cap in Q2." },
@@ -215,15 +213,14 @@ window.ALTS = {
       ],
       fundraisingSummary:"On pace for another record year after $30B gross raised in Q1'26 (highest-ever Q1, +46% YoY), with three large institutional credit funds in market over the next 12 months. ASOF III closed ~$10B; ACF III oversubscribed and closing Q2; SDL IV launch accelerated. 2028 fundraising guidance of $125B reiterated.",
       guidance:[
-        { metric:"FRE growth (CAGR)", period:"Multi-year", value:"16–20%", source:"transcript", comment:"Reiterated at Investor Day; +26% YoY in Q1'26." },
-        { metric:"Realized income (CAGR)", period:"Multi-year", value:"20–25%", source:"transcript", comment:"+24% YoY in Q1'26." },
-        { metric:"Dividend growth", period:"Annual", value:"~20%/yr", source:"transcript", comment:"Q1'26 dividend $1.35, +20%+ YoY." },
-        { metric:"FRE margin expansion", period:"FY2026", value:"0–150 bps (upper end)", source:"transcript", comment:"Q1 margin 42.4% (+90bps); GCP synergies + data-center fund turning FRE-positive." },
-        { metric:"Fundraising target", period:"Through 2028", value:"$125B", source:"transcript", comment:"Reaffirmed on Q&A." },
-        { metric:"DPS", period:"Q2 2026", value:"$1.35", source:"guidance tool", comment:"Consistent with Q1." },
-        { metric:"Tax rate", period:"FY2026", value:"11–15%", source:"transcript", comment:"Q1 was 13.5%." },
+        { metric:"FRE margin", period:"FY2026", value:"Upper end of 0-150bps expansion", source:"transcript", comment:"YTD margin 42.3%, ~100bps above prior year; ~$9M biennial AGM cost does not recur in 3Q/4Q." },
+        { metric:"Fee-related perf revenue", period:"Q3 2026", value:"~$62M", source:"transcript", comment:"From open-ended core alt credit fund; ~$32M REIT FRPR accrued for potential 4Q recognition." },
+        { metric:"Realized net perf income", period:"Q3 2026", value:"~$10M", source:"transcript", comment:"Limited in 3Q, but full-year expectations unchanged." },
+        { metric:"FRE / RI growth", period:"FY2026", value:"16-20% FRE, 20%+ RI", source:"transcript", comment:"On track; consistent with 2024 Investor Day CAGR targets." },
+        { metric:"Wealth gross fundraising", period:"2H 2026", value:"Similar to 1H's ~$8B", source:"transcript", comment:"~$3.9B in 2Q (+15% YoY) and ~$1.5B already in July; wealth AUM over $76B." },
+        { metric:"Digital infra FRE", period:"2027+", value:"$50-100M", source:"transcript", comment:"Reaffirmed on fundraising traction and seed portfolio." },
       ],
-      guidanceSummary:"Reaffirmed all long-term targets: 16–20% FRE CAGR, 20–25% realized-income CAGR, ~20% annual dividend growth. For 2026 expects FRE margin expansion toward the top of the 0–150bps range; $125B cumulative fundraising target through 2028 explicitly reaffirmed.",
+      guidanceSummary:"Reaffirmed FY26 objectives of 16-20% FRE and 20%+ RI growth, with FRE margin tracking to the upper end of the 0-150bps expansion guide as the biennial AGM cost rolls off. Earnings are back-half weighted: only ~$10M of realized net performance income in 3Q, with FRPR concentrated in 3Q (~$62M) and 4Q (~$32M REIT accrual). Record $170B dry powder and ~$828M of embedded incremental annual management fees underpin the path.",
       consensus:{ FRE:{cons:485,n:10}, PFRE:{cons:67,n:10}, FRE_ps:{cons:1.40,n:10}, DE_ps:{cons:1.38,n:10} },  // 2Q26E VA cons (10-Jun-26); DE_ps=after-tax realized inc/sh; net flows n/a in export
       exits:{ quarterly:{
         "2023 Q2":{count:6,totalTV:1663}, "2023 Q3":{count:3,totalTV:232}, "2023 Q4":{count:7,totalTV:3302}, "2024 Q1":{count:3,totalTV:8},
@@ -247,8 +244,8 @@ window.ALTS = {
     // ───────────────────────── BAM ─────────────────────────
     BAM: {
       ticker:"BAM", name:"Brookfield AM", longName:"Brookfield Asset Management Ltd.", exchange:"TSX", country:"Canada",
-      color:"#0891B2", cadence:"quarterly", period:"Q1 2026", periodEnd:"2026-03-31", reportDate:"2026-05-08",
-      reported:{ FRE:"$772M", FRE_ps:"$0.48", fpAUM:"$614B", DE_ps:"$0.43", comment:"Fee-bearing capital $614B (+12% YoY); FRE LTM $3.1B (+18%); DE $702M." },
+      color:"#0891B2", cadence:"quarterly", period:"Q2 2026", periodEnd:"2026-06-30", reportDate:"2026-08-05",
+      reported:{ FRE:"$808M", FRE_ps:"$0.50", fpAUM:"$672B", DE_ps:"$0.44", comment:"Record quarter: FRE +20% to $808M, DE +15% to $707M; fee-bearing capital $672B (+19% LTM) on an all-time-high $77B of fundraising incl. the $40B Just Group mandate." },
       fundraising:[
         { name:"Flagship Infrastructure Fund (BIF V)", strategy:"Infrastructure", status:"In market", target:"N/A", hardCap:"N/A", prevFund:"~$30B (BIF IV)", raisedToDate:"N/A", firstClose:"2026 (exp.)", finalClose:"N/A", pb:"N/A", comment:"'Meaningful first close also in 2026'; supercore infra >$20B, +$800M in Q1." },
         { name:"Flagship Private Equity Fund (BCP VI)", strategy:"Private Equity", status:"In market — first close held", target:"N/A", hardCap:"N/A", prevFund:"N/A", raisedToDate:"$6.0B (initial close)", firstClose:"Q1 2026", finalClose:"N/A", pb:"N/A", comment:"CEO: '$6B already closed, full first close coming'; expected largest-ever PE vintage." },
@@ -259,15 +256,14 @@ window.ALTS = {
       ],
       fundraisingSummary:"BAM expects 2026 to be its largest fundraising year ever — flagship infra (first close 2026), flagship PE ($6B raised, full first close coming), the $40B Just Group insurance mandate, AI infra, and the imminent full Oaktree consolidation. Q1'26 capital raised $21B; YTD through early-May $67B vs 2025's record $112B. BGTF II closed at $20B in Oct'25.",
       guidance:[
-        { metric:"DPS", period:"Q1 2026", value:"$0.5025", source:"guidance tool", comment:"Up from $0.4375 prior quarters." },
-        { metric:"FRE growth", period:"FY2026", value:"Exceed long-term targets", source:"transcript", comment:"CEO: 'record year, expect to exceed long-term growth targets'; FRE LTM $3.1B (+18%)." },
-        { metric:"Fee-bearing capital", period:"LTM", value:"+12% to $614B", source:"transcript", comment:"" },
-        { metric:"Fundraising", period:"FY2026", value:"Record, > $112B (2025)", source:"transcript", comment:"$67B raised YTD through early-May." },
-        { metric:"FRE margin", period:"FY2026", value:"~57–58% (pre-Oaktree)", source:"transcript", comment:"Compresses on Oaktree consolidation then rebuilds." },
-        { metric:"Buybacks", period:"YTD 2026", value:"~$800M", source:"transcript", comment:"$375M Q1 + $200M Q2; shares seen undervalued." },
-        { metric:"DE growth", period:"Q1'26 YoY", value:"+7% (DE $702M)", source:"transcript", comment:"Tracking FRE." },
+        { metric:"Fundraising", period:"FY2026", value:"Record; far above prior high", source:"transcript", comment:"$98B raised YTD; H2 inflows spread evenly across flagships, complementary equity, debt and insurance." },
+        { metric:"FRE trajectory", period:"2H26-2027", value:"'Rock solid'", source:"transcript", comment:"Q4 laps a strong prior-year quarter, which may temper YoY growth that quarter." },
+        { metric:"FRE margin", period:"Q3 2026", value:"Below the 57% Q2 level", source:"transcript", comment:"Oaktree consolidation lowers consolidated margin on mix; new partner-manager presentation starts Q3." },
+        { metric:"Fundraising", period:"FY2027", value:"Very strong but below 2026", source:"transcript", comment:"Final closes of infra/PE flagships plus pulled-forward RE and Oaktree credit launches; energy 2028." },
+        { metric:"Carried interest", period:"2026-2028", value:"Pulled forward vs prior plan", source:"transcript", comment:"Some carry generation and realization in 2026; larger realizations moved up from late decade." },
+        { metric:"Private wealth capital", period:"FY2026-2027", value:"~30% in 2026, then 30-50%", source:"transcript", comment:"Non-traded BDC softness (redemptions <5%, met in full) offset by infra wealth inflows." },
       ],
-      guidanceSummary:"Formal S&P guidance limited to DPS ($0.5025). Management reaffirmed exceeding Investor-Day FRE targets for 2026 with outperformance 'largely secured'; step-changes from flagship PE fees turning on, flagship infra first close, the $40B Just Group mandate, and full Oaktree consolidation (Q2'26).",
+      guidanceSummary:"2026 framed as a record year across FRE, DE and fundraising, with H2 flows balanced across four channels. 2027 growth should hold at or above long-term targets as real estate and credit flagships launch early and carry realizations pull forward. Reported margin steps down from Q3 on Oaktree consolidation. NOTE: $672B is fee-BEARING capital; total AUM is a separate, larger figure.",
       consensus:{ FRE:{cons:819,n:11}, PFRE:{cons:129,n:11}, FRE_ps:{cons:0.50,n:11}, DE_ps:{cons:0.44,n:11} },  // 2Q26E VA cons (20-May-26); PFRE=perf fees+incentive distributions; net flows n/a
       exits:{ quarterly:{
         "2023 Q2":{count:0,totalTV:0}, "2023 Q3":{count:0,totalTV:0}, "2023 Q4":{count:0,totalTV:0}, "2024 Q1":{count:0,totalTV:0},
@@ -287,8 +283,8 @@ window.ALTS = {
     // ───────────────────────── CG ─────────────────────────
     CG: {
       ticker:"CG", name:"Carlyle", longName:"The Carlyle Group Inc.", exchange:"NasdaqGS", country:"US",
-      color:"#16A34A", cadence:"quarterly", period:"Q1 2026", periodEnd:"2026-03-31", reportDate:"2026-05-07",
-      reported:{ FRE:"$300M", fpAUM:"—", DE_ps:"$0.89", comment:"Fund mgmt fees $545M (+4%); FRE margin 47%; DE $327M; dry powder record $96B (+13%)." },
+      color:"#16A34A", cadence:"quarterly", period:"Q2 2026", periodEnd:"2026-06-30", reportDate:"2026-08-05",
+      reported:{ FRE:"$358M", FRE_ps:null, fpAUM:"$334B", DE_ps:"$1.07", comment:"Record FRE $358M +11% at 47% margin; DE $472M / $1.07, best in ~4 years; FEAUM $334B +3%; $16.8B inflows, $14.3B deployed, ~$7B returned to LPs." },
       fundraising:[
         { name:"Carlyle Partners X (CP X)", strategy:"US Buyout (GPE)", status:"Pre-launch — cornerstone secured", target:"N/A", hardCap:"N/A", prevFund:"N/A", raisedToDate:"$5B cornerstone (AlpInvest structure)", firstClose:"2026 (exp.)", finalClose:"N/A", pb:"N/A", comment:"$5B AlpInvest-anchored cornerstone secured pre-launch; formal raise later in 2026." },
         { name:"Carlyle Europe Partners VI", strategy:"Europe Buyout (GPE)", status:"Open", target:">$8.7B", hardCap:"N/A", prevFund:"N/A", raisedToDate:"$1.16B (PB)", firstClose:"N/A", finalClose:"N/A", pb:"20707-66F", comment:"2024 vintage; early in raise." },
@@ -298,15 +294,14 @@ window.ALTS = {
       ],
       fundraisingSummary:"Carlyle is entering a fundraising 'super cycle' across GPE, Credit and AlpInvest. Next US Buyout (CP X) formally launches later in 2026 after a landmark $5B AlpInvest-anchored cornerstone. AlpInvest raised a record $6.8B in Q1'26; Global Credit raised $3.9B led by a $1.5B ABF first close. Most target sizes/hard caps undisclosed.",
       guidance:[
-        { metric:"FRE growth", period:"FY2026", value:"mid- to high-single-digit %", source:"transcript", comment:"Confidence expressed on Q&A." },
-        { metric:"Management fee growth", period:"FY2026+", value:"accelerating from 7% LTM", source:"transcript", comment:"As fundraising super cycle begins." },
-        { metric:"FRE", period:"FY2028", value:"$1.9B", source:"transcript", comment:"Feb shareholder-update target; 'expect to achieve or exceed'." },
-        { metric:"DE per share", period:"FY2028", value:"≥ $6.00", source:"transcript", comment:"Long-term target reiterated." },
-        { metric:"Total inflows", period:"FY2028", value:"$200B", source:"transcript", comment:"Cumulative fundraising target." },
-        { metric:"DPS", period:"FY2026", value:"$0.35/qtr", source:"guidance tool", comment:"Maintained." },
-        { metric:"Buyback", period:"Ongoing", value:"$1.9B left of $2B", source:"transcript", comment:"$205M repurchased/withheld in Q1." },
+        { metric:"FRE margin / comp ratio", period:"FY2026", value:"~47%", source:"transcript", comment:"Reinvesting in people, AI/technology and wealth; margin uplift pushed to 2027-28." },
+        { metric:"Transaction / capital markets fees", period:"Q3-Q4 2026", value:"Below Q2's record $111M", source:"transcript", comment:"Management does not expect the Q2 record to repeat; quarterly volatility is normal." },
+        { metric:"Global Credit AUM", period:"2H 2026", value:"+$5B on Unum close", source:"transcript", comment:"Second block reinsurance deal alongside Fortitude Re expected to close later this year." },
+        { metric:"Net realized perf revenue", period:"2H 2026", value:"Continued momentum", source:"transcript", comment:"Several deals closed in July; 3Q seasonally lighter but realization pace market-leading." },
+        { metric:"Fee-related perf revenue", period:"2027", value:"Steps up", source:"transcript", comment:"Wealth/AlpInvest growth; an ABF fund converted to a performance-fee structure is now in the run rate." },
+        { metric:"Fundraising super cycle", period:"2026-2028", value:"Target reaffirmed", source:"transcript", comment:"Nearly all flagships in market over the next ~24 months; 1H26 organic inflows of $30B a firm record." },
       ],
-      guidanceSummary:"Reiterated Feb-2026 targets: $1.9B FRE, $6+ DE/share and $200B inflows by end-2028, with full confidence in achieving/exceeding each. For 2026: mid-to-high-single-digit FRE growth and accelerating management-fee growth as GPE/AlpInvest/Credit ramp. $0.35/qtr dividend maintained.",
+      guidanceSummary:"Carlyle framed 2026 as an investment year: margin held near 47% while it spends on people, AI/technology and wealth, with operating leverage deferred to 2027-28 as the fundraising super cycle lands. Near term, Q2's record transaction fees and FRPR are explicitly NOT expected to repeat in 3Q/4Q, but realization momentum and the Unum block close (+$5B Global Credit AUM) support second-half DE.",
       consensus:{ FRE:{cons:320,n:10}, PFRE:{cons:74,n:10}, FRE_ps:{cons:0.89,n:10}, DE_ps:{cons:0.91,n:10}, netFlowsTotal:{cons:2.2,n:10}, netFlowsCredit:{cons:1.2,n:10} },  // 2Q26E VA cons (10-Jun-26); netFlowsCredit=Global Credit seg
       exits:{ quarterly:{
         "2023 Q2":{count:3,totalTV:0}, "2023 Q3":{count:6,totalTV:49}, "2023 Q4":{count:5,totalTV:1768}, "2024 Q1":{count:5,totalTV:1804},
@@ -328,8 +323,8 @@ window.ALTS = {
     // ───────────────────────── TPG ─────────────────────────
     TPG: {
       ticker:"TPG", name:"TPG", longName:"TPG Inc.", exchange:"NasdaqGS", country:"US",
-      color:"#EA580C", cadence:"quarterly", period:"Q1 2026", periodEnd:"2026-03-31", reportDate:"2026-05-01",
-      reported:{ FRE:"$247M", fpAUM:"$175B", DE_ps:"$0.70", comment:"LTM FRE >$1B first time (31% CAGR since IPO); FRE margin 44.3% (47% FY target); total AUM $306B (+22%)." },
+      color:"#EA580C", cadence:"quarterly", period:"Q2 2026", periodEnd:"2026-06-30", reportDate:"2026-08-04",
+      reported:{ FRE:"$315M", FRE_ps:"$0.82", fpAUM:"$181B", DE_ps:"$0.69", comment:"FRE $315M +43% at 50% margin, helped by pulled-forward capital markets fees; FAUM $181B +24%; $16.1B raised, ~$14B deployed, $5B realized." },
       fundraising:[
         { name:"TPG Partners X", strategy:"PE / Buyout", status:"Open — in market", target:"$13–15B", hardCap:"$15B", prevFund:"~$13.5B (Partners IX)", raisedToDate:"~$13.5B (PB); $12B+ raised 2025 w/ Healthcare III", firstClose:"2025", finalClose:"H2 2026 (exp.)", pb:"27844-84F", comment:"First close 'unusually successful'; final close back-half 2026." },
         { name:"TPG Healthcare Partners III", strategy:"Healthcare Buyout", status:"Open — in market", target:"$4.0B+", hardCap:"N/A", prevFund:"~$3.3B (HP II)", raisedToDate:"~$13B combined w/ Capital X", firstClose:"2025-06", finalClose:"H2 2026 (exp.)", pb:"28079-74F", comment:"Part of combined campaign with TPG Capital X." },
@@ -340,15 +335,14 @@ window.ALTS = {
       ],
       fundraisingSummary:"Maintained $50B+ 2026 fundraising target with $10B raised in Q1 (+75% YoY), back-half weighted (Capital X & Healthcare III final closes H2; Rise Climate Q3; RE cycle starting). Credit drove $4.4B in Q1 anchored by a $2B Jackson Financial ABF partnership. Private wealth +130% YoY; TPG Sports at $1.1B; T-POP perpetual PE at $2.1B AUM.",
       guidance:[
-        { metric:"FRE margin", period:"FY2026", value:"47%", source:"transcript", comment:"Q1 44.3% (RSU-tax seasonal); FY2025 45%." },
-        { metric:"Fundraising", period:"FY2026", value:">$50B", source:"transcript", comment:"$10B raised in Q1; back-half weighted." },
-        { metric:"LTM FRE", period:"Q1'26", value:">$1B (+36% YoY)", source:"transcript", comment:"First time; 31% CAGR since IPO." },
-        { metric:"Realized perf. allocations", period:"Q1 2026", value:"$68M (>$50M guide)", source:"transcript", comment:"OneOncology + Intersect Power." },
-        { metric:"Fee-earning AUM", period:"Q1'26", value:"$175B (+23% YoY)", source:"transcript", comment:"$45B AUM not yet earning fees (~$140M latent revenue)." },
-        { metric:"DE per share", period:"Q1 2026", value:"$0.70 (+46% YoY)", source:"transcript", comment:"GAAP net loss $123M." },
-        { metric:"DPS", period:"Q1 2026", value:"$0.59 declared", source:"transcript", comment:"S&P tool shows $0.24 mid (classification); use transcript." },
+        { metric:"Capital raised", period:"FY2026", value:">$50B", source:"transcript", comment:"$26.5B YTD; confident on TPG X/THP III completion, Rise Climate and real estate first closes." },
+        { metric:"FRE margin", period:"FY2026", value:"47%", source:"transcript", comment:"Guide left unchanged despite 50% in Q2; an upgrade needs better visibility on 2H capital markets fees." },
+        { metric:"Transaction & monitoring fees", period:"Q3 2026", value:"Step down", source:"transcript", comment:"Q2 benefited from pulled-forward closes; no large chunky deals budgeted for 3Q or 4Q." },
+        { metric:"Management fees", period:"2H 2026 - 2027", value:"Robust growth", source:"transcript", comment:"TPG X/THP III, accelerating credit deployment, and a 2027 real estate raise." },
+        { metric:"Realized perf allocations", period:"Late 2026 - 2027", value:"Step up", source:"transcript", comment:"Net accrued carry $1.4B, +15% q/q; broad monetization pipeline." },
+        { metric:"Effective tax rate", period:"Q3 2026", value:"High single digits", source:"transcript", comment:"8% in Q2 on January RSU-vesting deductions; steps up in 4Q." },
       ],
-      guidanceSummary:"Key 2026 targets: 47% FRE margin (vs 44.3% in Q1), $50B+ raised, continued double-digit FRE growth (LTM FRE >$1B). $140M of latent management fees embedded in $33B undeployed credit dry powder. No change to fundraising guidance despite macro volatility.",
+      guidanceSummary:"TPG held its FY26 guide at more than $50B of capital raised and a 47% FRE margin despite printing a 50% margin in Q2, attributing the gap to capital markets fees pulled forward into 2Q with no 4Q rebound budgeted. Management fee growth guided robust through 2027; realized performance allocations guided to step up late 2026 into 2027 off a $1.4B net accrued carry balance.",
       consensus:{ FRE:{cons:254,n:8}, PFRE:{cons:49,n:8}, FRE_ps:{cons:0.66,n:8}, DE_ps:{cons:0.60,n:8} },  // 2Q26E VA cons (10-Jun-26); operating basis; net flows n/a in export
       exits:{ quarterly:{
         "2023 Q2":{count:7,totalTV:2172}, "2023 Q3":{count:3,totalTV:7274}, "2023 Q4":{count:8,totalTV:1837}, "2024 Q1":{count:4,totalTV:141},
@@ -373,8 +367,8 @@ window.ALTS = {
     // ───────────────────────── OWL ─────────────────────────
     OWL: {
       ticker:"OWL", name:"Blue Owl", longName:"Blue Owl Capital Inc.", exchange:"NYSE", country:"US",
-      color:"#CA8A04", cadence:"quarterly", period:"Q1 2026", periodEnd:"2026-03-31", reportDate:"2026-04-30",
-      reported:{ FRE:"—", FRE_ps:"$0.25", fpAUM:"~$188B", DE_ps:"$0.19", comment:"FRE/sh $0.25; DE/sh $0.19; mgmt fees +13% YoY; total platform equity raised Q1 $11B; does not disclose $ totals or SRE." },
+      color:"#CA8A04", cadence:"quarterly", period:"Q2 2026", periodEnd:"2026-06-30", reportDate:"2026-07-30",
+      reported:{ FRE:"$392M", FRE_ps:"$0.25", fpAUM:"$191B", DE_ps:"$0.22", comment:"FRE +9% to $392M and DE +9% to $351M, FRE margin 58.5%; AUM $319B, FPAUM $191B; $7.8B raised as BDC redemptions eased and evergreen inflows troughed." },
       fundraising:[
         { name:"Real Estate Fund VI (Net Lease VI)", strategy:"Net Lease RE", status:"In market — approaching hard cap", target:"$4–5B", hardCap:"$7.5B", prevFund:"$5.16B", raisedToDate:"$5.8B", firstClose:"N/A", finalClose:"YE 2026 (target)", pb:"22564-90F", comment:"Pipeline ~$50B LoI/contract; hard cap $7.5B expected by end-2026." },
         { name:"GP Stakes VI", strategy:"GP Minority Stakes", status:"In market — wrapping up", target:"N/A", hardCap:"N/A", prevFund:"N/A", raisedToDate:"~$9B fund / ~$10B incl co-invest", firstClose:"N/A", finalClose:"2026", pb:"N/A", comment:"~40% committed; ~6 investments in pipeline." },
@@ -385,14 +379,14 @@ window.ALTS = {
       ],
       fundraisingSummary:"Raised $11B in Q1'26 ($57B LTM, 2nd-highest ever), across credit ($4B), real assets ($4B incl ~$3B net lease) and GP Strategic Capital ($0.9B). Net Lease VI tracking to its $7.5B hard cap by year-end; BODI IV initial close H2'26; GP Stakes VI closing out at ~$10B incl co-invest. Perpetual OCIC/ORENT drive wealth flows; OCIC sees modest industry-wide BDC redemption pressure.",
       guidance:[
-        { metric:"FRE margin", period:"FY2026", value:"58.5%", source:"transcript", comment:"Q1 already 58.4%." },
-        { metric:"Dividend / share", period:"FY2026", value:"$0.92 ($0.23/qtr)", source:"guidance tool", comment:"Payout ratio declining toward ~85% target." },
-        { metric:"FRE growth", period:"FY2026", value:"'Beat Visible Alpha consensus'", source:"transcript", comment:"Softened from low-double-digit given BDC retail headwinds." },
-        { metric:"Management fee growth", period:"Q1'26 YoY", value:"+13%", source:"transcript", comment:"From $57B LTM fundraising." },
-        { metric:"Embedded fee growth", period:"18–24 mo", value:"~$350M (~14% of fee base)", source:"transcript", comment:"$30B AUM not yet earning fees." },
-        { metric:"Real Assets AUM", period:"LTM", value:"+27% ($85B); net lease +38%", source:"transcript", comment:"Deployment +100% YoY." },
+        { metric:"FRE per share", period:"FY2026", value:"Above $1.02", source:"transcript", comment:"Reaffirms it can beat the Visible Alpha consensus bar cited on the Q1 call." },
+        { metric:"DE per share", period:"FY2026", value:"Above $0.89", source:"transcript", comment:"Same VA baseline; management says the beat is a top-line story, not margin." },
+        { metric:"FRE margin", period:"FY2026+", value:"~58.5%, modestly rising", source:"transcript", comment:"Q2 already at the full-year guide." },
+        { metric:"Management fees", period:"3Q/4Q26 and 2027", value:"Sequential growth; faster in 2027", source:"transcript", comment:"$31B AUM not yet paying fees carries ~$380M annualized fees, ~15% embedded growth." },
+        { metric:"Fundraising", period:"2H 2026", value:"Better than 1H 2026", source:"transcript", comment:"Wealth inflows troughed at the May 1 close and rose >50% by July 1." },
+        { metric:"Equity-based comp", period:"FY2026", value:"~$365M", source:"transcript", comment:"Business Combination Grants drop to zero starting Q4 2026." },
       ],
-      guidanceSummary:"Reaffirmed 58.5% FRE margin and $0.92 dividend for 2026 while softening FRE-growth language to 'beat Visible Alpha consensus' given retail-BDC headwinds. $30B of AUM not yet earning fees (~$350M latent management fees, ~14% growth runway) deploys over 18–24 months.",
+      guidanceSummary:"Blue Owl reaffirmed it can beat the $1.02 FRE/share and $0.89 DE/share Visible Alpha bars for 2026, with upside from revenue rather than margin. Management fees build sequentially in 3Q/4Q and grow faster in 2027, aided by $31B of AUM not yet paying fees. Note: OWL issues no formal numeric guidance — the 'guide' is framed against VA consensus levels.",
       consensus:{ FRE_ps:{act:0.25}, DE_ps:{act:0.19} },
       exits:{ quarterly:{
         "2024 Q4":{count:1,totalTV:null}, "2025 Q2":{count:1,totalTV:30}, "2025 Q3":{count:2,totalTV:12221},
@@ -455,8 +449,8 @@ window.ALTS = {
     // ───────────────────────── EQT (pending agent) ─────────────────────────
     EQT: {
       ticker:"EQT", name:"EQT AB", longName:"EQT AB (publ)", exchange:"STO", country:"Sweden",
-      color:"#059669", cadence:"semi-annual", period:"FY2025", periodEnd:"2025-12-31", reportDate:"2026-04-22", currency:"EUR",
-      reported:{ FRE:"€1.27B*", fpAUM:"€269B AUM", DE_ps:"—", comment:"*FY2025 fee-related revenue +9%; FRE EBITDA margin 52%; carry+investment income €448M; AUM €269B (Mar'26), ~€312B post-Coller. Semi-annual reporting; Q1'26 was a trading update." },
+      color:"#059669", cadence:"semi-annual", period:"H1 2026", periodEnd:"2026-06-30", reportDate:"2026-07-17", currency:"EUR",
+      reported:{ FRE:"EUR 571M", FRE_ps:null, fpAUM:"EUR 155B", DE_ps:null, comment:"EUR, not USD. FRE = fee-related EBITDA EUR 571M (50% margin); adj. EBITDA EUR 837M (60%); fee-related revenue -1% on lower retroactive fees; FAUM EUR 155B (+10%). Half-year reporter." },
       fundraising:[
         { name:"EQT XI", strategy:"PE Buyout (flagship)", status:"In market — first close ~mid'26", target:"€22–23B", hardCap:"N/A", prevFund:"€22B (EQT X)", raisedToDate:"N/A", firstClose:"~mid-2026", finalClose:"N/A", pb:"28044-37F", comment:"EQT X 60–65% invested; XI enters FAUM only on activation at first investment." },
         { name:"EQT Infrastructure VII", strategy:"Infrastructure (flagship)", status:"Launching ~mid'26", target:">€21B", hardCap:"N/A", prevFund:"€21.5B (Infra VI)", raisedToDate:"N/A", firstClose:"N/A", finalClose:"N/A", pb:"29268-91F", comment:"Infra VI closed Mar'25 at €21.5B, 75–80% invested; VII activation ~year-end'26; paired evergreen infra vehicle in Q2'26." },
@@ -467,15 +461,14 @@ window.ALTS = {
       ],
       fundraisingSummary:"One of EQT's most active fundraising years: EQT XI (PE, first close ~mid'26), Infrastructure VII (launch ~mid'26) and BPEA IX (closed at its $15.6B hard cap in April — the largest Asia PE fund ever). 10+ other closed-ended strategies are in market (Healthcare Growth, Transition Infra, Ventures, Life Sciences, Asia Mid-Market, Real Estate, Future, AI Infra), most extending into 2027. Evergreen NAV ~€3.5B at YE'25 with record €1B net inflows in Q1'26; the pending Coller combination (Q3'26 close) lifts combined AUM to ~€312B.",
       guidance:[
-        { metric:"FRE (EBITDA) margin", period:"Medium-term", value:"≥55%", source:"transcript", comment:"FY2025 was 52%; AI/efficiency + flat headcount to close the gap." },
-        { metric:"OpEx growth", period:"FY2026", value:"Mid-single-digit %", source:"transcript", comment:"Headcount broadly flat; H2'25 efficiency measures annualize." },
-        { metric:"Evergreen net inflows", period:"FY2026", value:">€4B run-rate", source:"transcript", comment:"Q1'26 already €1B; more vehicles launch Q2–Q3." },
-        { metric:"Exit volumes", period:"FY2026", value:"~in line with FY2025 (~€19B+, ~30 events)", source:"transcript", comment:"Maintained despite volatility; subject to markets." },
-        { metric:"Carried interest", period:"FY2026", value:"~€600M remaining (4 carry-mode funds)", source:"transcript", comment:"EQT VIII in cash carry; ~€500M weighted to H1'26; Infra IV & EQT IX not in carry in 2026." },
-        { metric:"Dividend / share", period:"FY2025", value:"SEK 5.00 (+16%)", source:"transcript", comment:"~€460M dividends + ~€300M buybacks LTM." },
-        { metric:"Coller combination", period:"Q3 2026 close", value:"Combined AUM ~€312B", source:"transcript", comment:"Adds ~€28B FAUM secondaries; Coller FRE ~$350–375M, ~50% margin." },
+        { metric:"Exits / distributions", period:"FY2026", value:"~EUR 20B, in line with 2025", source:"transcript", comment:"EUR 17B in H1; H2 pipeline includes IPOs and minority stake sales." },
+        { metric:"Fee-related EBITDA margin", period:"2027", value:"55% ambition", source:"transcript", comment:"Likely reached in the latter part of 2027; H1 2026 ran at 50%." },
+        { metric:"Coller fee-related EBITDA", period:"FY2026", value:"EUR 175-200M", source:"transcript", comment:"Full calendar-year basis; deal closes mid-to-late Q3 2026." },
+        { metric:"Fundraising cycle target", period:"Current cycle", value:">EUR 140B (up from 100B)", source:"transcript", comment:"~EUR 40B closed; AI Infra, Scaleup Europe and Coller add over EUR 40B." },
+        { metric:"Management fee step-up", period:"2027", value:"Full-year EQT XI + Infra VII", source:"transcript", comment:"EQT XI activates Q3 2026; Infra VII around year-end, first close only H1 2027." },
+        { metric:"Carry + investment income", period:"2H 2026", value:"H1 level a good proxy", source:"transcript", comment:"H1 was EUR 266M; Infra IV on path to initial carry late 2027." },
       ],
-      guidanceSummary:"Three pillars for 2026: (1) FRE margin toward the ≥55% medium-term target (52% in FY2025) on flat headcount + AI efficiency; (2) exit volumes ~in line with the record FY2025 (~€19B+/~30 events) with carry from four carry-mode funds (notably EQT VIII), but explicitly excluding Infra IV and EQT IX; (3) evergreen net inflows well above the €4B run-rate, plus the Coller combination (Q3'26) taking combined AUM to ~€312B. (S&P guidance tool: no data.)",
+      guidanceSummary:"EQT guided to a 2027-weighted inflection: full-year effects of EQT XI and Infra VII step up management fees, the 55% fee-related EBITDA margin ambition is reachable late in 2027, and the cycle fundraising target was lifted above EUR 140B. Near term, H2 2026 carry should roughly match H1 and the ~EUR 20B exit ambition is intact. All figures EUR.",
       consensus:{ FRE:{cons:585,n:10}, PFRE:{cons:136,n:10}, FRE_ps:{cons:0.49,n:10}, netFlowsTotal:{cons:3.8,n:10} },  // 1H26E VA cons (19-Jun-26), €M/€/€B; PFRE=carried interest (operating); no credit seg
       exits:{ quarterly:{
         "2023 Q2":{count:4,totalTV:1568}, "2023 Q3":{count:2,totalTV:480}, "2023 Q4":{count:2,totalTV:1503}, "2024 Q1":{count:2,totalTV:2062},
