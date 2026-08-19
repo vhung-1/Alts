@@ -1152,13 +1152,22 @@
           // A stable take rate ⇒ the P&L item is mechanically tied to the volume; a wild one ⇒ it isn't.
           const rateNum = isReal ? "perf" : "fees", rateDen = isReal ? "real" : "deployed";
           const rateLab = isReal ? "Perf / realizations" : "Fees / deployed";
-          const repRows = isReal ? [{k:"perf",lab:"Net realized perf fees"},{k:"real",lab:"Realizations"},{k:"__rate",lab:rateLab,rate:true}]
+          const repRowsAll = isReal ? [{k:"perf",lab:"Net realized perf fees"},{k:"real",lab:"Realizations"},{k:"__rate",lab:rateLab,rate:true}]
                         : isDeploy ? [{k:"fees",lab:"Transaction fees"},{k:"deployed",lab:"Capital deployed"},{k:"__rate",lab:rateLab,rate:true}] : [];
           const rateAt = (qq) => { const r = repFirm && repFirm[qq]; if (!r) return null;
             const n = r[rateNum], d = r[rateDen];
             return (isNum(n) && isNum(d) && d > 0) ? n/d*100 : null; };
           const rateVals = repFirm ? QEX.map(rateAt).filter(isNum) : [];
           const rateAvg = rateVals.length ? rateVals.reduce((s,x)=>s+x,0)/rateVals.length : null;
+          // Drop rows the firm never discloses rather than rendering 12 dashes; say why instead.
+          const hasAny = (row) => !repFirm ? false : row.rate ? rateVals.length>0
+            : QEX.some(qq => repFirm[qq] && isNum(repFirm[qq][row.k]));
+          const repRows = repRowsAll.filter(hasAny);
+          const missing = repRowsAll.filter(r => !hasAny(r) && !r.rate).map(r => r.k);
+          const D = (window.ALTS_REPORTED && window.ALTS_REPORTED.defs) ? window.ALTS_REPORTED.defs[tk] : null;
+          const missNote = (repFirm && missing.length && D)
+            ? missing.map(k => `${k==="real"?"Realizations":k==="fees"?"Transaction fees":k}: ${D[k]}`).join(" · ")
+            : null;
           const showRep = !!repFirm && repRows.length>0;
           const heat = (val,max)=>{ if(!(val>0)||!(max>0)) return "transparent"; const a=Math.round(Math.min(1,val/max)*0.5*255); return c + a.toString(16).padStart(2,"0"); };
           const stick = { position:"sticky", left:0, zIndex:2 };
@@ -1227,6 +1236,11 @@
                     );})}
                   </tbody>
                 </table>
+                {missNote && (
+                  <div style={{ padding:"6px 12px", borderTop:`1px dashed ${T.accent}44`, background:T.accent+"08", fontFamily:MONO, fontSize:8, color:T.textMuted, lineHeight:1.5 }}>
+                    <b style={{ color:T.accent }}>not disclosed —</b> {missNote}
+                  </div>
+                )}
               </div>
               )}
               {openQ && b[openQ] && b[openQ].rows.length>0 && (() => {
