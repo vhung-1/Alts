@@ -982,7 +982,7 @@
   const QEX = QUARTERS;                                          // no separate QTD column: 2026 Q2 is now fully reported and the PitchBook deal feed runs through mid-Jun 2026
   const CARRY_ORDER  = FIRM_ORDER.filter(tk => tk !== "OWL");   // Blue Owl earns fees, not carry — excluded from Carry
   const DEPLOY_ORDER = FIRM_ORDER;                             // deployment applies to every manager (Blue Owl included)
-  const fmtTV = (m) => !isNum(m) ? "n/d" : (Math.abs(m) >= 1000 ? fmtB(m) : `$${Math.round(m)}M`);
+  const fmtTV = (m, cur="$") => !isNum(m) ? "n/d" : (Math.abs(m) >= 1000 ? fmtB(m, cur) : `${cur}${Math.round(m)}M`);
   const qLabel = (qq) => qq.slice(5) + "'" + qq.slice(2,4);   // "2023 Q2" → "Q2'23"
   const quarterOf = (d) => { const p=String(d).split("-"); const qn=Math.floor((parseInt(p[1],10)-1)/3)+1; return p[0]+" Q"+qn; };
 
@@ -1122,13 +1122,13 @@
       <div>
         <div style={{ background: boxCol+"0C", border:`1px solid ${boxCol}44`, borderRadius:8, padding:"11px 15px", marginBottom:18, fontSize:10, color:T.textSub, lineHeight:1.6 }}>
           {isReal ? (
-            <span><b style={{color:T.neg}}>Read me — realizations as a proxy for realized performance fees.</b> The top rows are <i>activity</i> — leading, observable intra-quarter: PitchBook portfolio exits + retained-stake IPOs / sell-downs, merged and de-duped, sized by transaction value. The <b style={{color:T.accent}}>REPORTED</b> rows beneath are the <i>ground truth</i> that activity anticipates — each firm's net realized performance fees and disclosed realizations, lifted from the earnings supplement (core US names, trailing 6 quarters). Size is <b>not apples-to-apples</b>: exit TV = whole-deal EV, IPO / sell-down = offering proceeds, and neither is the GP's share — so read activity as <i>direction and tempo</i>, not a dollar forecast. Minority exits flagged <b>min</b>. The <b>Transcript check</b> strip compares the last two earnings calls against PitchBook. Blue Owl excluded (fees, not carry). <b>Quarters run across the top — click any quarter to expand the underlying deals.</b></span>
+            <span><b style={{color:T.neg}}>Read me — realizations as a proxy for realized performance fees.</b> The top rows are <i>activity</i> — leading, observable intra-quarter: PitchBook portfolio exits + retained-stake IPOs / sell-downs, merged and de-duped, sized by transaction value. The <b style={{color:T.accent}}>REPORTED</b> rows beneath are the <i>ground truth</i> that activity anticipates — each firm's net realized performance fees and disclosed realizations, lifted from the earnings supplement (six US names over 12 quarters, plus EQT's own quarterly realisation volumes in EUR). Size is <b>not apples-to-apples</b>: exit TV = whole-deal EV, IPO / sell-down = offering proceeds, and neither is the GP's share — so read activity as <i>direction and tempo</i>, not a dollar forecast. Minority exits flagged <b>min</b>. The <b>Transcript check</b> strip compares the last two earnings calls against PitchBook. Blue Owl excluded (fees, not carry). <b>Quarters run across the top — click any quarter to expand the underlying deals.</b></span>
           ) : isExit ? (
             <span><b style={{color:T.neg}}>Read me — exit TV ≠ realized carry.</b> PitchBook "exit size" is the <i>total transaction / enterprise value</i> of the deal, not the manager's equity proceeds (stakes range ~15–100%; minority deals flagged <b>min</b>). Per the KKR exit-pull study, exit TV is a <i>weak</i> predictor of realized performance income (r&lt;0.35): fund-level crystallizations, open-market sales and clawbacks are invisible, and bankruptcies show as exits with zero carry. Many exits have no disclosed size, so TV is a partial minimum. <b>Quarters run across the top — click any quarter to expand its individual exits.</b> Cells are shaded per firm (darker = larger). The <b>Transcript check</b> strip under each firm compares the last two earnings calls' monetization commentary against what PitchBook recorded. Blue Owl is excluded (fees, not carry). <b>Fund</b> reads <i>n/d</i> — the feed doesn't name the selling fund.</span>
           ) : isIPO ? (
             <span><b style={{color:T.accent}}>Read me — IPOs &amp; listings.</b> Built from PitchBook <i>company-deal</i> records — the <b>IPO</b> itself plus any post-IPO <b>open-market secondary</b> sell-downs (the actual realization events). This is the gap the exit feed misses: when a sponsor lists a company but keeps a stake, PitchBook keeps the holding <i>Active</i> (no "exit"), so the IPO never shows in Exit activity. Proceeds = total offering / transaction size, not the manager's take. <b>Quarters run across the top — click any quarter to see the listings.</b> Coverage = marquee/named listings plus a best-effort scan of each firm's recent active holdings, so very old holdings that listed may be missed. Blue Owl excluded.</span>
           ) : (
-            <span><b style={{color:"#1A7A5A"}}>Read me — deployment as a proxy for transaction fees.</b> The <b>#&nbsp;New&nbsp;inv.</b> row is <i>activity</i> — leading, observable intra-quarter: new investments dated by PitchBook entry date (<code>investor_since</code>). The feed exposes the company and date but <b>not the entry deal size</b> (only exits carry a size), so activity here is a <b>count</b>, not dollars. The <b style={{color:T.accent}}>REPORTED</b> rows beneath are the <i>ground truth</i> the cadence anticipates — each firm's transaction / capital-markets fees and capital deployed, from the earnings supplement (core US names, trailing 6 quarters); the reported <i>Capital deployed</i> row supplies the dollar dimension the feed can't. Counts can understate very active managers. <b>Quarters run across the top — click any quarter to see the companies.</b> All 13 names, Blue Owl included.</span>
+            <span><b style={{color:"#1A7A5A"}}>Read me — deployment as a proxy for transaction fees.</b> The <b>#&nbsp;New&nbsp;inv.</b> row is <i>activity</i> — leading, observable intra-quarter: new investments dated by PitchBook entry date (<code>investor_since</code>). The feed exposes the company and date but <b>not the entry deal size</b> (only exits carry a size), so activity here is a <b>count</b>, not dollars. The <b style={{color:T.accent}}>REPORTED</b> rows beneath are the <i>ground truth</i> the cadence anticipates — each firm's transaction / capital-markets fees and capital deployed, from the earnings supplement (six US names over 12 quarters, plus EQT's own quarterly investment volumes in EUR); the reported <i>Capital deployed</i> row supplies the dollar dimension the feed can't. Counts can understate very active managers. <b>Quarters run across the top — click any quarter to see the companies.</b> All 13 names, Blue Owl included.</span>
           )}
         </div>
         {(isReal || isDeploy) && <ProxyReadout kind={kind} />}
@@ -1165,8 +1165,9 @@
           const repRows = repRowsAll.filter(hasAny);
           const missing = repRowsAll.filter(r => !hasAny(r) && !r.rate).map(r => r.k);
           const D = (window.ALTS_REPORTED && window.ALTS_REPORTED.defs) ? window.ALTS_REPORTED.defs[tk] : null;
+          const repCcy = (D && D.ccy) || "$";   // EQT reports in EUR; everyone else USD
           const missNote = (repFirm && missing.length && D)
-            ? missing.map(k => `${k==="real"?"Realizations":k==="fees"?"Transaction fees":k}: ${D[k]}`).join(" · ")
+            ? missing.map(k => `${({perf:"Net realized perf fees",real:"Realizations",fees:"Transaction fees",deployed:"Capital deployed"})[k]||k}: ${D[k]}`).join(" · ")
             : null;
           const showRep = !!repFirm && repRows.length>0;
           const heat = (val,max)=>{ if(!(val>0)||!(max>0)) return "transparent"; const a=Math.round(Math.min(1,val/max)*0.5*255); return c + a.toString(16).padStart(2,"0"); };
@@ -1218,7 +1219,7 @@
                       <tr key={"rep-"+row.k}>
                         <td style={{ ...stick, background:T.bgCard, padding:"7px 12px", fontFamily:MONO, fontSize:8.5, fontWeight:700, color:T.accent, borderTop: ri===0?`2px solid ${T.accent}55`:(isRate?`1px dashed ${T.accent}55`:"none"), borderBottom: ri<repRows.length-1?`1px solid ${T.border}`:"none", borderRight:`1px solid ${T.border}`, whiteSpace:"nowrap" }}>
                           {ri===0 && <div style={{ fontSize:6.5, color:T.textFaint, letterSpacing:"0.14em", fontWeight:700 }}>REPORTED ▾</div>}
-                          {row.lab}<span style={{ color:T.textFaint, fontWeight:400 }}>{isRate?" %":" $"}</span>
+                          {row.lab}<span style={{ color:T.textFaint, fontWeight:400 }}>{isRate?" %":" "+repCcy}</span>
                           {isRate && isNum(rateAvg) && <span style={{ color:T.textFaint, fontWeight:400, fontSize:7.5 }}> avg {rateAvg.toFixed(2)}</span>}
                         </td>
                         {QEX.map(qq => {
@@ -1230,7 +1231,7 @@
                             bg = c + a.toString(16).padStart(2,"0");
                           }
                           return <td key={qq} style={{ padding:"7px 9px", textAlign:"center", fontFamily:MONO, fontSize: isRate?9:9.5, fontWeight:700, color: isNum(v)?T.text:T.textFaint, background:bg, borderTop: ri===0?`2px solid ${T.accent}55`:(isRate?`1px dashed ${T.accent}55`:"none"), borderBottom: ri<repRows.length-1?`1px solid ${T.border}`:"none", borderLeft:`1px solid ${T.border}` }}>
-                            {isNum(v) ? (isRate ? v.toFixed(2) : fmtTV(v)) : "—"}</td>;
+                            {isNum(v) ? (isRate ? v.toFixed(2) : fmtTV(v, repCcy)) : "—"}</td>;
                         })}
                       </tr>
                     );})}
