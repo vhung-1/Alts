@@ -984,6 +984,8 @@
   const DEPLOY_ORDER = FIRM_ORDER;                             // deployment applies to every manager (Blue Owl included)
   const fmtTV = (m, cur="$") => !isNum(m) ? "n/d" : (Math.abs(m) >= 1000 ? fmtB(m, cur) : `${cur}${Math.round(m)}M`);
   const qLabel = (qq) => qq.slice(5) + "'" + qq.slice(2,4);   // "2023 Q2" → "Q2'23"
+  const halfOf = (qq) => qq.slice(0,4) + (["Q1","Q2"].includes(qq.slice(5)) ? " H1" : " H2");  // "2025 Q3" → "2025 H2"
+  const halfLabel = (hk) => hk.slice(5) + "'" + hk.slice(2,4);
   const quarterOf = (d) => { const p=String(d).split("-"); const qn=Math.floor((parseInt(p[1],10)-1)/3)+1; return p[0]+" Q"+qn; };
 
   // Shared transposed quarterly matrix — quarters run across the TOP, metrics down the LEFT (keeps the page short).
@@ -1148,24 +1150,31 @@
           // Reported "ground-truth" rows: the fees each activity proxy is meant to anticipate.
           const repKind = isReal ? "carry" : isDeploy ? "deploy" : null;
           const repFirm = (repKind && window.ALTS_REPORTED && window.ALTS_REPORTED[repKind]) ? window.ALTS_REPORTED[repKind][tk] : null;
+          const D = (window.ALTS_REPORTED && window.ALTS_REPORTED.defs) ? window.ALTS_REPORTED.defs[tk] : null;
+          const repCcy = (D && D.ccy) || "$";   // EQT reports in EUR; everyone else USD
+          // Half-year reporters (CVC, PGHN, ICG, BPT) publish no quarterly split. The 12-quarter
+          // window covers exactly 6 calendar halves, so their values span two columns instead of
+          // being fabricated into quarters.
+          const repHalf = !!(D && D.cadence === "H");
+          const HALVES = repHalf ? QEX.filter((q,i)=>i%2===0).map(halfOf) : [];
+          const cellAt = (row, key) => { const r = repFirm && repFirm[key]; return r ? r[row.k] : null; };
           // two $ rows + a derived TAKE-RATE row (P&L line as % of the volume that drove it).
           // A stable take rate ⇒ the P&L item is mechanically tied to the volume; a wild one ⇒ it isn't.
           const rateNum = isReal ? "perf" : "fees", rateDen = isReal ? "real" : "deployed";
           const rateLab = isReal ? "Perf / realizations" : "Fees / deployed";
           const repRowsAll = isReal ? [{k:"perf",lab:"Net realized perf fees"},{k:"real",lab:"Realizations"},{k:"__rate",lab:rateLab,rate:true}]
                         : isDeploy ? [{k:"fees",lab:"Transaction fees"},{k:"deployed",lab:"Capital deployed"},{k:"__rate",lab:rateLab,rate:true}] : [];
-          const rateAt = (qq) => { const r = repFirm && repFirm[qq]; if (!r) return null;
+          const rateAt = (key) => { const r = repFirm && repFirm[key]; if (!r) return null;
             const n = r[rateNum], d = r[rateDen];
             return (isNum(n) && isNum(d) && d > 0) ? n/d*100 : null; };
-          const rateVals = repFirm ? QEX.map(rateAt).filter(isNum) : [];
+          const KEYS = () => repHalf ? HALVES : QEX;
+          const rateVals = repFirm ? KEYS().map(rateAt).filter(isNum) : [];
           const rateAvg = rateVals.length ? rateVals.reduce((s,x)=>s+x,0)/rateVals.length : null;
           // Drop rows the firm never discloses rather than rendering 12 dashes; say why instead.
           const hasAny = (row) => !repFirm ? false : row.rate ? rateVals.length>0
-            : QEX.some(qq => repFirm[qq] && isNum(repFirm[qq][row.k]));
+            : KEYS().some(k => repFirm[k] && isNum(repFirm[k][row.k]));
           const repRows = repRowsAll.filter(hasAny);
           const missing = repRowsAll.filter(r => !hasAny(r) && !r.rate).map(r => r.k);
-          const D = (window.ALTS_REPORTED && window.ALTS_REPORTED.defs) ? window.ALTS_REPORTED.defs[tk] : null;
-          const repCcy = (D && D.ccy) || "$";   // EQT reports in EUR; everyone else USD
           const missNote = (repFirm && missing.length && D)
             ? missing.map(k => `${({perf:"Net realized perf fees",real:"Realizations",fees:"Transaction fees",deployed:"Capital deployed"})[k]||k}: ${D[k]}`).join(" · ")
             : null;
@@ -1222,16 +1231,17 @@
                           {row.lab}<span style={{ color:T.textFaint, fontWeight:400 }}>{isRate?" %":" "+repCcy}</span>
                           {isRate && isNum(rateAvg) && <span style={{ color:T.textFaint, fontWeight:400, fontSize:7.5 }}> avg {rateAvg.toFixed(2)}</span>}
                         </td>
-                        {QEX.map(qq => {
-                          const v = isRate ? rateAt(qq) : (repFirm[qq] ? repFirm[qq][row.k] : null);
+                        {(repHalf ? HALVES : QEX).map(qq => {
+                          const v = isRate ? rateAt(qq) : cellAt(row, qq);
                           // shade the take rate vs its own 12-qtr mean: darker = richer take
                           let bg = tint;
                           if (isRate && isNum(v) && isNum(rateAvg) && rateAvg > 0) {
                             const a = Math.round(Math.min(1, Math.max(0, (v/rateAvg-0.5)/1.5)) * 0.45 * 255);
                             bg = c + a.toString(16).padStart(2,"0");
                           }
-                          return <td key={qq} style={{ padding:"7px 9px", textAlign:"center", fontFamily:MONO, fontSize: isRate?9:9.5, fontWeight:700, color: isNum(v)?T.text:T.textFaint, background:bg, borderTop: ri===0?`2px solid ${T.accent}55`:(isRate?`1px dashed ${T.accent}55`:"none"), borderBottom: ri<repRows.length-1?`1px solid ${T.border}`:"none", borderLeft:`1px solid ${T.border}` }}>
-                            {isNum(v) ? (isRate ? v.toFixed(2) : fmtTV(v, repCcy)) : "—"}</td>;
+                          return <td key={qq} colSpan={repHalf?2:1} style={{ padding:"7px 9px", textAlign:"center", fontFamily:MONO, fontSize: isRate?9:9.5, fontWeight:700, color: isNum(v)?T.text:T.textFaint, background:bg, borderTop: ri===0?`2px solid ${T.accent}55`:(isRate?`1px dashed ${T.accent}55`:"none"), borderBottom: ri<repRows.length-1?`1px solid ${T.border}`:"none", borderLeft:`1px solid ${T.border}` }}>
+                            {isNum(v) ? (isRate ? v.toFixed(2) : fmtTV(v, repCcy)) : "—"}
+                            {repHalf && isNum(v) && <div style={{ fontSize:6, fontWeight:700, color:T.textFaint, letterSpacing:"0.06em" }}>{halfLabel(qq)}</div>}</td>;
                         })}
                       </tr>
                     );})}
