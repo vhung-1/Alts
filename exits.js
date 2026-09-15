@@ -1,5 +1,14 @@
 ;(function(){var E=(window.ALTS_EXITS=window.ALTS_EXITS||{});
 E["BX"]=[
+  {c:"Cirsa Enterprises",d:"2026-09-02",s:3246.26,t:"M&A",h:"Maj",f:"n/d"},
+  {c:"Jersey Mike's Subs",d:"2026-07-31",s:1000,t:"IPO",h:"Maj",f:"n/d"},
+  {c:"NIBC Bank",d:"2026-08-01",s:999.58,t:"M&A",h:"Maj",f:"n/d"},
+  {c:"Knowledge Realty",d:"2026-08-28",s:836.56,t:"Secondary",h:"Min",f:"n/d"},
+  {c:"AYUMI Pharmaceutical",d:"2026-07-01",s:278.51,t:"M&A",h:"Maj",f:"n/d"},
+  {c:"Horizon Industrial Parks",d:"2026-08-24",s:272.11,t:"IPO",h:"Maj",f:"n/d"},
+  {c:"Crescent Biopharma",d:"2026-07-16",s:117.37,t:"2nd offering",h:"Min",f:"n/d"},
+  {c:"Hotel Investment Partners",d:"2026-09-02",s:null,t:"IPO",h:"Maj",f:"n/d"},
+  {c:"Blackstone (19 German logistics assets)",d:"2026-07-21",s:null,t:"M&A",h:"Maj",f:"n/d"},
 {c:"Onyx-Fire Protection Services",d:"2026-06-08",s:null,t:"M&A",h:"Maj",f:"n/d"},
 {c:"Jade Biosciences",d:"2026-06-05",s:150,t:"2nd offering",h:"Min",f:"n/d"},
 {c:"Qlar Group",d:"2026-05-07",s:null,t:"Buyout",h:"Maj",f:"n/d"},
@@ -113,6 +122,17 @@ E["BX"]=[
 {c:"Cypress Equities (Shopping Center Schaumburg IL)",d:"2023-04-01",s:null,t:"Asset sale",h:"Maj",f:"n/d"}
 ];
 E["KKR"]=[
+  {c:"USI Insurance Services",d:"2026-08-31",s:17000,t:"M&A",h:"Maj",f:"n/d"},
+  {c:"CoolIT Systems",d:"2026-07-02",s:4750,t:"M&A",h:"Maj",f:"n/d"},
+  {c:"LEAP India",d:"2026-08-14",s:258.76,t:"IPO",h:"Maj",f:"n/d"},
+  {c:"Atlantic Aviation FBO",d:"2026-08-27",s:null,t:"Buyout",h:"Maj",f:"n/d"},
+  {c:"Ocean Yield",d:"2026-08-21",s:null,t:"Buyout",h:"Maj",f:"n/d"},
+  {c:"J. B. Chemicals & Pharmaceuticals",d:"2026-07-08",s:null,t:"M&A",h:"Min",f:"n/d"},
+  {c:"Livspace",d:"2026-07-19",s:null,t:"Secondary",h:"Min",f:"n/d"},
+  {c:"Nordic Bioscience",d:"2026-09-03",s:null,t:"Secondary",h:"Min",f:"n/d"},
+  {c:"Accell Group",d:"2026-08-05",s:null,t:"Bankruptcy",h:"Maj",f:"n/d"},
+  {c:"Gamma Biosciences",d:"2026-08-26",s:null,t:"Bankruptcy",h:"Maj",f:"n/d"},
+  {c:"Joulon",d:"2026-09-05",s:null,t:"Bankruptcy",h:"Maj",f:"n/d"},
 {c:"Axius Water",d:"2026-06-01",s:700,t:"M&A",h:"Maj",f:"n/d"},
 {c:"Kokusai Electric",d:"2026-05-20",s:958,t:"Secondary",h:"Min",f:"n/d"},
 {c:"Corel (Ottawa)",d:"2026-05-05",s:null,t:"Buyout",h:"Maj",f:"n/d"},
@@ -203,6 +223,8 @@ E["KKR"]=[
 {c:"MMI Holdings",d:"2023-05-01",s:null,t:"Secondary",h:"Min",f:"n/d"}
 ];
 E["APO"]=[
+  {c:"Concord Music",d:"2026-09-01",s:7000,t:"M&A",h:"Min",f:"n/d"},
+  {c:"Great Bay Renewables",d:"2026-07-30",s:390,t:"Buyout",h:"Maj",f:"n/d"},
 {c:"NSI Industries",d:"2026-06-09",s:3000,t:"M&A",h:"Min",f:"n/d"},
 {c:"Sun Country Airlines",d:"2026-05-13",s:1386,t:"M&A",h:"Min",f:"n/d"},
 {c:"Invited Clubs",d:"2026-05-05",s:3000,t:"Buyout",h:"Maj",f:"n/d"},
@@ -247,6 +269,12 @@ E["APO"]=[
 })();
 ;(function(){var E=(window.ALTS_EXITS=window.ALTS_EXITS||{});
 E["ARES"]=[
+  {c:"Savers Value Village",d:"2026-08-13",s:235.75,t:"Secondary",h:"Maj",f:"n/d"},
+  {c:"Vivantadental",d:"2026-09-07",s:null,t:"Buyout",h:"Maj",f:"n/d"},
+  {c:"Genomatica",d:"2026-08-12",s:null,t:"M&A",h:"Min",f:"n/d"},
+  {c:"Professional Fighters League",d:"2026-07-30",s:null,t:"M&A",h:"Min",f:"n/d"},
+  {c:"Novotel London Greenwich",d:"2026-07-20",s:null,t:"Buyout",h:"Maj",f:"n/d"},
+  {c:"Repairify",d:"2026-07-02",s:null,t:"Buyout",h:"Min",f:"n/d"},
 {c:"Global Medical Response",d:"2026-05-13",s:478.72,t:"IPO",h:"Min",f:"n/d"},
 {c:"Teasdale Foods",d:"2026-04-07",s:null,t:"Buyout",h:"Min",f:"n/d"},
 {c:"Team Services Group",d:"2026-03-31",s:3000,t:"Buyout",h:"Min",f:"n/d"},
@@ -312,6 +340,14 @@ E["ARES"]=[
 {c:"Cyprum Metals",d:"2023-04-01",s:null,t:"Other",h:"Min",f:"n/d"}
 ];
 E["CG"]=[
+  {c:"Copia Power",d:"2026-08-10",s:2600,t:"Buyout",h:"Maj",f:"n/d"},
+  {c:"Hurst Point Group",d:"2026-09-01",s:786.43,t:"Buyout",h:"Maj",f:"n/d"},
+  {c:"Rigaku Holding",d:"2026-08-10",s:701.92,t:"Secondary",h:"Min",f:"n/d"},
+  {c:"Tescan Group",d:"2026-07-07",s:678,t:"M&A",h:"Maj",f:"n/d"},
+  {c:"iC Consult",d:"2026-08-25",s:491.04,t:"Buyout",h:"Maj",f:"n/d"},
+  {c:"KAP",d:"2026-08-21",s:null,t:"Secondary",h:"Min",f:"n/d"},
+  {c:"Quest Global Services",d:"2026-08-14",s:null,t:"IPO",h:"Min",f:"n/d"},
+  {c:"AmbioPharm",d:"2026-07-31",s:null,t:"Buyout",h:"Min",f:"n/d"},
 {c:"Atmas Health",d:"2026-06-15",s:null,t:"Other",h:"Maj",f:"n/d"},
 {c:"Liderman",d:"2026-04-21",s:53.5,t:"Buyout",h:"Maj",f:"n/d"},
 {c:"Arctic Glacier",d:"2026-02-18",s:126,t:"Buyout",h:"Maj",f:"n/d"},
@@ -364,12 +400,19 @@ E["CG"]=[
 {c:"YYK Enterprises",d:"2023-04-01",s:null,t:"Other",h:"Min",f:"n/d"}
 ];
 E["BAM"]=[
+  {c:"Altius Telecom Infrastructure Trust",d:"2026-09-02",s:1280.68,t:"Secondary",h:"Min",f:"n/d"},
+  {c:"Centuria Capital (World Square offices)",d:"2026-07-07",s:313.82,t:"M&A",h:"Maj",f:"n/d"},
 {c:"Livensa Living",d:"2025-03-01",s:1249.12,t:"Buyout",h:"Maj",f:"n/d"},
 {c:"Energy Infrastructure Trust",d:"2024-05-06",s:null,t:"Other",h:"Min",f:"n/d"}
 ];
 })();
 ;(function(){var E=(window.ALTS_EXITS=window.ALTS_EXITS||{});
 E["TPG"]=[
+  {c:"Manipal Health Enterprises",d:"2026-08-05",s:966.62,t:"IPO",h:"Min",f:"n/d"},
+  {c:"Dr Agarwals Eye Hospital",d:"2026-08-12",s:209.37,t:"Secondary",h:"Min",f:"n/d"},
+  {c:"Blackline Midstream",d:"2026-07-21",s:77,t:"M&A",h:"Min",f:"n/d"},
+  {c:"Genomatica",d:"2026-08-12",s:null,t:"M&A",h:"Min",f:"n/d"},
+  {c:"Livspace",d:"2026-07-19",s:null,t:"Secondary",h:"Min",f:"n/d"},
 {c:"Avalyn Pharma",d:"2026-04-30",s:300,t:"IPO",h:"Min",f:"n/d"},
 {c:"Infinidat",d:"2026-04-09",s:null,t:"M&A",h:"Min",f:"n/d"},
 {c:"Ouro Medicines",d:"2026-03-22",s:1675,t:"M&A",h:"Min",f:"n/d"},
@@ -433,6 +476,8 @@ E["TPG"]=[
 {c:"CourtTrax",d:"2023-05-01",s:null,t:"Secondary",h:"Min",f:"n/d"}
 ];
 E["PGHN"]=[
+  {c:"Zabka Group",d:"2026-07-31",s:8608.76,t:"M&A",h:"Min",f:"n/d"},
+  {c:"atNorth",d:"2026-09-01",s:4000,t:"Buyout",h:"Maj",f:"n/d"},
 {c:"Ararat Wind Farm",d:"2026-03-06",s:null,t:"M&A",h:"Maj",f:"n/d"},
 {c:"Sirion",d:"2026-02-18",s:900,t:"Buyout",h:"Min",f:"n/d"},
 {c:"Nozomi Networks",d:"2026-01-29",s:null,t:"M&A",h:"Min",f:"n/d"},
@@ -513,6 +558,9 @@ E["EQT"]=[
 })();
 ;(function(){var E=(window.ALTS_EXITS=window.ALTS_EXITS||{});
 E["CVC"]=[
+  {c:"Zabka Group",d:"2026-07-31",s:8608.76,t:"M&A",h:"Min",f:"n/d"},
+  {c:"Fast Logistics",d:"2026-08-26",s:null,t:"Secondary",h:"Min",f:"n/d"},
+  {c:"Icario",d:"2026-09-03",s:null,t:"M&A",h:"Maj",f:"n/d"},
 {c:"Naturgy Energy Group",d:"2026-05-26",s:3587,t:"Secondary",h:"Min",f:"n/d"},
 {c:"Vitech Systems Group",d:"2026-01-08",s:null,t:"Buyout",h:"Maj",f:"n/d"},
 {c:"Alvogen Group",d:"2025-12-03",s:2000,t:"M&A",h:"Maj",f:"n/d"},
@@ -547,6 +595,8 @@ E["ICG"]=[
 {c:"Nadella",d:"2023-04-04",s:null,t:"M&A",h:"Maj",f:"n/d"}
 ];
 E["BPT"]=[
+  {c:"Helio Intelligence",d:"2026-07-09",s:null,t:"Buyout",h:"Min",f:"n/d"},
+  {c:"Bridgepoint Credit (1.2B loan portfolio)",d:"2026-09-08",s:null,t:"Buyout",h:"Maj",f:"n/d"},
 {c:"The Flexitallic Group",d:"2026-04-01",s:475,t:"M&A",h:"Maj",f:"n/d"},
 {c:"Bartec",d:"2026-03-31",s:null,t:"Buyout",h:"Min",f:"n/d"},
 {c:"Sun World International",d:"2026-03-13",s:1425,t:"Buyout",h:"Maj",f:"n/d"},

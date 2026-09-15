@@ -406,8 +406,8 @@ window.ALTS = {
     // ───────────────────────── PGHN ─────────────────────────
     PGHN: {
       ticker:"PGHN", name:"Partners Group", longName:"Partners Group Holding AG", exchange:"SWX", country:"Switzerland",
-      color:"#DC2626", cadence:"annual", period:"FY2025", periodEnd:"2025-12-31", reportDate:"2026-03-10", currency:"CHF",
-      reported:{ FRE:"CHF1.7B*", fpAUM:"~$185B AUM", DE_ps:"—", comment:"*Mgmt fees CHF1.7B (+12% cc); EBITDA margin 62.8%; perf fees CHF819M (+60%); EPS CHF48.63. FPAUM not separately disclosed." },
+      color:"#DC2626", cadence:"annual", period:"H1 2026", periodEnd:"2026-06-30", reportDate:"2026-09-01", currency:"CHF",
+      reported:{ FRE:"CHF 572M", FRE_ps:null, fpAUM:"USD 186B", DE_ps:"CHF 19.49", comment:"CHF P&L / USD AUM. Management Income EBITDA CHF572M (closest FRE analogue) on management income CHF905M, +12% in constant currency; group EBITDA CHF706M at a 63.0% margin; EPS CHF19.49. Record H1 fundraising of USD16B, but performance income fell 39% to CHF216M as exits were pulled into H2'25 and investment income swung to CHF-20M; a stronger CHF turned flat constant-currency profit into a 13% reported decline." },
       fundraising:[
         { name:"Direct Infrastructure IV", strategy:"Infrastructure", status:"Open / raising", target:"N/A", hardCap:"N/A", prevFund:"Direct Infra 2020", raisedToDate:"N/A", firstClose:"N/A", finalClose:"H1 2026 (exp.)", pb:"29642-41F", comment:"Close timing affects mgmt-fee margin." },
         { name:"Private Equity II", strategy:"PE Buyout", status:"Open", target:"N/A", hardCap:"N/A", prevFund:"Direct Equity IV (2019)", raisedToDate:"N/A", firstClose:"N/A", finalClose:"N/A", pb:"16847-56F", comment:"Open flagship PE vehicle." },
@@ -418,14 +418,14 @@ window.ALTS = {
       ],
       fundraisingSummary:"Raised $26B organically in FY2025 (+22% YoY, above the 2021 peak), with bespoke mandate solutions 72% of new assets and now $69B AUM (67% of total). ~350 live vehicles incl. 33 evergreens (3 in private credit). Infra IV and several evergreens are in market. PitchBook does not report hard caps / current raise sizes for any open vehicle.",
       guidance:[
-        { metric:"Perf. fees % of revenue", period:"Medium-term", value:"25–40% (FY26 ~25%)", source:"transcript", comment:"Range widened from 20–30%; 2025 pull-forward keeps FY26 at low end." },
-        { metric:"Management-fee margin", period:"FY2026", value:"~1.24% (stable)", source:"transcript", comment:"Within 1.18–1.33% band." },
-        { metric:"EBITDA margin", period:"FY2026", value:"~63% reported", source:"transcript", comment:"IFRS 18 lifts reported margin ~+110bps; underwriting still ~60%." },
-        { metric:"Effective tax rate", period:"FY2026", value:"18–19%", source:"transcript", comment:"" },
-        { metric:"Dividend / share", period:"FY2025", value:"CHF 46 (+10%)", source:"transcript", comment:"16% CAGR since IPO; 5.7% yield." },
-        { metric:"AUM growth", period:"FY2025", value:"+21% USD / +8% avg CHF", source:"transcript", comment:"No explicit FY26 AUM target." },
+        { metric:"Gross new client demand", period:"FY2026", value:"USD 26-32B", source:"report", comment:"Reconfirmed 1 Sep; USD16B booked in H1, management declined to narrow the range." },
+        { metric:"Tail-down from mature programs", period:"FY2026", value:"USD -10 to -13B", source:"report", comment:"Formula-based run-off pre-agreed with clients; USD-6.6B already incurred in H1." },
+        { metric:"Performance income % of revenues", period:"FY2026", value:"~20-25%", source:"report", comment:"CUT at the 1-Sep print from the 15-Jul guide of 'around the lower end of 25-40%' — timing of select direct exits, with one large exit that may slip into 2027." },
+        { metric:"Performance income % of revenues", period:"Mid-term to 2028", value:"25-40%", source:"report", comment:"Confirmed, against an exit pipeline of roughly USD75B being actively worked; H1'26 slippage feeds 2027." },
+        { metric:"Realization volume", period:"2026 / 2027 / 2028", value:"~USD 20B / 25B / 30B", source:"report", comment:"Explicit forward exit-volume schedule vs actuals of USD12B (2023), 18B (2024), 26B (2025)." },
+        { metric:"Evergreen redemption drag", period:"H2 2026 - FY2027", value:"1-2% of AUM", source:"report", comment:"Concentrated in three mature evergreen strategies; H1'26 redemptions USD3.8B. No change to the July guide." },
       ],
-      guidanceSummary:"Primary guidance is qualitative: performance fees/income 25–40% of revenue medium-term (FY26 at ~25% on 2025 pull-forward), stable ~1.24% mgmt-fee margin and ~63% EBITDA margin. IFRS 18 from FY26 reclassifies investment income to revenue, modestly boosting reported margin only. No numeric AUM/EPS guidance. (S&P guidance tool: no data for PGHN.)",
+      guidanceSummary:"Fundraising guidance of USD26-32B was reconfirmed, but the FY26 performance-income guide was quietly CUT from 'around the lower end of 25-40%' to ~20-25% of revenues — attributed to exit timing, with one large exit possibly slipping into 2027. The mid-term 25-40% band is unchanged against a ~USD75B pipeline, and management published an explicit forward realization schedule of ~USD20B/25B/30B for 2026/27/28. Note IFRS 18: from H1'26 performance income bundles investment income, so it is not comparable with prior-period performance fees (CHF216M income vs CHF233M fees).",
       consensus:{},
       exits:{ quarterly:{
         "2023 Q2":{count:1,totalTV:0}, "2023 Q3":{count:5,totalTV:0}, "2023 Q4":{count:2,totalTV:0}, "2024 Q1":{count:3,totalTV:967},
@@ -490,8 +490,8 @@ window.ALTS = {
     // ───────────────────────── CVC ─────────────────────────
     CVC: {
       ticker:"CVC", name:"CVC", longName:"CVC Capital Partners plc", exchange:"ENXTAM", country:"Luxembourg",
-      color:"#7C2D12", cadence:"semi-annual", period:"FY2025", periodEnd:"2025-12-31", reportDate:"2026-03-11", currency:"EUR",
-      reported:{ FRE:"€1.45B*", fpAUM:"€148B", DE_ps:"—", comment:"*Mgmt fees €1.45B; MFE margin 58%; PRE €254M (+39%); EBITDA €1.1B (+13%); PAT €873M. FPAUM €148B." },
+      color:"#7C2D12", cadence:"semi-annual", period:"H1 2026", periodEnd:"2026-06-30", reportDate:"2026-07-30", currency:"EUR",
+      reported:{ FRE:"EUR 442M", FRE_ps:null, fpAUM:"EUR 153B", DE_ps:"EUR 0.40", comment:"EUR, adjusted basis. FRE EUR442M +11% at a 57% margin; FPAUM EUR153.2B +9% led by Credit/Secondaries/Infra (now >55% of FPAUM); EUR22M of catch-up fees from the Catalyst III and SOF VI closes; PRE EUR110M +15% took adj. EBITDA to EUR554M +12%. Adj. EPS EUR0.40 (statutory EUR0.34). Marathon closed 1 Jul 2026 so is NOT in H1 P&L or FPAUM." },
       fundraising:[
         { name:"Europe/Americas Fund X", strategy:"Large-cap Buyout", status:"Pre-marketing", target:"≥ Fund IX (€26B)", hardCap:"N/A", prevFund:"€26B (Fund IX)", raisedToDate:"N/A", firstClose:"N/A", finalClose:"launch early 2027", pb:"29333-62F", comment:"Strong LP pre-marketing; same-or-larger vs the €26B Fund IX (world's largest PE fund)." },
         { name:"Secondaries Fund VI (Glendower)", strategy:"PE Secondaries", status:"Approaching final close", target:">$8.5B", hardCap:"N/A", prevFund:"Secondaries V", raisedToDate:">$8.5B aggregated", firstClose:"N/A", finalClose:"end summer 2026", pb:"N/A", comment:"'North of $8.5B now aggregated'; strong pipeline to final close." },
@@ -502,15 +502,14 @@ window.ALTS = {
       ],
       fundraisingSummary:"2025 gross inflows a record €23B for an off-cycle year (Credit/Secondaries/Infra ~80%). Key 2026–27 catalysts: Secondaries VI (>$8.5B, near final close) and Catalyst III (oversubscribed, $2B). Flagship Fund X enters pre-marketing, launching early 2027 at same-or-larger than the €26B Fund IX. The $3.5B AIG partnership and Marathon acquisition (~$20B credit FPAUM, closes Q3'26) are additive.",
       guidance:[
-        { metric:"Fee-paying AUM", period:"2025–28", value:"€200B by end-2028 (10%+ CAGR)", source:"transcript", comment:"+€50B split ~1/3 PE, ~1/3 Credit, ~1/3 Secondaries+Infra." },
-        { metric:"Management fee growth", period:"FY2026", value:"stable double-digit", source:"transcript", comment:"+9% in FY2025; MFE margin 58%." },
-        { metric:"Core cost growth", period:"FY2026", value:"mid-to-high single-digit", source:"transcript", comment:"Total cost growth below 10%; a year earlier than indicated." },
-        { metric:"PRE", period:"FY2026", value:"~€254M (flat)", source:"transcript", comment:"Asia V carry now expected 2027." },
-        { metric:"PRE", period:"FY2027", value:"~€400M", source:"transcript", comment:"Asia V initial carry ~€100M." },
-        { metric:"PRE", period:"2028–29", value:"€1.2–1.5B combined", source:"transcript", comment:"Fund VIII harvest." },
-        { metric:"Dividend + buyback", period:"FY2025", value:"€500M div + €350M buyback", source:"transcript", comment:"Progressive dividend." },
+        { metric:"Performance Related Earnings", period:"FY2026-27", value:"~EUR600-700M aggregate", source:"report", comment:"Reaffirmed; 2026 around the 2025 level of EUR254M, first step-up in 2027 on initial Asia V carry. H2-26 second-half weighted, pending regulatory approvals." },
+        { metric:"Performance Related Earnings", period:"FY2028-29", value:"EUR1.2-1.5B aggregate", source:"report", comment:"Fund VIII recognises initial IFRS carry at a 30% contribution to the IPO perimeter (Fund VI 0%, Fund VII 15%)." },
+        { metric:"Embedded future carry", period:"At 30-Jun-26", value:"~EUR5B net", source:"report", comment:"Unchanged vs FY25; midpoint of an implied EUR3.3-7.2B range, excl. EUR0.8B already recognised." },
+        { metric:"Fee-paying AUM CAGR", period:"To 2028", value:"Double-digit %", source:"report", comment:"Fund IX 60-65% deployed at Jun-26; Fund X activation still expected H1 2028 at the ~95% trigger, size to be announced at the September investor meeting." },
+        { metric:"Total operating cost growth", period:"FY2026, then FY2027+", value:"High single digit, then mid-to-high single digit", source:"report", comment:"H1-26 ran at +7%; higher in H2 on hiring phasing and AI/private-wealth/insurance investment." },
+        { metric:"Total realisations", period:"FY2026", value:"Broadly similar to FY25 (~EUR21.9B)", source:"transcript", comment:"H1-26 realisations EUR11.5B +19% YoY and LTM a record EUR23.8B, so the guide implies a materially softer H2 than H2-25's EUR12.3B." },
       ],
-      guidanceSummary:"Central target: €200B FPAUM by end-2028 at 10%+ CAGR. Near-term PRE flat in 2026 (carry recognition slips on macro/exit timing), stepping to ~€400M in 2027 (Asia V) and €1.2–1.5B combined in 2028–29 (Fund VIII). Cost discipline mid-to-high single digit; €850M dividend+buyback for 2025. (S&P guidance tool: no data.)",
+      guidanceSummary:"CVC reaffirmed every medium-term marker: EUR600-700M of PRE across 2026-27 (2026 flat on 2025, first step-up in 2027), EUR1.2-1.5B across 2028-29 as Fund VIII starts recognising carry, ~EUR5B of embedded future carry and a double-digit FPAUM CAGR to 2028 on a Fund X at least the size of Fund IX. Near term the realisations guide of ~EUR21.9B implies a materially softer H2 after a record LTM. Watch the statutory numbers: statutory EBITDA fell EUR733M to EUR585M purely on the non-cash CVC DIF forward-liability revaluation, not on trading.",
       consensus:{ FRE:{cons:520,n:6}, PFRE:{cons:97,n:6} },  // 1H26E VA cons (18-Jun-26), €M; FRE=mgmt EBITDA (operating, FRE-equiv); PFRE incl. investment income
       exits:{ quarterly:{
         "2023 Q2":{count:3,totalTV:428}, "2023 Q3":{count:0,totalTV:0}, "2023 Q4":{count:0,totalTV:0}, "2024 Q1":{count:2,totalTV:2786},
@@ -574,8 +573,8 @@ window.ALTS = {
     // ───────────────────────── BPT ─────────────────────────
     BPT: {
       ticker:"BPT", name:"Bridgepoint", longName:"Bridgepoint Group plc", exchange:"LSE", country:"UK",
-      color:"#9333EA", cadence:"annual", period:"FY2025", periodEnd:"2025-12-31", reportDate:"2026-03-12", currency:"GBP",
-      reported:{ FRE:"£305M*", fpAUM:"$45.5B", DE_ps:"—", comment:"*EBITDA £305M (margin 53%); PRE £151.6M; mgmt fees +13% ex catch-up; total AUM $94.1B (+25%). Calpine closed Jan'26 (not in FY25)." },
+      color:"#9333EA", cadence:"annual", period:"H1 2026", periodEnd:"2026-06-30", reportDate:"2026-07-17", currency:"GBP",
+      reported:{ FRE:"GBP 108M", FRE_ps:null, fpAUM:"USD 58B", DE_ps:"16.3p", comment:"GBP P&L / USD AUM / EUR deal volumes. FRE GBP108M +42% incl. GBP21.7M of catch-up fees (GBP86.3M / +23% excl.); underlying EBITDA GBP227M at a 60.6% margin; underlying EPS 16.3p. FPAUM USD58.4B +33%. Driven by BE VIII starting to pay fees early (9 Jun) and ECP VI's 30-Jun close pulling catch-ups into H1, plus first-time ECP V carry on the Calpine, Symmetry and Cornerstone exits taking PRE to GBP120.7M — about two-thirds of expected FY26 PRE." },
       fundraising:[
         { name:"Bridgepoint Europe VIII (BE VIII)", strategy:"European Mid-market Buyout", status:"Raising — first close Q2'26", target:">€7.5B", hardCap:"not yet set", prevFund:"~€6.5B (BE VII, 87% deployed)", raisedToDate:"€5.4B (closed/IC-approved)", firstClose:"Q2 2026 (exp.)", finalClose:"fee-paying mid-2026", pb:"28314-82F", comment:"20%+ increase from returning LPs; 30%+ from new-to-vertical investors." },
         { name:"ECP VI (Energy Capital Partners)", strategy:"US Energy Transition Infra", status:"Raising — final close H2'26", target:"$5B", hardCap:"$7.5B", prevFund:"~$3.5B (ECP V)", raisedToDate:"$3.7B (first close)", firstClose:"pre-Dec 2025", finalClose:"H2 2026 (brought fwd)", pb:"N/A", comment:"KKR data-center co-invest partnership; Calpine was likely most profitable PE deal ever." },
@@ -586,15 +585,14 @@ window.ALTS = {
       ],
       fundraisingSummary:"Cumulative €24B-by-end-2026 target tracking well (€14B raised through FY2025). BE VIII (€5.4B closed/IC-approved, first close Q2'26) and ECP VI ($3.7B, targeting $5–7.5B) are the primary 2026 drivers; BDL IV exceeded its €4B cover. Newbury secondaries and BCO V are additional 2026 calls. Generations wealth product launched Oct'25 across five markets.",
       guidance:[
-        { metric:"Cumulative fundraising", period:"by end-2026", value:"€24B", source:"transcript", comment:"€14B raised through FY2025." },
-        { metric:"Revenue growth", period:"Through cycle", value:"13–16%/yr", source:"transcript", comment:"Flagships 10–12pp; balance from SMAs/co-invest/new strategies." },
-        { metric:"EBITDA margin", period:"FY2026–27", value:"55–60%", source:"transcript", comment:"Upgraded from FY2025's 53% as BE VIII / ECP VI become fee-paying." },
-        { metric:"PRE % of income", period:"FY2026–27", value:"20–25% (top end)", source:"transcript", comment:"Anchored by Calpine/Constellation share sales (50M shares)." },
-        { metric:"Management fee growth", period:"FY2026", value:"13%+ ex catch-up", source:"transcript", comment:"" },
-        { metric:"Opex growth", period:"FY2026+", value:"high single-digit", source:"transcript", comment:"Newbury breakeven first 2 years." },
-        { metric:"Embedded balance-sheet cash", period:"5 years", value:"~£2B + ~£1.1B next vintage", source:"transcript", comment:"'Pregnant with cash'; M&A (real estate) over buybacks." },
+        { metric:"Fundraising, 2024-26 cycle", period:"By end-2026", value:"EUR 28B (raised from EUR 24B)", source:"report", comment:"EUR26B raised to date, c.EUR2B left for H2. BE VIII final close expected Q1'27 at EUR8-8.5B; ECP VI hard cap lifted to USD7.8B." },
+        { metric:"Management fee growth", period:"Rolling 3-year", value:"13-16%", source:"report", comment:"H1'26 ran +16% excl. catch-up fees; group fee rate broadly flat at 1.17%." },
+        { metric:"Underlying EBITDA margin", period:"FY2026-27", value:"55-60%", source:"transcript", comment:"H1 came in at 60.6%, slightly above the top end; CFO expects FY26 a little lower as PRE was front-loaded." },
+        { metric:"PRE % of total income", period:"FY2026-27 / long term", value:"20-25% long term, top end in 2026-27", source:"report", comment:"H1'26 PRE was 32.2% of income and c.two-thirds of full-year PRE, materially de-risking the FY guide." },
+        { metric:"AUM staging post", period:"2029/2030", value:"USD 200B", source:"report", comment:"CMD target reaffirmed; pro forma AUM already USD120B including pending KARE." },
+        { metric:"Near-term deployment", period:"H2 2026", value:"~EUR 2B further", source:"transcript", comment:"BE VII has made its final investment; BE VIII announced its first at c.EUR600M." },
       ],
-      guidanceSummary:"Guides 13–16% revenue growth through the cycle with EBITDA margin stepping to 55–60% as BE VIII and ECP VI become fully fee-paying. PRE guided 20–25% of income (top end) for FY26–27, anchored by the Calpine/Constellation position. ~£2B of embedded balance-sheet cash over 5 years; prioritises M&A over buybacks. (S&P guidance tool: no data.)",
+      guidanceSummary:"Bridgepoint raised its 2024-26 fundraising target to EUR28B (from EUR24B) with EUR26B already in, and guided PRE to the top end of its 20-25% band for 2026-27 after H1 delivered about two-thirds of expected full-year PRE on first-time ECP V carry. Margin guidance of 55-60% stands with FY26 likely below H1's 60.6%. The pending KARE acquisition is excluded from all figures and carries its own medium-term guidance; it is only expected to close at end-2026 subject to approvals.",
       consensus:{ PFRE:{act:151.6} },
       exits:{ quarterly:{
         "2023 Q2":{count:2,totalTV:2664}, "2023 Q3":{count:1,totalTV:0}, "2023 Q4":{count:1,totalTV:0}, "2024 Q1":{count:1,totalTV:0},

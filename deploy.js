@@ -13,6 +13,13 @@
 ;(function(){
   var D = (window.ALTS_DEPLOY = window.ALTS_DEPLOY || {});
   D["BX"] = [
+  {c:"Huskeys",d:"2026-09-02",s:null,t:""},
+  {c:"Etched",d:"2026-08-18",s:null,t:""},
+  {c:"Firmus Technologies",d:"2026-08-07",s:null,t:""},
+  {c:"Ode with Anthropic",d:"2026-07-15",s:null,t:""},
+  {c:"Adani Enterprises",d:"2026-07-10",s:null,t:""},
+  {c:"INDEL BAURU Industria Eletrometalurgica",d:"2026-07-02",s:null,t:""},
+  {c:"Quantum Systems",d:"2026-07-02",s:null,t:""},
     {c:"CPP Investments (Portfolio of 33 Limited Partnership Fund Interests)", d:"2026-05-20", s:null, t:""},
     {c:"Artificial Intelligence Cloud Company (Alphabet / Blackstone)", d:"2026-05-18", s:null, t:""},
     {c:"Proudreed", d:"2026-05-14", s:null, t:""},
@@ -208,6 +215,8 @@
     {c:"Kite (New York)", d:"2023-04-10", s:null, t:""}
   ];
   D["KKR"] = [
+  {c:"Crowe",d:"2026-08-07",s:null,t:""},
+  {c:"Allyntra",d:"2026-07-09",s:null,t:""},
     {c:"Helix Digital Infrastructure", d:"2026-06-10", s:null, t:""},
     {c:"Fresha", d:"2026-05-21", s:null, t:""},
     {c:"Reserv", d:"2026-05-04", s:null, t:""},
@@ -380,6 +389,13 @@
     {c:"April Group", d:"2023-04-01", s:null, t:""}
   ];
   D["APO"] = [
+  {c:"Atlantic Aviation FBO",d:"2026-08-27",s:null,t:""},
+  {c:"Hadrian",d:"2026-08-14",s:null,t:""},
+  {c:"Joint Venture (Apollo / Starwood REIT)",d:"2026-08-03",s:null,t:""},
+  {c:"Maverick Water Group",d:"2026-07-31",s:null,t:""},
+  {c:"Ode with Anthropic",d:"2026-07-15",s:null,t:""},
+  {c:"Emerald Holding",d:"2026-07-14",s:null,t:""},
+  {c:"Vidrios Lirquen",d:"2026-07-02",s:null,t:""},
     {c:"PaRa Music", d:"2026-06-02", s:null, t:""},
     {c:"Noble Environmental", d:"2026-05-12", s:null, t:""},
     {c:"Grand Frais", d:"2026-05-07", s:null, t:""},
@@ -480,6 +496,7 @@
     {c:"Apollo Clean Transition Capital", d:"2023-04-26", s:null, t:""}
   ];
   D["ARES"] = [
+  {c:"toob",d:"2026-08-17",s:null,t:""},
     {c:"Rover Pipeline", d:"2026-04-29", s:null, t:""},
     {c:"Europastry", d:"2026-03-09", s:null, t:""},
     {c:"FundPark", d:"2025-10-28", s:null, t:""},
@@ -554,6 +571,10 @@
   // NOTE: This entity returned 32 investments shown (total 72 deals in system, 85 rows before filter).
   // No deal sizes available from this endpoint (all null).
   D["BAM"] = [
+  {c:"Boralex",d:"2026-08-14",s:null,t:""},
+  {c:"Lumara Energy",d:"2026-07-30",s:null,t:""},
+  {c:"Joint Venture (Brookfield / Healthpeak Properties)",d:"2026-07-20",s:null,t:""},
+  {c:"GEK Terna",d:"2026-07-01",s:null,t:""},
     {c:"Joint Venture (Brookfield Asset Management / M.H. Alshaya)", d:"2026-05-07", s:null, t:""},
     {c:"Peakstone Realty Trust", d:"2026-05-06", s:null, t:""},
     {c:"Joint Venture (Brookfield / The Nuclear Company)", d:"2026-05-04", s:null, t:""},
@@ -591,6 +612,13 @@
   // CG = The Carlyle Group (PBID 10048-15)
   // Deduped exact company+date duplicates. No deal sizes from this endpoint.
   D["CG"] = [
+  {c:"Seattle Seahawks",d:"2026-09-03",s:null,t:""},
+  {c:"Chungho Naice",d:"2026-08-26",s:null,t:""},
+  {c:"Castelion",d:"2026-08-13",s:null,t:""},
+  {c:"CAIS",d:"2026-07-29",s:null,t:""},
+  {c:"Secturion Systems",d:"2026-07-27",s:null,t:""},
+  {c:"Altera Infrastructure (FPSO business)",d:"2026-07-21",s:null,t:""},
+  {c:"Camino Natural Resources (Oklahoma oil & gas properties)",d:"2026-07-02",s:null,t:""},
     {c:"EqualizeRCM", d:"2026-04-24", s:null, t:""},
     {c:"KFC Korea", d:"2026-04-17", s:null, t:""},
     {c:"Unifi Aviation", d:"2026-03-09", s:null, t:""},
@@ -652,6 +680,14 @@
   // TPG = TPG Inc (PBID 10051-21)
   // Deduped exact company+date duplicates. No deal sizes from this endpoint.
   D["TPG"] = [
+  {c:"WellMed Optum Florida",d:"2026-09-09",s:null,t:""},
+  {c:"The OpenAI Deployment Company",d:"2026-08-18",s:null,t:""},
+  {c:"Waste Eliminator",d:"2026-08-13",s:null,t:""},
+  {c:"Databricks",d:"2026-08-13",s:null,t:""},
+  {c:"Aseem Infrastructure Finance",d:"2026-08-07",s:null,t:""},
+  {c:"Smith + Howard",d:"2026-07-31",s:null,t:""},
+  {c:"Zembl",d:"2026-07-15",s:null,t:""},
+  {c:"Super.com",d:"2026-07-07",s:null,t:""},
     {c:"ECHO Realty", d:"2026-06-05", s:null, t:""},
     {c:"The OpenAI Deployment Company", d:"2026-05-11", s:null, t:""},
     {c:"Sabre Industries", d:"2026-04-30", s:null, t:""},
@@ -743,6 +779,9 @@
   // OWL = Blue Owl Capital (PBID 55785-97)
   // Deduped exact company+date duplicates. No deal sizes from this endpoint.
   D["OWL"] = [
+  {c:"Databricks",d:"2026-08-13",s:null,t:""},
+  {c:"Hollyport Capital",d:"2026-08-12",s:null,t:""},
+  {c:"CAIS",d:"2026-07-29",s:null,t:""},
     {c:"Harvest Partners", d:"2026-04-01", s:null, t:""},
     {c:"Ambrosia Biosciences", d:"2026-03-31", s:null, t:""},
     {c:"Atlas Holdings", d:"2026-03-10", s:null, t:""},
@@ -822,6 +861,7 @@
   // Partners Group (PGHN) — 41 investments shown (2023-04-01 to 2025-12-01)
   // No deal size or deal type returned by PitchBook investor investments endpoint
   D["PGHN"] = [
+  {c:"AVK-SEG",d:"2026-08-06",s:null,t:""},
     {c:"Life Cycle Power", d:"2025-12-01", s:null, t:""},
     {c:"The Hoxton Poblenou", d:"2025-10-30", s:null, t:""},
     {c:"Infinity Fincorp Solutions", d:"2025-10-01", s:null, t:""},
@@ -867,6 +907,10 @@
 
   // EQT AB (EQT) — 86 investments shown (2023-05-04 to 2026-05-19)
   D["EQT"] = [
+  {c:"Americold-EQT Cold Storage Partnership",d:"2026-08-31",s:null,t:""},
+  {c:"CuspAI",d:"2026-08-27",s:null,t:""},
+  {c:"Starcloud",d:"2026-08-21",s:null,t:""},
+  {c:"Copia Power",d:"2026-08-10",s:null,t:""},
     {c:"EQT (Project Volt in Stockholm, Sweden)", d:"2026-05-19", s:null, t:""},
     {c:"Starcloud", d:"2026-05-09", s:null, t:""},
     {c:"Arium Networks", d:"2026-05-01", s:null, t:""},
@@ -957,6 +1001,9 @@
 
   // CVC Capital Partners (CVC) — deduped from 50 raw rows (2023-05-15 to 2025-12-05)
   D["CVC"] = [
+  {c:"Alice Pizza",d:"2026-08-05",s:null,t:""},
+  {c:"WillowWood Global",d:"2026-07-16",s:null,t:""},
+  {c:"Marathon Asset Management",d:"2026-07-01",s:null,t:""},
     {c:"Bamboo (Insurance Brokers)", d:"2025-12-05", s:null, t:""},
     {c:"Dream Games", d:"2025-10-01", s:null, t:""},
     {c:"Namecheap", d:"2025-09-12", s:null, t:""},
@@ -1035,6 +1082,9 @@
 
   // Bridgepoint (BPT) — 34 investments shown (2023-04-04 to 2026-05-07)
   D["BPT"] = [
+  {c:"iC Consult",d:"2026-08-25",s:null,t:""},
+  {c:"Obagi Cosmeceuticals",d:"2026-07-30",s:null,t:""},
+  {c:"VIPR Solutions",d:"2026-07-01",s:null,t:""},
     {c:"Interpath (UK)", d:"2026-05-07", s:null, t:""},
     {c:"Stockfiller", d:"2026-05-01", s:null, t:""},
     {c:"GoldState Music", d:"2026-02-26", s:null, t:""},
