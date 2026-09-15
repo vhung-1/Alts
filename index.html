@@ -979,7 +979,8 @@
 
   // ═════════════════════════ CARRY ═════════════════════════
   const QUARTERS = ["2023 Q3","2023 Q4","2024 Q1","2024 Q2","2024 Q3","2024 Q4","2025 Q1","2025 Q2","2025 Q3","2025 Q4","2026 Q1","2026 Q2"];  // trailing 12 complete quarters, through the last reported quarter (2026 Q2)
-  const QEX = QUARTERS;                                          // no separate QTD column: 2026 Q2 is now fully reported and the PitchBook deal feed runs through mid-Jun 2026
+  const QTD  = "2026 Q3";                                        // in-progress quarter: deal activity is visible, the fees it drives do not print until late Oct
+  const QEX  = QUARTERS.concat([QTD]);                           // 12 complete quarters + quarter-to-date
   const CARRY_ORDER  = FIRM_ORDER.filter(tk => tk !== "OWL");   // Blue Owl earns fees, not carry — excluded from Carry
   const DEPLOY_ORDER = FIRM_ORDER;                             // deployment applies to every manager (Blue Owl included)
   const fmtTV = (m, cur="$") => !isNum(m) ? "n/d" : (Math.abs(m) >= 1000 ? fmtB(m, cur) : `${cur}${Math.round(m)}M`);
@@ -1194,7 +1195,7 @@
                   <thead>
                     <tr style={{ background:T.bgHover }}>
                       <th style={{ ...stick, background:T.bgHover, padding:"6px 12px", textAlign:"left", fontFamily:MONO, fontSize:7.5, fontWeight:700, letterSpacing:"0.06em", color:T.textMuted, borderBottom:`2px solid ${T.border}`, borderRight:`1px solid ${T.border}`, whiteSpace:"nowrap" }}>QUARTER ▸</th>
-                      {QEX.map(qq => { const r=b[qq]; const sel=openQ===qq; const partial=false;
+                      {QEX.map(qq => { const r=b[qq]; const sel=openQ===qq; const partial=qq===QTD;
                         return (
                           <th key={qq} onClick={()=>toggle(qq)} title={partial?"current quarter to date":""}
                               style={{ padding:"6px 9px", textAlign:"center", fontFamily:MONO, fontSize:8.5, fontWeight:700, letterSpacing:"0.02em", color: sel?"#fff":(r.n?c:T.textFaint), background: sel?c:(partial?T.bgStripe:T.bgHover), borderBottom:`2px solid ${sel?c:T.border}`, borderLeft:`1px solid ${T.border}`, cursor:r.n?"pointer":"default", whiteSpace:"nowrap" }}>
@@ -1240,7 +1241,8 @@
                             bg = c + a.toString(16).padStart(2,"0");
                           }
                           return <td key={qq} colSpan={repHalf?2:1} style={{ padding:"7px 9px", textAlign:"center", fontFamily:MONO, fontSize: isRate?9:9.5, fontWeight:700, color: isNum(v)?T.text:T.textFaint, background:bg, borderTop: ri===0?`2px solid ${T.accent}55`:(isRate?`1px dashed ${T.accent}55`:"none"), borderBottom: ri<repRows.length-1?`1px solid ${T.border}`:"none", borderLeft:`1px solid ${T.border}` }}>
-                            {isNum(v) ? (isRate ? v.toFixed(2) : fmtTV(v, repCcy)) : "—"}
+                            {isNum(v) ? (isRate ? v.toFixed(2) : fmtTV(v, repCcy))
+                              : (qq === QTD ? <span title="quarter not yet reported" style={{ fontSize:8, letterSpacing:"0.04em" }}>n/r</span> : "—")}
                             {repHalf && isNum(v) && <div style={{ fontSize:6, fontWeight:700, color:T.textFaint, letterSpacing:"0.06em" }}>{halfLabel(qq)}</div>}</td>;
                         })}
                       </tr>
@@ -1266,7 +1268,7 @@
                 return (
                   <div style={{ borderTop:`1px solid ${T.border}`, background:c+"06" }}>
                     <div style={{ padding:"7px 16px", fontFamily:MONO, fontSize:9, color:c, background:c+"10", borderBottom:`1px solid ${T.border}` }}>
-                      {qLabel(openQ)} — <b>{r.n}</b> {isExit?("exit"+(r.n>1?"s":"")):isIPO?("event"+(r.n>1?"s":"")):("new investment"+(r.n>1?"s":""))}{hasValue?<span> · <b>{r.tv>0?fmtTV(r.tv):"n/d"}</b> {valWord}</span>:null}
+                      {qLabel(openQ)}{openQ===QTD?" ·QTD":""} — <b>{r.n}</b> {isExit?("exit"+(r.n>1?"s":"")):isIPO?("event"+(r.n>1?"s":"")):("new investment"+(r.n>1?"s":""))}{hasValue?<span> · <b>{r.tv>0?fmtTV(r.tv):"n/d"}</b> {valWord}</span>:null}
                     </div>
                     <div style={{ overflowX:"auto" }}>
                       <table style={{ width:"100%", borderCollapse:"collapse", fontSize:10 }}>
@@ -1324,12 +1326,12 @@
         {isDeploy && <FeeDriverDeals filter={filter} ORDER={ORDER} />}
         <div style={{ marginTop:6, fontSize:9, color:T.textFaint, fontFamily:MONO, lineHeight:1.7 }}>
           {isReal
-            ? "Trailing 12 quarters through 2026 Q2 (last reported); PitchBook deal feed runs through mid-Jun 2026. Click a quarter to expand the underlying deals. Activity rows = PitchBook investor-exit feed (Exit rows) + company-deal records (IPO / Sell-Down rows), de-duped, sized by TV (exit) or gross proceeds (IPO/sell-down). REPORTED rows = net realized performance fees + disclosed realizations from S&P Global transcripts / SEC 8-K earnings supplements (core US names, 2025 Q1–2026 Q2). Transcript check = S&P Global last-two-quarters calls vs PitchBook."
+            ? "Trailing 12 complete quarters through 2026 Q2, plus 2026 Q3 quarter-to-date (QTD, excluded from the 3-yr totals). Q3 fees do not print until late Oct, so the REPORTED cells read n/r there — that gap is the point. Click a quarter to expand the underlying deals. Activity rows = PitchBook investor-exit feed (Exit rows) + company-deal records (IPO / Sell-Down rows), de-duped, sized by TV (exit) or gross proceeds (IPO/sell-down). REPORTED rows = net realized performance fees + disclosed realizations from S&P Global transcripts / SEC 8-K earnings supplements (core US names, 2025 Q1–2026 Q2). Transcript check = S&P Global last-two-quarters calls vs PitchBook."
             : isExit
-            ? "Trailing 12 quarters through 2026 Q2. Click a quarter column to expand its exits. Source: PitchBook investor-exit feed (investor_status = Former), deduped by company + date. Transcript check = S&P Global last-two-quarters earnings calls vs PitchBook."
+            ? "Trailing 12 complete quarters through 2026 Q2 plus 2026 Q3 QTD. Click a quarter column to expand its exits. Source: PitchBook investor-exit feed (investor_status = Former), deduped by company + date. Transcript check = S&P Global last-two-quarters earnings calls vs PitchBook."
             : isIPO
-            ? "Trailing 12 quarters through 2026 Q2. Click a quarter column to expand its IPOs & listings. Source: PitchBook company-deal records — IPOs and post-IPO open-market secondaries; captures listings where the GP retains a stake (which the exit feed omits). Coverage = named/marquee listings + best-effort scan of recent active holdings."
-            : "Trailing 12 quarters through 2026 Q2 (last reported); PitchBook deal feed runs through mid-Jun 2026. Click a quarter to see the new investments. Activity row = PitchBook investor-investment feed (entry date = investor_since), deduped by company + date; entry deal size is not exposed, so activity is a count. REPORTED rows = transaction / capital-markets fees + capital deployed from S&P Global transcripts / SEC 8-K earnings supplements (core US names, 2025 Q1–2026 Q2)."}
+            ? "Trailing 12 complete quarters through 2026 Q2 plus 2026 Q3 QTD. Click a quarter column to expand its IPOs & listings. Source: PitchBook company-deal records — IPOs and post-IPO open-market secondaries; captures listings where the GP retains a stake (which the exit feed omits). Coverage = named/marquee listings + best-effort scan of recent active holdings."
+            : "Trailing 12 complete quarters through 2026 Q2, plus 2026 Q3 quarter-to-date (QTD, excluded from the 3-yr totals). Q3 fees do not print until late Oct, so the REPORTED cells read n/r there. Click a quarter to see the new investments. Activity row = PitchBook investor-investment feed (entry date = investor_since), deduped by company + date; entry deal size is not exposed, so activity is a count. REPORTED rows = transaction / capital-markets fees + capital deployed from S&P Global transcripts / SEC 8-K earnings supplements (core US names, 2025 Q1–2026 Q2)."}
         </div>
       </div>
     );

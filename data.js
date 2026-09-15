@@ -30,7 +30,7 @@
 
 window.ALTS = {
   meta: {
-    asOf: "2026-08-16",
+    asOf: "2026-09-15",
     note: "US large-caps at Q1 2026 (Mar 31); European names on semi-annual/annual cadence (FY2025 or FYE Mar-26).",
   },
 
