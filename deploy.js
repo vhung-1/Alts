@@ -10,6 +10,11 @@
 // very active managers; BAM is sparse (most Brookfield deals sit under the parent, not the
 // 515633-59 asset-manager entity). All 13 names incl. Blue Owl (OWL = PBID 55785-97).
 // Source: PitchBook Premium, pitchbook_get_investor_investments, deduped by company + date.
+// REVISION BEHAVIOUR (measured 15 -> 21 Sep 2026): this endpoint is NOT append-only. Re-pulling the
+// same quarter-to-date window both ADDED backfilled records (TPG +1, PGHN +1, EQT +2) and REMOVED
+// records already captured (APO -2, KKR -1, BAM -1), and one exit lost its disclosed size. So a
+// quarter-to-date count is not monotonic and in-progress quarters carry revision noise in BOTH
+// directions — treat the QTD column as provisional, not merely incomplete.
 ;(function(){
   var D = (window.ALTS_DEPLOY = window.ALTS_DEPLOY || {});
   D["BX"] = [
@@ -215,7 +220,7 @@
     {c:"Kite (New York)", d:"2023-04-10", s:null, t:""}
   ];
   D["KKR"] = [
-  {c:"Crowe",d:"2026-08-07",s:null,t:""},
+  {c:"Bayer (Long-acting Reversible Contraceptives)",d:"2026-09-16",s:null,t:""},
   {c:"Allyntra",d:"2026-07-09",s:null,t:""},
     {c:"Helix Digital Infrastructure", d:"2026-06-10", s:null, t:""},
     {c:"Fresha", d:"2026-05-21", s:null, t:""},
@@ -389,8 +394,7 @@
     {c:"April Group", d:"2023-04-01", s:null, t:""}
   ];
   D["APO"] = [
-  {c:"Atlantic Aviation FBO",d:"2026-08-27",s:null,t:""},
-  {c:"Hadrian",d:"2026-08-14",s:null,t:""},
+  {c:"Bayer (Long-acting Reversible Contraceptives)",d:"2026-09-16",s:null,t:""},
   {c:"Joint Venture (Apollo / Starwood REIT)",d:"2026-08-03",s:null,t:""},
   {c:"Maverick Water Group",d:"2026-07-31",s:null,t:""},
   {c:"Ode with Anthropic",d:"2026-07-15",s:null,t:""},
@@ -496,6 +500,8 @@
     {c:"Apollo Clean Transition Capital", d:"2023-04-26", s:null, t:""}
   ];
   D["ARES"] = [
+  {c:"Joint Venture (Ares / PSP Investments)",d:"2026-09-16",s:null,t:""},
+  {c:"U.S. Logistics Real Estate (Ares / PSP)",d:"2026-09-16",s:null,t:""},
   {c:"toob",d:"2026-08-17",s:null,t:""},
     {c:"Rover Pipeline", d:"2026-04-29", s:null, t:""},
     {c:"Europastry", d:"2026-03-09", s:null, t:""},
@@ -572,7 +578,6 @@
   // No deal sizes available from this endpoint (all null).
   D["BAM"] = [
   {c:"Boralex",d:"2026-08-14",s:null,t:""},
-  {c:"Lumara Energy",d:"2026-07-30",s:null,t:""},
   {c:"Joint Venture (Brookfield / Healthpeak Properties)",d:"2026-07-20",s:null,t:""},
   {c:"GEK Terna",d:"2026-07-01",s:null,t:""},
     {c:"Joint Venture (Brookfield Asset Management / M.H. Alshaya)", d:"2026-05-07", s:null, t:""},
@@ -681,9 +686,10 @@
   // Deduped exact company+date duplicates. No deal sizes from this endpoint.
   D["TPG"] = [
   {c:"WellMed Optum Florida",d:"2026-09-09",s:null,t:""},
+  {c:"Crusoe",d:"2026-09-03",s:null,t:""},
   {c:"The OpenAI Deployment Company",d:"2026-08-18",s:null,t:""},
-  {c:"Waste Eliminator",d:"2026-08-13",s:null,t:""},
   {c:"Databricks",d:"2026-08-13",s:null,t:""},
+  {c:"Waste Eliminator",d:"2026-08-13",s:null,t:""},
   {c:"Aseem Infrastructure Finance",d:"2026-08-07",s:null,t:""},
   {c:"Smith + Howard",d:"2026-07-31",s:null,t:""},
   {c:"Zembl",d:"2026-07-15",s:null,t:""},
@@ -861,6 +867,8 @@
   // Partners Group (PGHN) — 41 investments shown (2023-04-01 to 2025-12-01)
   // No deal size or deal type returned by PitchBook investor investments endpoint
   D["PGHN"] = [
+  {c:"HSBC AM (UK PBSA portfolio, 1570 beds)",d:"2026-09-18",s:null,t:""},
+  {c:"Sports Entertainment Group International",d:"2026-09-15",s:null,t:""},
   {c:"AVK-SEG",d:"2026-08-06",s:null,t:""},
     {c:"Life Cycle Power", d:"2025-12-01", s:null, t:""},
     {c:"The Hoxton Poblenou", d:"2025-10-30", s:null, t:""},
@@ -907,6 +915,8 @@
 
   // EQT AB (EQT) — 86 investments shown (2023-05-04 to 2026-05-19)
   D["EQT"] = [
+  {c:"Euclyd",d:"2026-09-15",s:null,t:""},
+  {c:"Tandem (Medical Records Systems)",d:"2026-09-14",s:null,t:""},
   {c:"Americold-EQT Cold Storage Partnership",d:"2026-08-31",s:null,t:""},
   {c:"CuspAI",d:"2026-08-27",s:null,t:""},
   {c:"Starcloud",d:"2026-08-21",s:null,t:""},

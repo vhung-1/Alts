@@ -1,3 +1,8 @@
+// REVISION BEHAVIOUR (measured 15 -> 21 Sep 2026): this endpoint is NOT append-only. Re-pulling the
+// same quarter-to-date window both ADDED backfilled records (TPG +1, PGHN +1, EQT +2) and REMOVED
+// records already captured (APO -2, KKR -1, BAM -1), and one exit lost its disclosed size. So a
+// quarter-to-date count is not monotonic and in-progress quarters carry revision noise in BOTH
+// directions — treat the QTD column as provisional, not merely incomplete.
 ;(function(){var E=(window.ALTS_EXITS=window.ALTS_EXITS||{});
 E["BX"]=[
   {c:"Cirsa Enterprises",d:"2026-09-02",s:3246.26,t:"M&A",h:"Maj",f:"n/d"},
@@ -8,7 +13,6 @@ E["BX"]=[
   {c:"Horizon Industrial Parks",d:"2026-08-24",s:272.11,t:"IPO",h:"Maj",f:"n/d"},
   {c:"Crescent Biopharma",d:"2026-07-16",s:117.37,t:"2nd offering",h:"Min",f:"n/d"},
   {c:"Hotel Investment Partners",d:"2026-09-02",s:null,t:"IPO",h:"Maj",f:"n/d"},
-  {c:"Blackstone (19 German logistics assets)",d:"2026-07-21",s:null,t:"M&A",h:"Maj",f:"n/d"},
 {c:"Onyx-Fire Protection Services",d:"2026-06-08",s:null,t:"M&A",h:"Maj",f:"n/d"},
 {c:"Jade Biosciences",d:"2026-06-05",s:150,t:"2nd offering",h:"Min",f:"n/d"},
 {c:"Qlar Group",d:"2026-05-07",s:null,t:"Buyout",h:"Maj",f:"n/d"},
@@ -124,14 +128,14 @@ E["BX"]=[
 E["KKR"]=[
   {c:"USI Insurance Services",d:"2026-08-31",s:17000,t:"M&A",h:"Maj",f:"n/d"},
   {c:"CoolIT Systems",d:"2026-07-02",s:4750,t:"M&A",h:"Maj",f:"n/d"},
+  {c:"First Gen",d:"2026-09-14",s:413.77,t:"Secondary",h:"Min",f:"n/d"},
   {c:"LEAP India",d:"2026-08-14",s:258.76,t:"IPO",h:"Maj",f:"n/d"},
-  {c:"Atlantic Aviation FBO",d:"2026-08-27",s:null,t:"Buyout",h:"Maj",f:"n/d"},
-  {c:"Ocean Yield",d:"2026-08-21",s:null,t:"Buyout",h:"Maj",f:"n/d"},
   {c:"J. B. Chemicals & Pharmaceuticals",d:"2026-07-08",s:null,t:"M&A",h:"Min",f:"n/d"},
   {c:"Livspace",d:"2026-07-19",s:null,t:"Secondary",h:"Min",f:"n/d"},
-  {c:"Nordic Bioscience",d:"2026-09-03",s:null,t:"Secondary",h:"Min",f:"n/d"},
+  {c:"Ocean Yield",d:"2026-08-21",s:null,t:"Buyout",h:"Maj",f:"n/d"},
   {c:"Accell Group",d:"2026-08-05",s:null,t:"Bankruptcy",h:"Maj",f:"n/d"},
   {c:"Gamma Biosciences",d:"2026-08-26",s:null,t:"Bankruptcy",h:"Maj",f:"n/d"},
+  {c:"Nordic Bioscience",d:"2026-09-03",s:null,t:"Secondary",h:"Min",f:"n/d"},
   {c:"Joulon",d:"2026-09-05",s:null,t:"Bankruptcy",h:"Maj",f:"n/d"},
 {c:"Axius Water",d:"2026-06-01",s:700,t:"M&A",h:"Maj",f:"n/d"},
 {c:"Kokusai Electric",d:"2026-05-20",s:958,t:"Secondary",h:"Min",f:"n/d"},
@@ -224,7 +228,7 @@ E["KKR"]=[
 ];
 E["APO"]=[
   {c:"Concord Music",d:"2026-09-01",s:7000,t:"M&A",h:"Min",f:"n/d"},
-  {c:"Great Bay Renewables",d:"2026-07-30",s:390,t:"Buyout",h:"Maj",f:"n/d"},
+  {c:"Great Bay Renewables",d:"2026-07-10",s:390,t:"Buyout",h:"Maj",f:"n/d"},
 {c:"NSI Industries",d:"2026-06-09",s:3000,t:"M&A",h:"Min",f:"n/d"},
 {c:"Sun Country Airlines",d:"2026-05-13",s:1386,t:"M&A",h:"Min",f:"n/d"},
 {c:"Invited Clubs",d:"2026-05-05",s:3000,t:"Buyout",h:"Maj",f:"n/d"},
@@ -270,11 +274,11 @@ E["APO"]=[
 ;(function(){var E=(window.ALTS_EXITS=window.ALTS_EXITS||{});
 E["ARES"]=[
   {c:"Savers Value Village",d:"2026-08-13",s:235.75,t:"Secondary",h:"Maj",f:"n/d"},
-  {c:"Vivantadental",d:"2026-09-07",s:null,t:"Buyout",h:"Maj",f:"n/d"},
   {c:"Genomatica",d:"2026-08-12",s:null,t:"M&A",h:"Min",f:"n/d"},
   {c:"Professional Fighters League",d:"2026-07-30",s:null,t:"M&A",h:"Min",f:"n/d"},
   {c:"Novotel London Greenwich",d:"2026-07-20",s:null,t:"Buyout",h:"Maj",f:"n/d"},
   {c:"Repairify",d:"2026-07-02",s:null,t:"Buyout",h:"Min",f:"n/d"},
+  {c:"Vivantadental",d:"2026-09-07",s:null,t:"Buyout",h:"Maj",f:"n/d"},
 {c:"Global Medical Response",d:"2026-05-13",s:478.72,t:"IPO",h:"Min",f:"n/d"},
 {c:"Teasdale Foods",d:"2026-04-07",s:null,t:"Buyout",h:"Min",f:"n/d"},
 {c:"Team Services Group",d:"2026-03-31",s:3000,t:"Buyout",h:"Min",f:"n/d"},
@@ -400,7 +404,6 @@ E["CG"]=[
 {c:"YYK Enterprises",d:"2023-04-01",s:null,t:"Other",h:"Min",f:"n/d"}
 ];
 E["BAM"]=[
-  {c:"Altius Telecom Infrastructure Trust",d:"2026-09-02",s:1280.68,t:"Secondary",h:"Min",f:"n/d"},
   {c:"Centuria Capital (World Square offices)",d:"2026-07-07",s:313.82,t:"M&A",h:"Maj",f:"n/d"},
 {c:"Livensa Living",d:"2025-03-01",s:1249.12,t:"Buyout",h:"Maj",f:"n/d"},
 {c:"Energy Infrastructure Trust",d:"2024-05-06",s:null,t:"Other",h:"Min",f:"n/d"}
@@ -559,8 +562,8 @@ E["EQT"]=[
 ;(function(){var E=(window.ALTS_EXITS=window.ALTS_EXITS||{});
 E["CVC"]=[
   {c:"Zabka Group",d:"2026-07-31",s:8608.76,t:"M&A",h:"Min",f:"n/d"},
-  {c:"Fast Logistics",d:"2026-08-26",s:null,t:"Secondary",h:"Min",f:"n/d"},
   {c:"Icario",d:"2026-09-03",s:null,t:"M&A",h:"Maj",f:"n/d"},
+  {c:"Fast Logistics",d:"2026-08-26",s:null,t:"Secondary",h:"Min",f:"n/d"},
 {c:"Naturgy Energy Group",d:"2026-05-26",s:3587,t:"Secondary",h:"Min",f:"n/d"},
 {c:"Vitech Systems Group",d:"2026-01-08",s:null,t:"Buyout",h:"Maj",f:"n/d"},
 {c:"Alvogen Group",d:"2025-12-03",s:2000,t:"M&A",h:"Maj",f:"n/d"},
