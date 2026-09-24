@@ -1245,6 +1245,8 @@
                           return <td key={qq} colSpan={cell.span} style={{ padding:"7px 9px", textAlign:"center", fontFamily:MONO, fontSize: isRate?9:9.5, fontWeight:700, color: isNum(v)?T.text:T.textFaint, background:bg, borderTop: ri===0?`2px solid ${T.accent}55`:(isRate?`1px dashed ${T.accent}55`:"none"), borderBottom: ri<repRows.length-1?`1px solid ${T.border}`:"none", borderLeft:`1px solid ${T.border}` }}>
                             {isNum(v) ? (isRate ? v.toFixed(2) : fmtTV(v, repCcy))
                               : ((qq === QTD || (repHalf && qq === halfOf(QTD))) ? <span title="period not yet reported" style={{ fontSize:8, letterSpacing:"0.04em" }}>n/r</span> : "—")}
+                            {!isRate && !isNum(v) && repFirm && repFirm[qq] && repFirm[qq].prelimShort && ri===0 &&
+                              <div title={repFirm[qq].prelim} style={{ marginTop:3, fontSize:7, fontWeight:700, color:T.neg, letterSpacing:"0.02em", whiteSpace:"normal", lineHeight:1.25, maxWidth:120 }}>{repFirm[qq].prelimShort} ⓘ</div>}
                             {repHalf && isNum(v) && <div style={{ fontSize:6, fontWeight:700, color:T.textFaint, letterSpacing:"0.06em" }}>{halfLabel(qq)}</div>}</td>;
                         })}
                       </tr>

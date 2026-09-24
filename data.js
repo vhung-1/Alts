@@ -81,6 +81,7 @@ window.ALTS = {
       ],
       fundraisingSummary:"Strong Q1'26 cycle: two flagships reached final close (BXLS VI at its $6.3B hard cap, COF V at >$10B), BCP Asia III hit its $13B hard cap by June. SP X is at $11B of a >$22B target and BETP V launched at $1.7B. Total inflows $69B in Q1 (~$250B LTM); management guided base-fee acceleration into H2'26 as drawdown funds come off fee holidays.",
       guidance:[
+        { metric:"Intra-quarter realization update", period:"3Q26 (1 Jul-22 Sep)", value:">$350M realized perf rev + principal inv. income", source:"8-K", comment:"Filed 22 Sep. ~90% is realized performance revenue (~$315M+) vs $731M in 2Q26 and $745M in 3Q25 - roughly half on a like-for-like gross basis. Pre-compensation, so not the net-realizations line; at BX's historical net/gross ratio it implies net of roughly $180-200M, below the 12-quarter low." },
         { metric:"Base management fees", period:"Q3 2026", value:"Similar YoY growth to Q2", source:"transcript", comment:"Base fees grew mid-single-digit in Q2; same YoY pace expected in 3Q." },
         { metric:"Base management fees", period:"FY2027", value:"Return to double-digit growth", source:"transcript", comment:"PE drawdown activations, perpetual/infra scaling, $84B credit dry powder, RE base-fee stabilization." },
         { metric:"Net realizations", period:"H2 2026", value:"3Q down seq., 4Q robust", source:"transcript", comment:"Net accrued perf revenue $7.5B ($6.00/sh), a 4-year high." },
