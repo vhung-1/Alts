@@ -1188,9 +1188,16 @@
     if (!FIN || !FIN.deals) return null;
     const firms = Object.keys(FIN.deals).filter(tk => (filter === "All" || filter === tk) && (!ORDER || ORDER.includes(tk)));
     if (!firms.length) return null;
+    // header span from the quarters actually present: a full first half reads "H1", the in-progress quarter reads "QTD"
+    const qs = [...new Set(firms.flatMap(tk => (FIN.deals[tk] || []).map(d => d.q)).filter(Boolean))].sort();
+    const span = [...new Set(qs.map(q => q.slice(0, 4)))].map(y => {
+      const inY = qs.filter(q => q.startsWith(y)).map(q => q.slice(5));
+      const h1 = inY.includes("Q1") && inY.includes("Q2");
+      return [h1 ? `${y} H1` : null, ...inY.filter(x => !(h1 && (x === "Q1" || x === "Q2"))).map(x => `${h1 ? "" : y + " "}${x}${`${y} ${x}` === QTD ? " QTD" : ""}`)].filter(Boolean).join(" + ");
+    }).join(" · ");
     return (
       <div style={{ marginTop:22 }}>
-        <div style={{ fontFamily:MONO, fontSize:10, fontWeight:700, letterSpacing:"0.06em", color:T.text, marginBottom:4 }}>◆ FEE DRIVERS — MARQUEE SIZED DEALS (2026 H1)</div>
+        <div style={{ fontFamily:MONO, fontSize:10, fontWeight:700, letterSpacing:"0.06em", color:T.text, marginBottom:4 }}>◆ FEE DRIVERS — MARQUEE SIZED DEALS ({span})</div>
         <div style={{ fontSize:10, color:T.textSub, marginBottom:12, lineHeight:1.55, maxWidth:940 }}>
           The <b>#&nbsp;New&nbsp;inv.</b> count can't see deal <i>size</i>, but transaction &amp; capital-markets fees scale with it — this is the missing size signal. The large sponsor-led buyouts / take-privates / carve-outs / platforms each firm led, sized from PitchBook (deal size · debt raised). Top deals per quarter, not exhaustive. Size is the <i>whole-deal</i> value (consortium deals include partners' capital) — read it as fee-driving deal scale, not the manager's own check. <span style={{color:T.textFaint}}>ARES omitted (no transaction-fee line).</span>
         </div>
