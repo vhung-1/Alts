@@ -5,7 +5,8 @@
 // Source: PitchBook Premium, pitchbook_get_investor_investments. Pulled 2026-09-26 for the full window
 // 2023-04-01 .. 2026-09-26 (quarter-to-date).
 // Excluded although PitchBook marks them Completed: Carlyle/Quest Global "IPO" 2026-08-14 (bank mandate only;
-// listing ~2027) and KKR/USI Insurance Services 2026-08-31 ($17B sale to Aon, closing expected 4Q26 per KKR).
+// listing ~2027), ICG/Visma "IPO" 2026-03-27 (IPO postponed to 2027, Visma still private) and KKR/USI Insurance
+// Services 2026-08-31 ($17B sale to Aon, closing expected 4Q26 per KKR).
 // REVISION BEHAVIOUR: this endpoint is NOT append-only, and it keeps revising well after quarter-end.
 //   15 -> 21 Sep 2026 (Q3 QTD re-pull): records both ADDED (backfill) and REMOVED; one exit lost its size.
 //   21 -> 26 Sep 2026: Q2 2026 new investments rose 46 -> 76 (almost all dated before 21 Sep), and a
@@ -13,7 +14,7 @@
 //   file was re-pulled on the SAME day (26 Sep 2026), so quarters are comparable with each other as of
 //   that date. The most recent quarters will still fill in further — read the latest 1-2 quarters as
 //   provisional, and the QTD column as provisional in both directions.
-;(window.ALTS_FEEDS=window.ALTS_FEEDS||{}).exits={lab:"PitchBook exits",asOf:"2026-09-26",extra:"re-pull still running for CVC, ICG, BPT (21 Sep series shown)",src:"PitchBook Premium investor_investments, Completed exits, whole history re-pulled 26 Sep 2026"};
+;(window.ALTS_FEEDS=window.ALTS_FEEDS||{}).exits={lab:"PitchBook exits",asOf:"2026-09-26",src:"PitchBook Premium investor_investments, Completed exits, whole history re-pulled 26 Sep 2026"};
 ;(function(){var E=(window.ALTS_EXITS=window.ALTS_EXITS||{});
 E["BX"]=[
   {c:"Cirsa Enterprises",d:"2026-09-02",s:3246.26264352,t:"M&A",h:"Maj",f:"n/d"},
@@ -874,28 +875,67 @@ E["EQT"]=[
   {c:"Blume Global",d:"2023-04-01",s:414,t:"M&A",h:"Min",f:"n/d"}
 ];
 E["CVC"]=[
-  {c:"Zabka Group",d:"2026-07-31",s:8608.76,t:"M&A",h:"Min",f:"n/d"},
   {c:"Icario",d:"2026-09-03",s:null,t:"M&A",h:"Maj",f:"n/d"},
   {c:"Fast Logistics",d:"2026-08-26",s:null,t:"Secondary",h:"Min",f:"n/d"},
-  {c:"Naturgy Energy Group",d:"2026-05-26",s:3587,t:"Secondary",h:"Min",f:"n/d"},
+  {c:"Zabka Group",d:"2026-07-31",s:8608.76059711,t:"M&A",h:"Min",f:"n/d"},
+  {c:"Aham Asset Management",d:"2026-06-30",s:559.8802271,t:"M&A",h:"n/d",f:"n/d"},
+  {c:"Worldwide Express",d:"2026-06-01",s:5090,t:"Buyout",h:"n/d",f:"n/d"},
+  {c:"Fine Today",d:"2026-06-01",s:1263.78393339,t:"Buyout",h:"n/d",f:"n/d"},
+  {c:"Rayner Group",d:"2026-05-28",s:584.2038295,t:"Secondary",h:"n/d",f:"n/d"},
+  {c:"Naturgy Energy Group",d:"2026-05-26",s:4467.18871283,t:"Secondary",h:"Min",f:"n/d"},
+  {c:"Tipico Group",d:"2026-04-23",s:5407.63146751,t:"M&A",h:"n/d",f:"n/d"},
+  {c:"Sebia",d:"2026-04-17",s:null,t:"Buyout",h:"n/d",f:"n/d"},
+  {c:"Pension Insurance Corporation",d:"2026-03-27",s:7623.09968607,t:"Buyout",h:"n/d",f:"n/d"},
   {c:"Vitech Systems Group",d:"2026-01-08",s:null,t:"Buyout",h:"Maj",f:"n/d"},
+  {c:"Yeogi Eottae",d:"2025-12-31",s:550,t:"Continuation Fund Transaction",h:"n/d",f:"n/d"},
   {c:"Alvogen Group",d:"2025-12-03",s:2000,t:"M&A",h:"Maj",f:"n/d"},
-  {c:"The Ethniki Hellenic General Insurance",d:"2025-11-27",s:694,t:"M&A",h:"Maj",f:"n/d"},
-  {c:"Curalie",d:"2025-05-29",s:null,t:"Bankruptcy",h:"Maj",f:"n/d"},
+  {c:"Domestic & General",d:"2025-12-02",s:null,t:"Buyout",h:"n/d",f:"n/d"},
+  {c:"The Ethniki Hellenic General Insurance Company",d:"2025-11-27",s:693.92854926,t:"M&A",h:"n/d",f:"n/d"},
+  {c:"Vitalia Home",d:"2025-11-13",s:1739.55263345,t:"Buyout",h:"n/d",f:"n/d"},
+  {c:"Genetic",d:"2025-10-13",s:820.53173582,t:"Buyout",h:"n/d",f:"n/d"},
+  {c:"Hellenic Healthcare",d:"2025-10-07",s:939.17988465,t:"M&A",h:"n/d",f:"n/d"},
+  {c:"NewDay",d:"2025-10-01",s:null,t:"Buyout",h:"n/d",f:"n/d"},
+  {c:"Ahlsell",d:"2025-09-11",s:null,t:"Continuation Fund Transaction",h:"n/d",f:"n/d"},
+  {c:"HealthCare Global Enterprises",d:"2025-09-10",s:62.91657706,t:"Secondary",h:"n/d",f:"n/d"},
+  {c:"Tidlor Holdings",d:"2025-08-13",s:null,t:"Secondary",h:"n/d",f:"n/d"},
+  {c:"Teneo Holdings",d:"2025-08-04",s:null,t:"Secondary",h:"n/d",f:"n/d"},
+  {c:"Etraveli Group",d:"2025-07-21",s:851.98387191,t:"Secondary",h:"n/d",f:"n/d"},
+  {c:"Curalie",d:"2025-05-29",s:null,t:"Out of Business",h:"Maj",f:"n/d"},
+  {c:"Gujarat Titans",d:"2025-03-17",s:9.62360796,t:"M&A",h:"n/d",f:"n/d"},
   {c:"Autobar",d:"2025-03-01",s:null,t:"M&A",h:"Maj",f:"n/d"},
+  {c:"Tendam",d:"2025-02-25",s:918.92602696,t:"M&A",h:"n/d",f:"n/d"},
   {c:"Skybox Security",d:"2025-02-24",s:null,t:"Buyout",h:"Min",f:"n/d"},
   {c:"Mail Step",d:"2025-02-18",s:null,t:"Buyout",h:"Maj",f:"n/d"},
   {c:"OANDA",d:"2025-01-30",s:250,t:"M&A",h:"Maj",f:"n/d"},
   {c:"Verwater Group",d:"2024-11-20",s:null,t:"Buyout",h:"Maj",f:"n/d"},
+  {c:"DKV Mobility Group",d:"2024-09-30",s:null,t:"Secondary",h:"n/d",f:"n/d"},
+  {c:"Acronis",d:"2024-08-07",s:null,t:"Buyout",h:"n/d",f:"n/d"},
+  {c:"GEMS Education",d:"2024-07-17",s:2000,t:"Secondary",h:"n/d",f:"n/d"},
+  {c:"Pelagos Insurance Capital",d:"2024-05-23",s:144,t:"Secondary",h:"n/d",f:"n/d"},
+  {c:"Recordati",d:"2024-04-24",s:6147.73479618,t:"M&A",h:"n/d",f:"n/d"},
+  {c:"Asia Commercial Bank",d:"2024-04-12",s:220,t:"Secondary",h:"n/d",f:"n/d"},
+  {c:"Parfümerie Douglas",d:"2024-03-21",s:966.76176802,t:"IPO",h:"n/d",f:"n/d"},
+  {c:"Synsam Group",d:"2024-03-07",s:104.95599249,t:"Secondary",h:"n/d",f:"n/d"},
+  {c:"Phoenix Legacy",d:"2024-02-29",s:485.84302636,t:"M&A",h:"n/d",f:"n/d"},
   {c:"Neptune Energy",d:"2024-01-31",s:2300,t:"M&A",h:"Min",f:"n/d"},
+  {c:"Apidos Capital Management",d:"2024-01-01",s:null,t:"M&A",h:"n/d",f:"n/d"},
   {c:"Messer Americas",d:"2023-05-30",s:null,t:"Buyout",h:"Maj",f:"n/d"},
+  {c:"PGE Energetyka Kolejowa",d:"2023-04-03",s:428.10483606,t:"M&A",h:"n/d",f:"n/d"},
   {c:"April Group",d:"2023-04-01",s:null,t:"Buyout",h:"Maj",f:"n/d"}
 ];
 E["ICG"]=[
-  {c:"PSB Academy",d:"2026-01-12",s:544,t:"Buyout",h:"Maj",f:"n/d"},
+  {c:"Study Group",d:"2026-05-08",s:null,t:"Buyout",h:"n/d",f:"n/d"},
+  {c:"PSB Academy",d:"2026-01-12",s:543.63386622,t:"Buyout",h:"Maj",f:"n/d"},
+  {c:"Dietrich Engineering Consultants",d:"2026-01-12",s:null,t:"M&A",h:"n/d",f:"n/d"},
   {c:"With Intelligence",d:"2025-11-25",s:1800,t:"M&A",h:"Min",f:"n/d"},
-  {c:"Time Education",d:"2025-09-03",s:65,t:"Buyout",h:"Maj",f:"n/d"},
-  {c:"Akuo Energy",d:"2025-07-04",s:731,t:"Buyout",h:"Min",f:"n/d"},
+  {c:"Infra Group",d:"2025-09-11",s:3504.93494841,t:"PE Growth/Expansion",h:"n/d",f:"n/d"},
+  {c:"Time Education",d:"2025-09-03",s:64.73761428,t:"Buyout",h:"Maj",f:"n/d"},
+  {c:"Eroski (Four Hypermarkets in Spain)",d:"2025-09-01",s:null,t:"M&A",h:"n/d",f:"n/d"},
+  {c:"Alpha Media",d:"2025-08-13",s:null,t:"M&A",h:"n/d",f:"n/d"},
+  {c:"Akuo Energy",d:"2025-07-04",s:731.36143663,t:"Buyout",h:"Min",f:"n/d"},
+  {c:"RSEA",d:"2025-06-01",s:null,t:"M&A",h:"n/d",f:"n/d"},
+  {c:"Minimax",d:"2025-04-16",s:58.13600608,t:"Secondary",h:"n/d",f:"n/d"},
+  {c:"Kee Safety",d:"2025-04-01",s:1006.99734049,t:"Buyout",h:"n/d",f:"n/d"},
   {c:"Marston Holdings",d:"2025-04-01",s:null,t:"Secondary",h:"Min",f:"n/d"},
   {c:"Lunch Garden",d:"2025-01-20",s:null,t:"Bankruptcy",h:"Maj",f:"n/d"},
   {c:"Picard Surgelés",d:"2024-12-18",s:null,t:"Buyout",h:"Min",f:"n/d"},
@@ -903,35 +943,40 @@ E["ICG"]=[
   {c:"Datavant",d:"2024-08-30",s:null,t:"Buyout",h:"Min",f:"n/d"},
   {c:"Inenco Group",d:"2024-08-16",s:null,t:"Buyout",h:"Maj",f:"n/d"},
   {c:"Amolyt Pharma",d:"2024-07-15",s:1107,t:"M&A",h:"Min",f:"n/d"},
-  {c:"Ventura Motors",d:"2024-06-03",s:398,t:"Buyout",h:"Min",f:"n/d"},
+  {c:"Ventura Motors",d:"2024-06-03",s:398.22559524,t:"Buyout",h:"Min",f:"n/d"},
   {c:"Groupe OCEA",d:"2024-04-04",s:null,t:"Buyout",h:"Maj",f:"n/d"},
+  {c:"IRIS Software Group",d:"2024-04-01",s:4003.03976861,t:"Buyout",h:"n/d",f:"n/d"},
   {c:"6point6",d:"2023-12-29",s:null,t:"M&A",h:"Min",f:"n/d"},
   {c:"VESCON (Frankenthal)",d:"2023-08-31",s:null,t:"Buyout",h:"Min",f:"n/d"},
-  {c:"JamesTech",d:"2023-07-01",s:null,t:"Bankruptcy",h:"Maj",f:"n/d"},
+  {c:"JamesTech",d:"2023-07-01",s:null,t:"Out of Business",h:"Maj",f:"n/d"},
   {c:"Nadella",d:"2023-04-04",s:null,t:"M&A",h:"Maj",f:"n/d"}
 ];
 E["BPT"]=[
+  {c:"Sotralu",d:"2026-09-24",s:null,t:"Buyout",h:"n/d",f:"n/d"},
+  {c:"Bridgepoint Group (Bridgepoint Credit 1.2 Billion Loan Portfolio)",d:"2026-09-08",s:null,t:"Buyout",h:"n/d",f:"n/d"},
   {c:"Helio Intelligence",d:"2026-07-09",s:null,t:"Buyout",h:"Min",f:"n/d"},
-  {c:"Bridgepoint Credit (1.2B loan portfolio)",d:"2026-09-08",s:null,t:"Buyout",h:"Maj",f:"n/d"},
-  {c:"The Flexitallic Group",d:"2026-04-01",s:475,t:"M&A",h:"Maj",f:"n/d"},
+  {c:"The Flexitallic Group",d:"2026-04-06",s:475.1,t:"M&A",h:"n/d",f:"n/d"},
   {c:"Bartec",d:"2026-03-31",s:null,t:"Buyout",h:"Min",f:"n/d"},
   {c:"Sun World International",d:"2026-03-13",s:1425,t:"Buyout",h:"Maj",f:"n/d"},
   {c:"TasteCard",d:"2025-12-31",s:null,t:"Buyout",h:"Maj",f:"n/d"},
-  {c:"Vermaat Groep",d:"2025-12-16",s:1743,t:"M&A",h:"Maj",f:"n/d"},
-  {c:"Kereis",d:"2025-10-27",s:2332,t:"Buyout",h:"Maj",f:"n/d"},
-  {c:"Cyrus Herez",d:"2025-10-25",s:1400,t:"Buyout",h:"Min",f:"n/d"},
-  {c:"Cruise.co.uk",d:"2025-07-29",s:341,t:"M&A",h:"Maj",f:"n/d"},
+  {c:"Vermaat Groep",d:"2025-12-16",s:1743.07399233,t:"M&A",h:"Maj",f:"n/d"},
+  {c:"Evac",d:"2025-12-08",s:695.32916496,t:"Buyout",h:"n/d",f:"n/d"},
+  {c:"Practice Plus Group",d:"2025-10-31",s:252.43255049,t:"M&A",h:"n/d",f:"n/d"},
+  {c:"Kereis",d:"2025-10-27",s:2332.09589734,t:"Buyout",h:"Maj",f:"n/d"},
+  {c:"Cyrus Herez",d:"2025-10-25",s:1399.86312449,t:"Buyout",h:"Min",f:"n/d"},
+  {c:"Cruise.co.uk",d:"2025-07-29",s:341.02642639,t:"M&A",h:"Maj",f:"n/d"},
   {c:"Dorna Sports",d:"2025-07-03",s:3659,t:"M&A",h:"Min",f:"n/d"},
   {c:"Primonial",d:"2025-04-07",s:null,t:"Buyout",h:"Min",f:"n/d"},
-  {c:"Younited Financial",d:"2024-12-20",s:null,t:"Other",h:"Min",f:"n/d"},
+  {c:"Younited Financial",d:"2024-12-20",s:null,t:"Reverse Merger",h:"Min",f:"n/d"},
   {c:"Newco AH",d:"2024-11-01",s:null,t:"M&A",h:"Maj",f:"n/d"},
   {c:"Care UK",d:"2024-10-01",s:null,t:"Buyout",h:"Maj",f:"n/d"},
-  {c:"Hobbycraft",d:"2024-08-23",s:null,t:"Buyout",h:"Maj",f:"n/d"},
-  {c:"Vitamin Well (Sweden)",d:"2024-08-07",s:null,t:"Buyout",h:"Maj",f:"n/d"},
+  {c:"Hobbycraft Trading",d:"2024-08-23",s:null,t:"Buyout",h:"n/d",f:"n/d"},
+  {c:"Vitamin Well",d:"2024-08-07",s:null,t:"Buyout",h:"n/d",f:"n/d"},
   {c:"SMYK",d:"2024-04-29",s:null,t:"Buyout",h:"Maj",f:"n/d"},
   {c:"one.network",d:"2024-02-08",s:null,t:"Buyout",h:"Maj",f:"n/d"},
   {c:"Dr Gerard",d:"2023-10-06",s:null,t:"M&A",h:"Maj",f:"n/d"},
   {c:"PharmaReview",d:"2023-08-01",s:null,t:"M&A",h:"Min",f:"n/d"},
+  {c:"DMC Power",d:"2023-07-13",s:350,t:"Buyout",h:"n/d",f:"n/d"},
   {c:"Diaverum",d:"2023-06-30",s:2250,t:"M&A",h:"Maj",f:"n/d"},
   {c:"Blume Global",d:"2023-04-01",s:414,t:"M&A",h:"Min",f:"n/d"}
 ];

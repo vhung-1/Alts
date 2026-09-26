@@ -365,10 +365,10 @@ window.ALTS = {
       guidanceSummary:"CVC reaffirmed every medium-term marker: EUR600-700M of PRE across 2026-27 (2026 flat on 2025, first step-up in 2027), EUR1.2-1.5B across 2028-29 as Fund VIII starts recognising carry, ~EUR5B of embedded future carry and a double-digit FPAUM CAGR to 2028. The CAGR is now anchored by a EUR26B fee-paying initial target for Fund X, set 11 Sep with the formal raise from January 2027. Near term, the realisations guide of ~EUR21.9B implies a materially softer H2 after a record LTM, and a GBP400M commitment to the Standard Life PRT venture (completion expected H1 2027) extends the insurance push. Watch the statutory numbers: statutory EBITDA fell EUR733M to EUR585M purely on the non-cash CVC DIF forward-liability revaluation, not on trading.",
       consensus:{ FRE:{cons:520,n:6}, PFRE:{cons:97,n:6} },  // 1H26E VA cons (18-Jun-26), €M; FRE=mgmt EBITDA (operating, FRE-equiv); PFRE incl. investment income
       exits:{ quarterly:{
-        "2023 Q2":{count:2,totalTV:0}, "2023 Q3":{count:0,totalTV:0}, "2023 Q4":{count:0,totalTV:0}, "2024 Q1":{count:1,totalTV:2300},
-        "2024 Q2":{count:0,totalTV:0}, "2024 Q3":{count:0,totalTV:0}, "2024 Q4":{count:1,totalTV:0}, "2025 Q1":{count:4,totalTV:250},
-        "2025 Q2":{count:1,totalTV:0}, "2025 Q3":{count:0,totalTV:0}, "2025 Q4":{count:2,totalTV:2694}, "2026 Q1":{count:1,totalTV:0},
-        "2026 Q2":{count:1,totalTV:3587} },
+        "2023 Q2":{count:3,totalTV:428}, "2023 Q3":{count:0,totalTV:0}, "2023 Q4":{count:0,totalTV:0}, "2024 Q1":{count:5,totalTV:3858},
+        "2024 Q2":{count:3,totalTV:6512}, "2024 Q3":{count:3,totalTV:2000}, "2024 Q4":{count:1,totalTV:0}, "2025 Q1":{count:6,totalTV:1179},
+        "2025 Q2":{count:1,totalTV:0}, "2025 Q3":{count:5,totalTV:915}, "2025 Q4":{count:8,totalTV:6743}, "2026 Q1":{count:2,totalTV:7623},
+        "2026 Q2":{count:7,totalTV:17373} },
         notable:[
           { company:"Pension Insurance Corporation", exitDate:"2026-03-27", exitSize:"$7,623M", type:"Buyout", investorSince:"2017", flag:"minority" },
           { company:"Worldwide Express", exitDate:"2026-06-01", exitSize:"$5,000M", type:"Buyout", investorSince:"2021", flag:"minority; Q2'26" },
@@ -395,9 +395,9 @@ window.ALTS = {
       consensus:{},
       exits:{ quarterly:{
         "2023 Q2":{count:1,totalTV:0}, "2023 Q3":{count:2,totalTV:0}, "2023 Q4":{count:1,totalTV:0}, "2024 Q1":{count:0,totalTV:0},
-        "2024 Q2":{count:2,totalTV:398}, "2024 Q3":{count:3,totalTV:1107}, "2024 Q4":{count:2,totalTV:0}, "2025 Q1":{count:1,totalTV:0},
-        "2025 Q2":{count:1,totalTV:0}, "2025 Q3":{count:2,totalTV:796}, "2025 Q4":{count:1,totalTV:1800}, "2026 Q1":{count:1,totalTV:544},
-        "2026 Q2":{count:0,totalTV:0} },
+        "2024 Q2":{count:3,totalTV:4401}, "2024 Q3":{count:3,totalTV:1107}, "2024 Q4":{count:2,totalTV:0}, "2025 Q1":{count:1,totalTV:0},
+        "2025 Q2":{count:4,totalTV:1065}, "2025 Q3":{count:5,totalTV:4301}, "2025 Q4":{count:1,totalTV:1800}, "2026 Q1":{count:2,totalTV:544},
+        "2026 Q2":{count:1,totalTV:0} },
         notable:[
           { company:"With Intelligence", exitDate:"2025-11-25", exitSize:"$1,800M", type:"M&A", investorSince:"2020", flag:"minority" },
           { company:"Akuo Energy", exitDate:"2025-07-04", exitSize:"$731M", type:"Buyout", investorSince:"N/A", flag:"minority" },
@@ -421,9 +421,9 @@ window.ALTS = {
       guidanceSummary:"Bridgepoint raised its 2024-26 fundraising target to EUR28B (from EUR24B) with EUR26B already in, and ECP VI's USD8.1B final close on 6 Aug further de-risks it; BE VIII's EUR8-8.5B final close is due in Q1'27. PRE is guided to the top end of its 20-25% band for 2026-27 after H1 delivered about two-thirds of expected full-year PRE on first-time ECP V carry. Margin guidance of 55-60% stands, with FY26 likely below H1's 60.6%. The pending KARE acquisition is excluded from all figures and carries its own medium-term guidance; it is only expected to close at end-2026, subject to approvals.",
       consensus:{ PFRE:{act:151.6} },
       exits:{ quarterly:{
-        "2023 Q2":{count:2,totalTV:2664}, "2023 Q3":{count:1,totalTV:0}, "2023 Q4":{count:1,totalTV:0}, "2024 Q1":{count:1,totalTV:0},
+        "2023 Q2":{count:2,totalTV:2664}, "2023 Q3":{count:2,totalTV:350}, "2023 Q4":{count:1,totalTV:0}, "2024 Q1":{count:1,totalTV:0},
         "2024 Q2":{count:1,totalTV:0}, "2024 Q3":{count:2,totalTV:0}, "2024 Q4":{count:3,totalTV:0}, "2025 Q1":{count:0,totalTV:0},
-        "2025 Q2":{count:1,totalTV:0}, "2025 Q3":{count:2,totalTV:4000}, "2025 Q4":{count:4,totalTV:5475}, "2026 Q1":{count:2,totalTV:1425},
+        "2025 Q2":{count:1,totalTV:0}, "2025 Q3":{count:2,totalTV:4000}, "2025 Q4":{count:6,totalTV:6423}, "2026 Q1":{count:2,totalTV:1425},
         "2026 Q2":{count:1,totalTV:475} },
         notable:[
           { company:"Dorna Sports (MotoGP)", exitDate:"2025-07-03", exitSize:"$3,659M", type:"M&A", investorSince:"2006", flag:"minority" },
