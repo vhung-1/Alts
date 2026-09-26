@@ -20,3 +20,4 @@
     },
   };
 })();
+;(window.ALTS_FEEDS=window.ALTS_FEEDS||{}).financings={lab:"Fee-driver deals",asOf:"2026-08-16",extra:"Q3 2026 deal pull still running",src:"PitchBook deal records (size + new debt), lead/co-lead confirmed"};
