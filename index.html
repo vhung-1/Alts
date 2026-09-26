@@ -290,9 +290,12 @@
     const SEG_COLORS = ['#6B5E4A','#8B7355','#5B7FA6','#2B7A4B','#A05878','#7B5EA6'];
     const fmtB = (v) => v == null ? '—' : v < 10 ? v.toFixed(2) : v < 100 ? v.toFixed(1) : Math.round(v).toString();
     const netColor = (v) => v == null ? T.textFaint : v > 0 ? '#2B7A4B' : '#B94040';
-    const isHist = (i) => i < histN;
-    const isAnn  = (i) => i >= histN + 3;
-    const BL = (i) => (i===histN||i===histN+3) ? `2px solid ${T.borderFt}` : `1px solid ${T.border}`;
+    // period-label driven (2Q26 moved to actuals on 26 Sep for most firms, so the A/E split differs by firm)
+    const isAnnP = (p) => /^20\d\dE$/.test(p||"");
+    const isHist = (i) => /A$/.test(periods[i]||"");
+    const isAnn  = (i) => isAnnP(periods[i]);
+    const firstEst = periods.findIndex(p => /E$/.test(p)), firstAnn = periods.findIndex(isAnnP);
+    const BL = (i) => (i===firstEst||i===firstAnn) ? `2px solid ${T.borderFt}` : `1px solid ${T.border}`;
     // Net Flow Rate: annualized net / prior-period FPAUM (quarterly periods only, skip i=0 and annual)
     const flowRate = (i) => {
       if (i === 0 || isAnn(i) || !f.fpaum[i-1]) return null;
@@ -300,9 +303,11 @@
     };
     const rateColor = (v) => v==null?T.textFaint:v>=15?'#1A7A3A':v>=8?'#2B7A4B':v>=3?'#4A9B6A':v>=0?T.textMuted:'#B94040';
     const segPct = (sv, i) => { const t=f.inflows[i]; return (!t||sv==null)?null:sv/t*100; };
-    const maxQtrInf = Math.max(...f.inflows.slice(0, histN+3).filter(v=>v!=null));
+    const maxQtrInf = Math.max(...f.inflows.slice(0, firstAnn<0?f.inflows.length:firstAnn).filter(v=>v!=null));
     // Cross-firm compare helpers
     const allPeriods = FLOWS.firms[FLOWS.order[0]].periods;
+    const colA   = (ci) => FLOWS.order.every(tk => /A$/.test((FLOWS.firms[tk].periods||[])[ci]||""));
+    const colMix = (ci) => !colA(ci) && FLOWS.order.some(tk => /A$/.test((FLOWS.firms[tk].periods||[])[ci]||""));
     const metricGet = (tk,i) => {
       const fi=FLOWS.firms[tk]; if(!fi) return null;
       if(cMetric==='fpaum') return fi.fpaum[i];
@@ -313,7 +318,7 @@
         return (infl!=null&&net!=null) ? infl-net : null;
       }
       if(cMetric==='rate'){
-        if(i===0||(i>=fi.histN+3)||!fi.fpaum[i-1]) return null;
+        if(i===0||isAnnP(fi.periods[i])||!fi.fpaum[i-1]||fi.net[i]==null) return null;
         return fi.net[i]/fi.fpaum[i-1]*4*100;
       }
       return null;
@@ -394,15 +399,15 @@
                     {allPeriods.map((p,ci)=>React.createElement('th',{key:ci,style:{
                       padding:'7px 8px',textAlign:'right',fontFamily:MONO,fontSize:8,letterSpacing:'0.06em',
                       borderBottom:`2px solid ${T.border}`,borderLeft:BL(ci),whiteSpace:'nowrap',
-                      color:isHist(ci)?T.textMuted:isAnn(ci)?T.accent:T.text,fontWeight:isAnn(ci)?700:600
-                    }},p.replace(/[AE]$/,'')+(isHist(ci)?' A':'')))}
+                      color:colA(ci)?T.textMuted:isAnnP(p)?T.accent:T.text,fontWeight:isAnnP(p)?700:600
+                    }},p.replace(/[AE]$/,'')+(colA(ci)?' A':colMix(ci)?' A/E':'')))}
                   </tr>
                   <tr style={{ background:T.bgCard }}>
                     <th style={{ borderBottom:`1px solid ${T.border}` }} />
                     {allPeriods.map((p,ci)=>React.createElement('th',{key:ci,style:{
                       padding:'2px 8px',textAlign:'right',fontFamily:MONO,fontSize:7,
                       color:T.textFaint,borderBottom:`1px solid ${T.border}`,borderLeft:BL(ci)
-                    }},isHist(ci)?'ACTUAL':isAnn(ci)?'FY EST':'QTR EST'))}
+                    }},colA(ci)?'ACTUAL':colMix(ci)?'MIXED':isAnnP(p)?'FY EST':'QTR EST'))}
                   </tr>
                 </thead>
                 <tbody>
@@ -419,9 +424,10 @@
                         return React.createElement('td',{key:ci,style:{
                           padding:'7px 8px',textAlign:'right',fontFamily:MONO,fontSize:11,
                           borderBottom:`1px solid ${T.border}`,borderLeft:BL(ci),
-                          background:isMax?'#2B7A4B18':isMin?'#B9404015':isHist(ci)?'rgba(0,0,0,.025)':isAnn(ci)?colorOf(tk)+'06':'transparent',
-                          color:metricColor(tk,v),fontWeight:v!=null?600:400
-                        }},metricFmt(v));
+                          background:isMax?'#2B7A4B18':isMin?'#B9404015':/A$/.test(FLOWS.firms[tk].periods[ci]||'')?'rgba(0,0,0,.025)':isAnnP(p)?colorOf(tk)+'06':'transparent',
+                          color:metricColor(tk,v),fontWeight:v!=null?600:400,
+                          opacity:(colMix(ci)&&/E$/.test(FLOWS.firms[tk].periods[ci]||''))?0.6:1
+                        },title:(colMix(ci)&&/E$/.test(FLOWS.firms[tk].periods[ci]||''))?'VA estimate — actual not yet mapped':undefined},metricFmt(v));
                       })}
                     </tr>
                   ))}
@@ -429,7 +435,7 @@
               </table>
             </div>
             <div style={{ marginTop:8, fontSize:9, color:T.textFaint, fontFamily:MONO, lineHeight:1.6 }}>
-              <b>A</b> = VA actuals · <b>EST</b> = VA consensus · Flow Rate = annualized net / prior-period FPAUM × 4, quarterly only · All values in $B except Rate. Not investment advice.
+              <b>A</b> = reported actuals (2Q26 added 26 Sep from company supplements) · <b>EST</b> = Visible Alpha consensus ({FLOWS.estAsOf||FLOWS.asOf}) · <b>A/E</b> = actual for most firms, faded cells still VA estimates · Flow Rate = annualized net / prior-period FPAUM × 4, quarterly only · All values in $B except Rate. Not investment advice.
             </div>
           </div>
         )}
@@ -448,7 +454,7 @@
         </div>
         <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:14 }}>
           <span style={{ fontSize:9, fontFamily:MONO, color:T.textMuted }}>
-            VA · {FLOWS.asOf} · {f.cur} · {f.label}
+            {f.periods.some(p=>p==="2Q26A") ? <>actuals to 2Q26 · VA est. {FLOWS.estAsOf}</> : <>VA · {FLOWS.estAsOf||FLOWS.asOf}</>} · {f.cur} · {f.label}
           </span>
           <button onClick={()=>setShowChart(c=>!c)} style={{
             padding:'3px 10px', fontFamily:MONO, fontSize:9, border:`1px solid ${T.border}`, borderRadius:4,
@@ -1470,7 +1476,7 @@
             if (firm.name==="Carlyle")    gross = +(net/0.38).toFixed(1);
             if (firm.name==="Blackstone") gross = +(net/0.56).toFixed(1);
           }
-          return { ...f, gross: gross??null, net: net??null, netIsEst: f.net===undefined };
+          return { ...f, gross: gross??null, net: net??null, netIsEst: f.net===undefined || !!firm.netAllocated };
         });
         const segNet=+funds.reduce((s,f)=>s+(f.net??0),0).toFixed(1);
         const segGross=+funds.reduce((s,f)=>s+(f.gross??0),0).toFixed(1);
@@ -1562,7 +1568,7 @@
             </tbody>
           </table>
         </div>
-        <div style={{ marginTop:10, fontSize:8.5, color:T.textFaint, lineHeight:1.8 }}>† KKR net estimated at 25% of gross (75% comp guidance). All totals computed bottom-up from fund data; "Other / Adj." lines reconcile to disclosed segment totals. {DATA.accruedMeta && DATA.accruedMeta.note}</div>
+        <div style={{ marginTop:10, fontSize:8.5, color:T.textFaint, lineHeight:1.8 }}>† KKR net estimated at 25% of gross (75% comp guidance); Apollo discloses net only in total, so its per-fund nets are that total allocated pro rata to gross (the firm total is as reported). All totals computed bottom-up from fund data; "Other / Adj." lines reconcile to disclosed segment totals. {DATA.accruedMeta && DATA.accruedMeta.note}</div>
       </div>
     );
   }
