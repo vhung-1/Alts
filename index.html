@@ -106,12 +106,35 @@
   function Empty({ label }) {
     return <div style={{ padding:"18px", textAlign:"center", color:T.textFaint, fontFamily:MONO, fontSize:11, fontStyle:"italic" }}>{label}</div>;
   }
-  function SectionTitle({ kicker, title, sub }) {
+  // ── Feed freshness: every data file registers itself in window.ALTS_FEEDS; each tab stamps the feeds it uses ──
+  const FEEDS = window.ALTS_FEEDS || {};
+  const dShort = (d) => { if (!d || !/^\d{4}-\d{2}-\d{2}$/.test(d)) return d || "—"; const M=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"]; return (+d.slice(8))+" "+M[+d.slice(5,7)-1]+" "+d.slice(0,4); };
+  const latestRec = (obj, fld="d") => { if (!obj) return null; let m=null; Object.values(obj).forEach(a => Array.isArray(a) && a.forEach(r => { const v=r && r[fld]; if (v && (!m || v>m)) m=v; })); return m; };
+  const FEED_LATEST = {
+    exits:      () => latestRec(window.ALTS_EXITS),
+    deploy:     () => latestRec(window.ALTS_DEPLOY),
+    ipos:       () => latestRec(window.ALTS_IPOS),
+    financings: () => window.ALTS_FINANCINGS ? latestRec(window.ALTS_FINANCINGS.deals, "date") : null,
+  };
+  function FeedStamp({ keys }) {
+    const rows = (keys||[]).map(k => ({ k, f: FEEDS[k] })).filter(r => r.f);
+    if (!rows.length) return null;
+    return (
+      <div style={{ marginTop:7, display:"flex", flexWrap:"wrap", gap:"4px 14px", fontFamily:MONO, fontSize:8.5, color:T.textMuted, lineHeight:1.5 }}>
+        <span style={{ fontWeight:700, letterSpacing:"0.12em", color:T.textFaint }}>AS OF</span>
+        {rows.map(({k,f}) => { const lt = FEED_LATEST[k] ? FEED_LATEST[k]() : null;
+          return <span key={k} title={f.src || ""}><b style={{ color:T.textSub, fontWeight:600 }}>{f.lab}</b> {f.verb || "pulled"} {dShort(f.asOf)}{f.through ? <> · through {f.through}</> : null}{lt ? <> · latest record {dShort(lt)}</> : null}{f.extra ? <> · {f.extra}</> : null}</span>; })}
+      </div>
+    );
+  }
+
+  function SectionTitle({ kicker, title, sub, feeds }) {
     return (
       <div style={{ marginBottom:16 }}>
         {kicker && <div style={{ fontSize:8.5, fontFamily:MONO, color:T.textMuted, letterSpacing:"0.2em", textTransform:"uppercase", marginBottom:5 }}>{kicker}</div>}
         <h2 style={{ fontFamily:SERIF, fontSize:22, fontWeight:700, color:T.text, lineHeight:1 }}>{title}</h2>
         {sub && <p style={{ fontSize:11, color:T.textSub, marginTop:5, maxWidth:760, lineHeight:1.5 }}>{sub}</p>}
+        {feeds && <FeedStamp keys={feeds} />}
       </div>
     );
   }
@@ -185,7 +208,7 @@
           ))}
         </div>
 
-        <SectionTitle kicker="Coverage" title="Manager snapshot" sub="Latest reported period per firm. Click a card to jump to its fundraising detail. European names report on a semi-annual / annual cadence." />
+        <SectionTitle feeds={["reported","exits","street"]} kicker="Coverage" title="Manager snapshot" sub="Latest reported period per firm. Click a card to jump to its fundraising detail. European names report on a semi-annual / annual cadence." />
         <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill, minmax(225px, 1fr))", gap:12 }}>
           {FIRM_ORDER.map(tk => {
             const f = FIRMS[tk]; const c = colorOf(tk);
@@ -212,7 +235,7 @@
         </div>
 
         {acc && <div style={{ marginTop:26 }}>
-          <SectionTitle kicker="Carry" title="Net accrued carried interest — disclosing firms" sub="Bottom-up from fund-level 10-Q data. Full detail under the Carry tab." />
+          <SectionTitle feeds={["accrued"]} kicker="Carry" title="Net accrued carried interest — disclosing firms" sub="Bottom-up from fund-level 10-Q data. Full detail under the Carry tab." />
           <div style={{ background:T.bgCard, border:`1.5px solid ${T.border}`, borderRadius:10, padding:"18px 22px" }}>
             <AccruedCompChart />
           </div>
@@ -636,7 +659,7 @@
         </div>
         {subTab==='flows' ? <AumFlows /> : (
         <div>
-        <SectionTitle kicker="Section 1" title="Fundraising — funds in market" sub="What management flagged as in-market on the latest earnings call (CALL), augmented with PitchBook fund data (PB) — target / hard cap, prior-fund size, amount raised, expected first & final close." />
+        <SectionTitle feeds={["fundraising","flows"]} kicker="Section 1" title="Fundraising — funds in market" sub="What management flagged as in-market on the latest earnings call (CALL), augmented with PitchBook fund data (PB) — target / hard cap, prior-fund size, amount raised, expected first & final close." />
         <MomentumTable />
         <FirmFilter value={filter} onChange={setFilter} />
         {shownFirms(filter).map(tk => {
@@ -689,7 +712,7 @@
   function Guidance({ filter, setFilter }) {
     return (
       <div>
-        <SectionTitle kicker="Section 2" title="Earnings guidance" sub="Forward guidance pulled from each company's latest transcript (S&P Global) plus structured company-issued guidance. One table per firm." />
+        <SectionTitle feeds={["guidance"]} kicker="Section 2" title="Earnings guidance" sub="Forward guidance pulled from each company's latest transcript (S&P Global) plus structured company-issued guidance. One table per firm." />
         <FirmFilter value={filter} onChange={setFilter} />
         <div style={{ display:"grid", gridTemplateColumns: filter==="All"?"repeat(auto-fill, minmax(420px, 1fr))":"1fr", gap:16 }}>
           {shownFirms(filter).map(tk => {
@@ -876,24 +899,35 @@
     );
   }
 
+  const cSymX = (cur) => ({USD:"$",EUR:"€",GBP:"£",CHF:"CHF "})[cur] || "$";
+  const ICG_FY = {"2026E":"FY3/27E","2027E":"FY3/28E","2028E":"FY3/29E"};
+  const stKey  = (tk, per) => tk==="ICG" ? ICG_FY[per] : per;
   function ConsValuation() {
-    const pde = (f, per) => { const i=f.periods.indexOf(per); if(i<0) return null; const mo=f.m.DE_ps; const de=mo&&mo.v[i]; return (isNum(de)&&de>0&&isNum(f.price)) ? f.price/de : null; };
+    const S = CONS.street;
+    const ORDERV = S ? DATA.order.filter(tk => S.firms[tk]) : CONS_ORDER;
+    const epsAt = (tk, per) => {
+      if (S && S.firms[tk]) { const r = S.firms[tk].per[stKey(tk,per)]; return r ? r.v : null; }
+      const f = CONS.firms[tk]; const i = f ? f.periods.indexOf(per) : -1; return (i<0 || !f.m.DE_ps) ? null : f.m.DE_ps.v[i];
+    };
+    const pxOf  = (tk) => (S && S.firms[tk]) ? S.firms[tk].px  : (CONS.firms[tk]||{}).price;
+    const curOf = (tk) => (S && S.firms[tk]) ? S.firms[tk].cur : (CONS.firms[tk]||{}).cur;
+    const pde = (tk, per) => { const e = epsAt(tk,per), p = pxOf(tk); return (isNum(e) && e>0 && isNum(p)) ? p/e : null; };
     return (
       <div>
         <div style={{ overflowX:"auto", border:`1.5px solid ${T.border}`, borderRadius:10 }}>
           <table style={{ borderCollapse:"collapse", fontSize:10.5, minWidth:"100%" }}>
             <thead><tr style={{ background:T.bgHover }}>
               <th style={{ ...cStick, background:T.bgHover, textAlign:"left", padding:"8px 14px", fontFamily:MONO, fontSize:8, fontWeight:700, letterSpacing:"0.05em", color:T.textMuted, borderBottom:`2px solid ${T.border}` }}>FIRM</th>
-              <th style={{ padding:"8px 14px", textAlign:"right", fontFamily:MONO, fontSize:9, fontWeight:700, color:T.textSub, borderBottom:`2px solid ${T.border}`, borderLeft:`1px solid ${T.border}` }}>PRICE</th>
+              <th style={{ padding:"8px 14px", textAlign:"right", fontFamily:MONO, fontSize:9, fontWeight:700, color:T.textSub, borderBottom:`2px solid ${T.border}`, borderLeft:`1px solid ${T.border}` }}>PRICE {S ? S.pxDate.slice(8)+"/"+S.pxDate.slice(5,7) : ""}</th>
               {CONS_ANNUAL.map(p=>(<th key={p} style={{ padding:"8px 14px", textAlign:"right", fontFamily:MONO, fontSize:9, fontWeight:700, color:T.textSub, borderBottom:`2px solid ${T.border}`, borderLeft:`1px solid ${T.border}` }}>P / DE {p}</th>))}
             </tr></thead>
             <tbody>
-              {CONS_ORDER.map((tk,ri)=>{ const f=CONS.firms[tk]; if(!f) return null; const c=colorOf(tk); const bg=ri%2?T.bgStripe:T.bgCard; const sym=cSym(f.cur);
+              {ORDERV.map((tk,ri)=>{ const c=colorOf(tk); const bg=ri%2?T.bgStripe:T.bgCard; const sym=cSymX(curOf(tk));
                 return (
                   <tr key={tk} style={{ background:bg }}>
-                    <td style={{ ...cStick, background:bg, padding:"7px 14px", borderLeft:`3px solid ${c}` }}><FirmTag tk={tk} /></td>
-                    <td style={{ padding:"7px 14px", textAlign:"right", fontFamily:MONO, fontSize:10, color:T.textSub, borderLeft:`1px solid ${T.border}` }}>{isNum(f.price)?sym+cNum(f.price,2):"·"}</td>
-                    {CONS_ANNUAL.map(per=>{ const x=pde(f,per);
+                    <td style={{ ...cStick, background:bg, padding:"7px 14px", borderLeft:`3px solid ${c}` }}><FirmTag tk={tk} />{tk==="ICG" && <span style={{ marginLeft:6, fontFamily:MONO, fontSize:7.5, color:T.textFaint }}>FY Mar</span>}</td>
+                    <td style={{ padding:"7px 14px", textAlign:"right", fontFamily:MONO, fontSize:10, color:T.textSub, borderLeft:`1px solid ${T.border}` }}>{isNum(pxOf(tk))?sym+cNum(pxOf(tk),2):"·"}</td>
+                    {CONS_ANNUAL.map(per=>{ const x=pde(tk,per);
                       return <td key={per} style={{ padding:"7px 14px", textAlign:"right", fontFamily:MONO, fontSize:11, fontWeight:700, color:x==null?T.textFaint:c, borderLeft:`1px solid ${T.border}` }}>{x==null?"·":x.toFixed(1)+"×"}</td>;
                     })}
                   </tr>
@@ -902,7 +936,74 @@
             </tbody>
           </table>
         </div>
-        <div style={{ marginTop:8, fontSize:9, color:T.textFaint, fontFamily:MONO, lineHeight:1.7 }}>P / DE = share price ÷ consensus distributable-earnings per share (EU: ÷ diluted EPS, operating). The multiple is currency-neutral — price and DE/sh are in each firm's own currency. EQT price converted SEK→EUR at {CONS.fx?CONS.fx.EURSEK:"~11"}. Prices as of {CONS.asOf}.</div>
+        <div style={{ marginTop:8, fontSize:9, color:T.textFaint, fontFamily:MONO, lineHeight:1.7 }}>{S
+          ? <>P / DE = {S.pxDate} close ÷ street-now consensus (S&amp;P Capital IQ mean normalized EPS — for the US managers that is the distributable-earnings-per-share line; for the European/UK/Swiss names it is normalized EPS). Currency-neutral: price and EPS are each in the firm's own currency; EQT converted SEK→EUR at {S.fx.EURSEK} (ECB, {S.pxDate}). ICG runs a March fiscal year, so its FY3/27E sits under 2026E. Consensus pulled {DATA.meta.refreshed || S.asOf}.</>
+          : <>P / DE = share price ÷ consensus distributable-earnings per share (EU: ÷ diluted EPS, operating). Prices as of {CONS.asOf}.</>}</div>
+      </div>
+    );
+  }
+
+  // ── Street now (S&P Capital IQ) vs the Visible Alpha set that preceded the 2Q print ──
+  function ConsStreet() {
+    const S = CONS.street; if (!S) return <Empty label="Street-now consensus not loaded." />;
+    const ORDER13 = DATA.order.filter(tk => S.firms[tk]);
+    const PERS = [["3Q26E","3Q26E"],["2026E","FY26E"],["2027E","FY27E"]];
+    const vaAt = (tk, per) => { const f = CONS.firms[tk]; if (!f || !f.m || !f.m.DE_ps) return null; const i = f.periods.indexOf(per); return i<0 ? null : f.m.DE_ps.v[i]; };
+    const usd  = (tk) => !!(CONS.firms[tk] && CONS.firms[tk].cur === "USD");   // EU VA basis (operating diluted EPS) ≠ CapIQ normalized EPS
+    const stAt = (tk, per) => S.firms[tk].per[stKey(tk,per)] || null;
+    const dPct = (a, b) => (isNum(a) && isNum(b) && a !== 0) ? (b/a - 1)*100 : null;
+    const pxD  = (tk) => { const f = CONS.firms[tk]; return (f && f.cur === S.firms[tk].cur) ? dPct(f.price, S.firms[tk].px) : null; };
+    const moves = ORDER13.filter(usd).map(tk => ({ tk, d: dPct(vaAt(tk,"3Q26E"), (stAt(tk,"3Q26E")||{}).v) })).filter(r => isNum(r.d)).sort((a,b)=>a.d-b.d);
+    const cuts = moves.filter(r => r.d <= -2), raises = moves.filter(r => r.d >= 2);
+    const fmtD = (d) => (d>=0?"+":"−")+Math.abs(d).toFixed(1)+"%";
+    const th = { padding:"7px 10px", textAlign:"right", fontFamily:MONO, fontSize:8, fontWeight:700, letterSpacing:"0.05em", color:T.textMuted, borderBottom:`2px solid ${T.border}`, whiteSpace:"nowrap" };
+    const td = { padding:"7px 10px", textAlign:"right", fontFamily:MONO, fontSize:10 };
+    return (
+      <div>
+        <div style={{ background:T.bgCard, border:`1.5px solid ${T.border}`, borderLeft:`3px solid ${T.accent}`, borderRadius:8, padding:"11px 15px", marginBottom:14, fontSize:10.5, color:T.textSub, lineHeight:1.6 }}>
+          <b style={{ color:T.accent, fontFamily:MONO, fontSize:9.5, letterSpacing:"0.06em" }}>STREET NOW vs VISIBLE ALPHA {CONS.asOf} · DE / SHARE</b><br/>
+          {cuts.length ? <>3Q26E cut since {CONS.asOf}: {cuts.map((r,i)=><span key={r.tk}>{i?", ":""}<b style={{ color:T.text }}>{r.tk}</b> {fmtD(r.d)}</span>)}. </> : null}
+          {raises.length ? <>Raised: {raises.map((r,i)=><span key={r.tk}>{i?", ":""}<b style={{ color:T.text }}>{r.tk}</b> {fmtD(r.d)}</span>)}. </> : null}
+          Where nothing happened, the two sources agree closely (e.g. BAM FY26E), so most of a large gap is a genuine revision. Blank Δ = not comparable or not in the VA set.
+        </div>
+        <div style={{ overflowX:"auto", border:`1.5px solid ${T.border}`, borderRadius:10 }}>
+          <table style={{ borderCollapse:"collapse", fontSize:10.5, minWidth:"100%" }}>
+            <thead>
+              <tr style={{ background:T.bgHover }}>
+                <th rowSpan={2} style={{ ...th, ...cStick, background:T.bgHover, textAlign:"left" }}>FIRM</th>
+                <th colSpan={2} style={{ ...th, textAlign:"center", borderLeft:`1px solid ${T.border}` }}>PRICE</th>
+                {PERS.map(([p,lab])=>(<th key={p} colSpan={3} style={{ ...th, textAlign:"center", borderLeft:`1px solid ${T.border}` }}>{lab}</th>))}
+              </tr>
+              <tr style={{ background:T.bgHover }}>
+                <th style={{ ...th, borderLeft:`1px solid ${T.border}` }}>{S.pxDate.slice(8)}/{S.pxDate.slice(5,7)}</th><th style={th}>Δ</th>
+                {PERS.map(([p])=>[
+                  <th key={p+"v"} style={{ ...th, borderLeft:`1px solid ${T.border}` }}>VA</th>,
+                  <th key={p+"s"} style={th}>NOW</th>,
+                  <th key={p+"d"} style={th}>Δ</th>])}
+              </tr>
+            </thead>
+            <tbody>
+              {ORDER13.map((tk,ri)=>{ const f=S.firms[tk]; const c=colorOf(tk); const bg=ri%2?T.bgStripe:T.bgCard; const sym=cSymX(f.cur); const pd=pxD(tk);
+                return (
+                  <tr key={tk} style={{ background:bg }}>
+                    <td style={{ ...td, ...cStick, background:bg, textAlign:"left", borderLeft:`3px solid ${c}` }}><FirmTag tk={tk} />{tk==="ICG" && <span style={{ marginLeft:6, fontSize:7.5, color:T.textFaint }}>FY Mar</span>}</td>
+                    <td style={{ ...td, color:T.textSub, borderLeft:`1px solid ${T.border}` }}>{sym}{cNum(f.px,2)}</td>
+                    <td style={{ ...td, fontSize:9.5, color:pd==null?T.textFaint:(pd>=0?T.pos:T.neg) }}>{pd==null?"·":fmtD(pd)}</td>
+                    {PERS.map(([p])=>{ const va=vaAt(tk,p), st=stAt(tk,p); const d=usd(tk)?dPct(va,st&&st.v):null;
+                      return [
+                        <td key={p+"v"} style={{ ...td, color:T.textMuted, borderLeft:`1px solid ${T.border}` }}>{isNum(va)?cNum(va,2):"·"}</td>,
+                        <td key={p+"s"} style={{ ...td, fontWeight:700, color:T.text }} title={st?`${st.n} estimates`:""}>{st?cNum(st.v,2):"·"}{st && <span style={{ fontSize:7, color:T.textFaint, fontWeight:400 }}> n{st.n}</span>}</td>,
+                        <td key={p+"d"} style={{ ...td, fontWeight:700, fontSize:9.5, color:d==null?T.textFaint:(d>=0?T.pos:T.neg) }}>{d==null?"·":fmtD(d)}</td>];
+                    })}
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+        <div style={{ marginTop:8, fontSize:9, color:T.textFaint, fontFamily:MONO, lineHeight:1.7 }}>
+          NOW = S&amp;P Capital IQ mean normalized EPS (n = number of estimates), pulled {DATA.meta.refreshed || S.asOf}; prices {S.pxDate} close. For the US managers CapIQ's normalized EPS is the distributable-earnings-per-share line (within ~1–3% of its separate DE/sh line); ARES is on a realized-income-per-share basis. VA = Visible Alpha DE/sh from the pre-2Q-print tearsheets ({CONS.asOf}). Δ therefore mixes a genuine revision with a change of aggregator. European VA figures are operating diluted EPS, a different basis from CapIQ's normalized EPS, so no Δ is shown for them; OWL, PGHN, ICG and BPT were not in the VA set. FY26E moves also absorb the 2Q print (a 2Q beat lifts FY26E even when 3Q is cut). Price Δ is in local currency (EQT in EUR at the ECB rate).
+        </div>
       </div>
     );
   }
@@ -954,11 +1055,11 @@
 
   function Consensus({ filter, setFilter }) {
     const [view,setView] = useState("company");
-    const VIEWS = [["company","By company"],["print","2Q'26 vs cons."],["compare","Compare"],["valuation","Valuation (P/DE)"]];
+    const VIEWS = [["company","By company"],["street","Street now"],["print","2Q'26 vs cons."],["compare","Compare"],["valuation","Valuation (P/DE)"]];
     const list = filter==="All" ? CONS_ORDER : CONS_ORDER.filter(tk=>tk===filter);
     return (
       <div>
-        <SectionTitle kicker="Section 3" title="Consensus — Visible Alpha estimates" sub="Multi-period sell-side consensus (Visible Alpha) for the carry managers: per-firm metric build with y/y growth, a cross-firm comparison, and a P/DE valuation screen. Estimates run 2Q26E→FY28E (US, quarterly) / 1H26E→FY28E (European, half-year) — and the 2Q'26 vs cons. view scores the estimate that has since printed against the reported actual." />
+        <SectionTitle feeds={["va","street"]} kicker="Section 3" title="Consensus — Visible Alpha + street now" sub={`Two layers. Visible Alpha (${CONS.asOf}, set before the 2Q print): the per-firm metric build with y/y growth, a cross-firm comparison, and the 2Q'26 vs cons. scorecard. Street now (S&P Capital IQ, pulled ${CONS.street ? (DATA.meta.refreshed || CONS.street.asOf) : "—"}): current DE/sh consensus for all 13 managers, the revision since the VA set, and the P/DE screen at the latest close.`} />
         <div style={{ display:"flex", gap:6, marginBottom:16, flexWrap:"wrap" }}>
           {VIEWS.map(([id,lab])=>(
             <button key={id} onClick={()=>setView(id)} style={{ padding:"6px 16px", borderRadius:7, cursor:"pointer", fontFamily:MONO, fontSize:10.5, fontWeight:view===id?700:500, letterSpacing:"0.05em", border:`1.5px solid ${view===id?T.accent:T.border}`, background:view===id?T.accent+"14":T.bgCard, color:view===id?T.accent:T.textSub }}>{lab.toUpperCase()}</button>
@@ -970,6 +1071,7 @@
             ? <Empty label={`No Visible Alpha consensus loaded for ${filter}.`} />
             : <div style={{ display:"grid", gridTemplateColumns: filter==="All"?"repeat(auto-fill, minmax(440px, 1fr))":"1fr", gap:16 }}>{list.map(tk=><ConsCompanyCard key={tk} tk={tk} />)}</div>}
         </div>)}
+        {view==="street"    && <ConsStreet />}
         {view==="print"     && <ConsPrint />}
         {view==="compare"   && <ConsCompare />}
         {view==="valuation" && <ConsValuation />}
@@ -1025,6 +1127,21 @@
     if (!rows.length) return null;
     const up = rows.filter(r => isNum(r.v1) && r.v2 > r.v1).length;
     const dn = rows.filter(r => isNum(r.v1) && r.v2 < r.v1).length;
+    // live proxy strength: per-firm Pearson r of the activity row vs the reported fee line over the complete quarters
+    const PS = (() => {
+      const src = isC ? buildRealSrc() : (window.ALTS_DEPLOY || {});
+      const corr = (a, b) => { const n=a.length, ma=a.reduce((x,y)=>x+y,0)/n, mb=b.reduce((x,y)=>x+y,0)/n; let sab=0,saa=0,sbb=0; for (let i=0;i<n;i++){ sab+=(a[i]-ma)*(b[i]-mb); saa+=(a[i]-ma)**2; sbb+=(b[i]-mb)**2; } return (saa>0&&sbb>0) ? sab/Math.sqrt(saa*sbb) : null; };
+      const rs = Object.keys(box).map(tk => {
+        const recs = src[tk] || []; const xs=[], ys=[];
+        QUARTERS.forEach(q => { const y = (box[tk][q]||{})[mk]; if (!isNum(y)) return;
+          const inQ = recs.filter(r => quarterOf(r.d) === q);
+          xs.push(isC ? inQ.reduce((t,r)=>t+(isNum(r.s)?r.s:0),0) : inQ.length); ys.push(y); });
+        return xs.length >= 8 ? corr(xs, ys) : null;
+      }).filter(isNum).sort((a,b)=>a-b);
+      if (rs.length < 2) return null;
+      const m = rs.length>>1, med = rs.length%2 ? rs[m] : (rs[m-1]+rs[m])/2;
+      return { med, min: rs[0], max: rs[rs.length-1], n: rs.length };
+    })();
     const qoq = (v2,v1) => (isNum(v2) && isNum(v1) && v1 !== 0) ? (v2-v1)/Math.abs(v1)*100 : null;
     return (
       <div style={{ marginBottom:16, background:T.bgCard, border:`1.5px solid ${T.border}`, borderLeft:`3px solid ${T.accent}`, borderRadius:8, padding:"11px 15px" }}>
@@ -1046,9 +1163,9 @@
           {isC
             ? `Net realized carry rose q/q at ${up} of ${rows.length} core names and fell at ${dn}. `
             : `Transaction fees rose q/q at ${up} of ${rows.length} core names and fell at ${dn}${up>=rows.length-1?" — a broad capital-markets fee surge (BX, CG and APO each set records)":""}. `}
-          <b style={{ color:T.textMuted }}>Proxy strength (measured, 12 qtrs):</b> {isC
-            ? <span>exit TV vs reported net carry runs at a median <b>r ≈ 0.20</b> across the six names (range −0.39 to +0.34) — a <i>weak</i> lead, consistent with the KKR exit-pull study's r&lt;0.35.</span>
-            : <span>new-investment count vs reported transaction fees runs at a median <b>r ≈ 0.09</b> (range −0.22 to +0.65) — effectively <i>no</i> linear lead.</span>} The feed also lags by weeks and undercounts the newest quarters, and transaction value ≠ realized carry while entry-count ≠ fee dollars. Read activity for tempo and for <i>which</i> deals; the REPORTED rows are the truth{isC ? null : <span>, and the <b>fee drivers</b> below are the size signal that actually moves the fee line</span>}.
+          <b style={{ color:T.textMuted }}>Proxy strength (measured live, {QUARTERS.length} qtrs):</b> {PS
+            ? <span>{isC ? "realization TV (as shown in the table)" : "new-investment count"} vs reported {isC ? "net carry" : "transaction fees"} runs at a median <b>r ≈ {PS.med.toFixed(2)}</b> across {PS.n} names (range {PS.min.toFixed(2).replace("-","−")} to {PS.max.toFixed(2).replace("-","−")}) — {PS.med < 0.15 ? <>effectively <i>no</i> linear lead</> : PS.med < 0.35 ? <>a <i>weak</i> lead</> : PS.med < 0.6 ? <>a <i>moderate</i> lead</> : <>a <i>strong</i> lead</>}.</span>
+            : <span>not enough paired quarters to measure.</span>} The feed also lags by weeks and undercounts the newest quarters, and transaction value ≠ realized carry while entry-count ≠ fee dollars. Read activity for tempo and for <i>which</i> deals; the REPORTED rows are the truth{isC ? null : <span>, and the <b>fee drivers</b> below are the size signal that actually moves the fee line</span>}.
           <div style={{ marginTop:7 }}>
             <b style={{ color:T.textMuted }}>Take-rate row:</b> the third REPORTED row is {isC ? <span><i>net realized perf fees ÷ disclosed realizations</i></span> : <span><i>transaction fees ÷ capital deployed</i></span>}, shaded against that firm's own 12-quarter mean. It strips out volume, so a <b>stable</b> rate means the P&amp;L line is mechanically tied to the volume, while a <b>drifting</b> one means mix or pricing is doing the work. {isC
               ? <span>Only BX, CG and TPG disclose a realization volume, so the other three read “—”. BX is the steadiest (avg 1.67%, 1.0–2.7%); CG swings 16× (0.17–2.68%) — its realized proceeds and its carry crystallizations simply aren't the same quarter's events.</span>
@@ -1456,7 +1573,7 @@
     const acc = window.__ACCRUED__;
     return (
       <div>
-        <SectionTitle kicker="Section 4" title="Carry — realizations as a fee proxy" sub="Realization activity is observable deal-by-deal intra-quarter (PitchBook exits + retained-stake IPOs & sell-downs, merged, 12 quarters, 12 names — Blue Owl excluded as it earns fees not carry); the net realized performance fees it generates only print weeks later on the call. So the activity rows are a leading proxy and the REPORTED rows beneath (net realized perf fees + disclosed realizations, core US names, trailing 6 qtrs) are the ground truth. Second lens: net accrued (unrealized) carry from fund-level 10-Q disclosure. Each realization table also carries a transcript check vs the last two calls." />
+        <SectionTitle feeds={["exits","ipos","reported","accrued"]} kicker="Section 4" title="Carry — realizations as a fee proxy" sub="Realization activity is observable deal-by-deal intra-quarter (PitchBook exits + retained-stake IPOs & sell-downs, merged, 12 quarters, 12 names — Blue Owl excluded as it earns fees not carry); the net realized performance fees it generates only print weeks later on the call. So the activity rows are a leading proxy and the REPORTED rows beneath (net realized perf fees + disclosed realizations, core US names, trailing 6 qtrs) are the ground truth. Second lens: net accrued (unrealized) carry from fund-level 10-Q disclosure. Each realization table also carries a transcript check vs the last two calls." />
         <div style={{ display:"flex", gap:6, marginBottom:18, flexWrap:"wrap" }}>
           {[["real","Realizations"],["accrued","Net accrued carry"]].map(([id,lab])=>(
             <button key={id} onClick={()=>setSub(id)} style={{ padding:"6px 16px", borderRadius:7, cursor:"pointer", fontFamily:MONO, fontSize:10.5, fontWeight:sub===id?700:500, letterSpacing:"0.05em", border:`1.5px solid ${sub===id?T.accent:T.border}`, background:sub===id?T.accent+"14":T.bgCard, color:sub===id?T.accent:T.textSub }}>{lab.toUpperCase()}</button>
@@ -1497,7 +1614,7 @@
   function Deployment({ filter, setFilter }) {
     return (
       <div>
-        <SectionTitle kicker="Section 5" title="Deployment — deals as a transaction-fee proxy" sub="Deployment cadence is observable intra-quarter (new investments by PitchBook entry date = investor_since); the transaction / capital-markets fees it drives print later on the call. So the count row is a leading proxy and the REPORTED rows beneath (transaction fees + capital deployed, core US names, trailing 6 qtrs) are the ground truth. The feed exposes entry dates but not deal size, so activity is a count; the reported Capital-deployed row supplies the dollar dimension. Quarters run across the top; click any quarter to see the deals. All 13 names, Blue Owl included." />
+        <SectionTitle feeds={["deploy","financings","reported"]} kicker="Section 5" title="Deployment — deals as a transaction-fee proxy" sub="Deployment cadence is observable intra-quarter (new investments by PitchBook entry date = investor_since); the transaction / capital-markets fees it drives print later on the call. So the count row is a leading proxy and the REPORTED rows beneath (transaction fees + capital deployed, core US names, trailing 6 qtrs) are the ground truth. The feed exposes entry dates but not deal size, so activity is a count; the reported Capital-deployed row supplies the dollar dimension. Quarters run across the top; click any quarter to see the deals. All 13 names, Blue Owl included." />
         <QuarterPanel kind="deploy" filter={filter} setFilter={setFilter} />
       </div>
     );
