@@ -1129,7 +1129,7 @@
     const QS = REP.quarters; const LQ = QS[QS.length-1], PQ = QS[QS.length-2];
     const mk = isC ? "perf" : "fees";
     const lab = isC ? "Net realized performance fees" : "Transaction / capital-markets fees";
-    const rows = Object.keys(box).map(tk => ({ tk, v2:(box[tk][LQ]||{})[mk], v1:(box[tk][PQ]||{})[mk] })).filter(r => isNum(r.v2));
+    const rows = Object.keys(box).map(tk => ({ tk, v2:(box[tk][LQ]||{})[mk], v1:(box[tk][PQ]||{})[mk], pe:(box[tk][QTD]||{}).prelimEst, pn:(box[tk][QTD]||{}).prelim })).filter(r => isNum(r.v2));
     if (!rows.length) return null;
     const up = rows.filter(r => isNum(r.v1) && r.v2 > r.v1).length;
     const dn = rows.filter(r => isNum(r.v1) && r.v2 < r.v1).length;
@@ -1149,6 +1149,10 @@
       return { med, min: rs[0], max: rs[rs.length-1], n: rs.length };
     })();
     const qoq = (v2,v1) => (isNum(v2) && isNum(v1) && v1 !== 0) ? (v2-v1)/Math.abs(v1)*100 : null;
+    // intra-quarter company updates are GROSS; reported.js carries a derived net range (prelimEst) for the in-progress quarter
+    const rangeTV = (lo, hi) => lo === hi ? fmtTV(lo) : Math.max(lo, hi) < 1000 ? `$${Math.round(lo)}–${Math.round(hi)}M` : `${fmtTV(lo)}–${fmtTV(hi)}`;
+    const rangePct = (a, b) => { const x = Math.min(a, b), y = Math.max(a, b); return y < 0 ? `▼ ${Math.abs(y).toFixed(0)}–${Math.abs(x).toFixed(0)}%` : x >= 0 ? `▲ ${x.toFixed(0)}–${y.toFixed(0)}%` : `${x.toFixed(0)}% to +${y.toFixed(0)}%`; };
+    const pl = isC ? rows.filter(r => Array.isArray(r.pe) && isNum(r.pe[0])) : [];
     return (
       <div style={{ marginBottom:16, background:T.bgCard, border:`1.5px solid ${T.border}`, borderLeft:`3px solid ${T.accent}`, borderRadius:8, padding:"11px 15px" }}>
         <div style={{ fontFamily:MONO, fontSize:9, letterSpacing:"0.08em", color:T.accent, fontWeight:700, marginBottom:9 }}>
@@ -1161,6 +1165,11 @@
                 <div style={{ fontFamily:MONO, fontSize:9, fontWeight:700, color:colorOf(r.tk) }}>{r.tk}</div>
                 <div style={{ fontFamily:MONO, fontSize:13.5, fontWeight:700, color:T.text, lineHeight:1.2 }}>{fmtTV(r.v2)}</div>
                 <div style={{ fontFamily:MONO, fontSize:8.5, color:cc }}>{p==null?"— q/q":(p>=0?"▲ ":"▼ ")+Math.abs(p).toFixed(0)+"% q/q"}</div>
+                {isC && Array.isArray(r.pe) && isNum(r.pe[0]) &&
+                  <div title={r.pn} style={{ marginTop:4, paddingTop:4, borderTop:`1px dashed ${T.border}`, fontFamily:MONO, fontSize:8, color:T.textMuted, lineHeight:1.35, cursor:"help" }}>
+                    {qLabel(QTD)} prelim ≈<b style={{ color:T.text }}>{rangeTV(r.pe[0], r.pe[1])}</b> net<br/>
+                    <span style={{ color: r.pe[1] < r.v2 ? T.neg : r.pe[0] > r.v2 ? T.pos : T.textMuted }}>{rangePct(qoq(r.pe[0], r.v2), qoq(r.pe[1], r.v2))} vs {qLabel(LQ)}</span> ⓘ
+                  </div>}
               </div>
             );
           })}
@@ -1169,6 +1178,7 @@
           {isC
             ? `Net realized carry rose q/q at ${up} of ${rows.length} core names and fell at ${dn}. `
             : `Transaction fees rose q/q at ${up} of ${rows.length} core names and fell at ${dn}${up>=rows.length-1?" — a broad capital-markets fee surge (BX, CG and APO each set records)":""}. `}
+          {pl.length > 0 && <span><b style={{ color:T.textMuted }}>{qLabel(QTD)} so far:</b> intra-quarter company updates put net carry at {pl.map(r => `${r.tk} ≈${rangeTV(r.pe[0], r.pe[1])}`).join(" and ")}{pl.every(r => r.pe[1] < r.v2) ? (pl.length > 1 ? ", both below " : ", below ") + qLabel(LQ) : ""}. These are derived from the gross figures the firms published, so they are estimates, not reported numbers (hover a card for the method). </span>}
           <b style={{ color:T.textMuted }}>Proxy strength (measured live, {QUARTERS.length} qtrs):</b> {PS
             ? <span>{isC ? "realization TV (as shown in the table)" : "new-investment count"} vs reported {isC ? "net carry" : "transaction fees"} runs at a median <b>r ≈ {PS.med.toFixed(2)}</b> across {PS.n} names (range {PS.min.toFixed(2).replace("-","−")} to {PS.max.toFixed(2).replace("-","−")}) — {PS.med < 0.15 ? <>effectively <i>no</i> linear lead</> : PS.med < 0.35 ? <>a <i>weak</i> lead</> : PS.med < 0.6 ? <>a <i>moderate</i> lead</> : <>a <i>strong</i> lead</>}.</span>
             : <span>not enough paired quarters to measure.</span>} The feed also lags by weeks and undercounts the newest quarters, and transaction value ≠ realized carry while entry-count ≠ fee dollars. Read activity for tempo and for <i>which</i> deals; the REPORTED rows are the truth{isC ? null : <span>, and the <b>fee drivers</b> below are the size signal that actually moves the fee line</span>}.
