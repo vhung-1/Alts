@@ -147,10 +147,10 @@
       "company": "DCC Energy",
       "date": "2026-07-26",
       "q": "2026 Q3",
-      "size": 5750,
+      "size": 7697.2,
       "debt": null,
       "type": "Take-private LBO",
-      "note": "announced: co-led w/ ECP, GBP65.25/sh; deal is GBP5.75B (PB: $5,750M)"
+      "note": "announced: co-led w/ ECP, 6,525p/sh; GBP5.75B (≈$7.7B); PB's $5,750M is the GBP figure"
      },
      {
       "company": "Integer Holdings",
