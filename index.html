@@ -767,7 +767,7 @@
     { key:"DE_ps",  label:"DE / sh",     money:false, unit:"$"  },
     { key:"FRE_ps", label:"FRE / sh",    money:false, unit:"$"  },
   ];
-  const cSym   = (cur) => cur === "EUR" ? "€" : "$";
+  const cSym   = (cur) => ({EUR:"€",GBP:"£",CHF:"CHF "})[cur] || "$";
   const cNum   = (x,dp) => !isNum(x) ? "·" : x.toLocaleString("en-US",{maximumFractionDigits:dp,minimumFractionDigits:dp});
   const cYoY   = (mo,i) => (mo && mo.v && isNum(mo.v[i]) && isNum(mo.pp[i]) && mo.pp[i]!==0) ? (mo.v[i]/mo.pp[i]-1) : null;
   const cFlow  = (f,i)  => (f.flow && isNum(f.flow.net[i]) && isNum(f.flow.bop[i]) && f.flow.bop[i]!==0) ? (f.flow.net[i]/f.flow.bop[i]*(f.basis[i]||1)) : null;
@@ -788,8 +788,8 @@
           <table style={{ borderCollapse:"collapse", fontSize:10, minWidth:"100%" }}>
             <thead><tr style={{ background:T.bgHover }}>
               <th style={{ ...cStick, background:T.bgHover, textAlign:"left", padding:"6px 12px", fontFamily:MONO, fontSize:7.5, fontWeight:700, letterSpacing:"0.05em", color:T.textMuted, borderBottom:`2px solid ${T.border}`, whiteSpace:"nowrap" }}>METRIC</th>
-              {f.periods.map(p=>(
-                <th key={p} style={{ padding:"6px 9px", textAlign:"right", fontFamily:MONO, fontSize:8.5, fontWeight:700, color:c, borderBottom:`2px solid ${T.border}`, borderLeft:`1px solid ${T.border}`, whiteSpace:"nowrap" }}>{p}</th>
+              {f.periods.map((p,i)=>(
+                <th key={p} style={{ padding:"6px 9px", textAlign:"right", fontFamily:MONO, fontSize:8.5, fontWeight:700, color:c, borderBottom:`2px solid ${T.border}`, borderLeft:`1px solid ${T.border}`, whiteSpace:"nowrap" }}>{(f.labels||f.periods)[i]}</th>
               ))}
             </tr></thead>
             <tbody>
@@ -797,7 +797,7 @@
                 const mo = f.m[m.key];
                 if (!mo || mo.v.every(x=>!isNum(x))) return null;
                 const bg = mi%2 ? T.bgStripe : T.bgCard; const dp = m.money ? 0 : 2;
-                const munit = (sym==="€" && m.money) ? "€M" : m.unit;
+                const munit = m.money ? (({EUR:"€M",GBP:"£M",CHF:"CHFM"})[f.cur] || "$M") : (({EUR:"€",GBP:"£",CHF:"CHF"})[f.cur] || "$");
                 return [
                   <tr key={m.key} style={{ background:bg }}>
                     <td style={{ ...cStick, background:bg, padding:"5px 12px 0", fontFamily:MONO, fontSize:9.5, color:T.text, whiteSpace:"nowrap" }}>{m.label}<span style={{color:T.textFaint}}> {munit}</span></td>
@@ -818,13 +818,13 @@
             </tbody>
           </table>
         </div>
-        {f.cur==="EUR" && <div style={{ padding:"6px 12px", background:T.bgHover, fontSize:8, color:T.textFaint, fontFamily:MONO }}>EU reporting (operating basis): DE = net profit, DE/sh = diluted EPS; FRE/sh shown where disclosed. AUM in €B.</div>}
+        {f.note && <div style={{ padding:"6px 12px", background:T.bgHover, fontSize:8, color:T.textFaint, fontFamily:MONO, lineHeight:1.5 }}>{f.note}</div>}
       </div>
     );
   }
 
   const CONS_ANNUAL = ["2026E","2027E","2028E"];
-  const CONS_QTR = ["2Q26E","3Q26E","4Q26E","1H26E","2H26E"];   // US quarters + EU half-years (each firm fills its own)
+  const CONS_QTR = ["3Q26E","4Q26E","2H26E"];   // US quarters + EU half-year (each firm fills its own; ICG's halves run to March, annual view only)
   function ConsCompare() {
     const OPTS = [
       { id:"FRE_g",    lab:"FRE growth %",      kind:"yoy",  key:"FRE"    },
@@ -849,7 +849,7 @@
       if (met.kind==="yoy") return cYoY(mo,i);
       return mo.v[i];
     };
-    const divCol = (per) => gran!=="annual" && per==="1H26E";   // visual divider before EU half-years
+    const divCol = (per) => gran!=="annual" && per==="2H26E";   // visual divider before the EU half-year
     // CAGR of the selected metric's underlying LEVEL (FY25 actual sits in pp[] of FY26E).
     const cagrVals = (f) => {
       const mo = met.key && f.m[met.key]; if (!mo) return null;
@@ -882,7 +882,7 @@
               {CONS_ORDER.map((tk,ri)=>{ const f=CONS.firms[tk]; if(!f) return null; const c=colorOf(tk); const bg=ri%2?T.bgStripe:T.bgCard;
                 return (
                   <tr key={tk} style={{ background:bg }}>
-                    <td style={{ ...cStick, background:bg, padding:"7px 14px", borderLeft:`3px solid ${c}` }}><FirmTag tk={tk} /></td>
+                    <td style={{ ...cStick, background:bg, padding:"7px 14px", borderLeft:`3px solid ${c}` }}><FirmTag tk={tk} />{tk==="ICG" && <span style={{ marginLeft:6, fontFamily:MONO, fontSize:7.5, color:T.textFaint }}>FY Mar</span>}</td>
                     {cols.map(per=>{ const v=cell(f,per);
                       const disp = v==null ? "·" : pct ? ((v>=0?"+":"−")+Math.abs(v*100).toFixed(met.kind==="flow"?1:0)+"%") : cNum(v,met.dp);
                       const col = v==null ? T.textFaint : pct ? cGrowC(v) : T.text;
@@ -899,7 +899,7 @@
         </div>
         <div style={{ marginTop:8, fontSize:9, color:T.textFaint, fontFamily:MONO, lineHeight:1.7 }}>{gran==="annual"
           ? "Full-year consensus (FY26E–FY28E), comparable across all managers. Switch to Quarterly for sub-annual detail. Growth = y/y; net flow % = net flows ÷ BoP AUM (annualized), shown where the AUM roll-forward is disclosed."
-          : "Quarterly columns (2Q26E–4Q26E) are the US managers' quarters; European managers (EQT, CVC) report half-years (1H26E, 2H26E) — shown in the two right-hand columns. Each firm populates only its native periods. Growth = y/y vs the same quarter/half a year earlier."}
+          : "Quarterly columns (3Q26E–4Q26E) are the US managers' quarters; the European managers (EQT, CVC, PGHN) report half-years (2H26E, right-hand column). ICG's halves run to March, so it appears in the annual view only. Each firm populates only its native periods. Growth = y/y vs the same quarter/half a year earlier."}
           {" "}CAGR columns are 2-yr compound growth of the selected metric's level — 25–27E = (FY27E/FY25)^½−1, 26–28E = (FY28E/FY26E)^½−1; shown for level/growth metrics (not net-flow %).</div>
       </div>
     );
@@ -949,28 +949,36 @@
     );
   }
 
-  // ── Street now (S&P Capital IQ) vs the Visible Alpha set that preceded the 2Q print ──
+  // ── Revisions: the Visible Alpha set that preceded the 2Q print (prev) vs the current set; S&P Capital IQ as a cross-check ──
   function ConsStreet() {
-    const S = CONS.street; if (!S) return <Empty label="Street-now consensus not loaded." />;
-    const ORDER13 = DATA.order.filter(tk => S.firms[tk]);
+    const P = CONS.prev, S = CONS.street;
+    if (!P) return <Empty label="No earlier Visible Alpha set loaded." />;
+    const ORDER = DATA.order.filter(tk => CONS.firms[tk] || P.firms[tk] || (S && S.firms[tk]));
     const PERS = [["3Q26E","3Q26E"],["2026E","FY26E"],["2027E","FY27E"]];
-    const vaAt = (tk, per) => { const f = CONS.firms[tk]; if (!f || !f.m || !f.m.DE_ps) return null; const i = f.periods.indexOf(per); return i<0 ? null : f.m.DE_ps.v[i]; };
-    const usd  = (tk) => !!(CONS.firms[tk] && CONS.firms[tk].cur === "USD");   // EU VA basis (operating diluted EPS) ≠ CapIQ normalized EPS
-    const stAt = (tk, per) => S.firms[tk].per[stKey(tk,per)] || null;
+    const dsh  = (set, tk, per) => { const f = set && set.firms[tk]; if (!f || !f.m || !f.m.DE_ps) return null; const i = f.periods.indexOf(per); return i<0 ? null : f.m.DE_ps.v[i]; };
     const dPct = (a, b) => (isNum(a) && isNum(b) && a !== 0) ? (b/a - 1)*100 : null;
-    const pxD  = (tk) => { const f = CONS.firms[tk]; return (f && f.cur === S.firms[tk].cur) ? dPct(f.price, S.firms[tk].px) : null; };
-    const moves = ORDER13.filter(usd).map(tk => ({ tk, d: dPct(vaAt(tk,"3Q26E"), (stAt(tk,"3Q26E")||{}).v) })).filter(r => isNum(r.d)).sort((a,b)=>a.d-b.d);
-    const cuts = moves.filter(r => r.d <= -2), raises = moves.filter(r => r.d >= 2);
+    const stAt = (tk, per) => (S && S.firms[tk] && S.firms[tk].per[stKey(tk,per)]) || null;
+    const usd  = (tk) => !!(CONS.firms[tk] && CONS.firms[tk].cur === "USD");   // EU VA basis (operating diluted EPS) ≠ CapIQ normalized EPS
+    const curOf = (tk) => (S && S.firms[tk] ? S.firms[tk].cur : (CONS.firms[tk] || P.firms[tk] || {}).cur);
+    const pxD  = (tk) => { const a = P.firms[tk], s = S && S.firms[tk]; return (a && s && a.cur === s.cur) ? dPct(a.price, s.px) : null; };
+    const rev  = (per) => ORDER.map(tk => ({ tk, d: dPct(dsh(P,tk,per), dsh(CONS,tk,per)) })).filter(r => isNum(r.d)).sort((a,b)=>a.d-b.d);
+    const fy = rev("2026E"), q3 = rev("3Q26E");
+    const xs = ORDER.filter(usd).map(tk => { const st = stAt(tk,"2026E"); return dPct(st && st.v, dsh(CONS,tk,"2026E")); }).filter(isNum).map(Math.abs).sort((a,b)=>a-b);
+    const xMed = xs.length ? (xs.length%2 ? xs[xs.length>>1] : (xs[xs.length/2-1]+xs[xs.length/2])/2) : null;
     const fmtD = (d) => (d>=0?"+":"−")+Math.abs(d).toFixed(1)+"%";
+    const list = (arr) => arr.map((r,i)=><span key={r.tk}>{i?", ":""}<b style={{ color:T.text }}>{r.tk}</b> {fmtD(r.d)}</span>);
+    const dd = (s) => s ? s.slice(8)+"/"+s.slice(5,7) : "—";
     const th = { padding:"7px 10px", textAlign:"right", fontFamily:MONO, fontSize:8, fontWeight:700, letterSpacing:"0.05em", color:T.textMuted, borderBottom:`2px solid ${T.border}`, whiteSpace:"nowrap" };
     const td = { padding:"7px 10px", textAlign:"right", fontFamily:MONO, fontSize:10 };
+    const dCell = (d, key, bold) => <td key={key} style={{ ...td, fontWeight:bold?700:500, fontSize:9.5, color:d==null?T.textFaint:(d>=0?T.pos:T.neg) }}>{d==null?"·":fmtD(d)}</td>;
     return (
       <div>
         <div style={{ background:T.bgCard, border:`1.5px solid ${T.border}`, borderLeft:`3px solid ${T.accent}`, borderRadius:8, padding:"11px 15px", marginBottom:14, fontSize:10.5, color:T.textSub, lineHeight:1.6 }}>
-          <b style={{ color:T.accent, fontFamily:MONO, fontSize:9.5, letterSpacing:"0.06em" }}>STREET NOW vs VISIBLE ALPHA {CONS.asOf} · DE / SHARE</b><br/>
-          {cuts.length ? <>3Q26E cut since {CONS.asOf}: {cuts.map((r,i)=><span key={r.tk}>{i?", ":""}<b style={{ color:T.text }}>{r.tk}</b> {fmtD(r.d)}</span>)}. </> : null}
-          {raises.length ? <>Raised: {raises.map((r,i)=><span key={r.tk}>{i?", ":""}<b style={{ color:T.text }}>{r.tk}</b> {fmtD(r.d)}</span>)}. </> : null}
-          Where nothing happened, the two sources agree closely (e.g. BAM FY26E), so most of a large gap is a genuine revision. Blank Δ = not comparable or not in the VA set.
+          <b style={{ color:T.accent, fontFamily:MONO, fontSize:9.5, letterSpacing:"0.06em" }}>VISIBLE ALPHA REVISIONS · {P.asOf} → {CONS.asOf} · DE / SHARE</b><br/>
+          {fy.length ? <>FY26E, largest cut first: {list(fy)}. </> : null}
+          {q3.length ? <>3Q26E: {list(q3)}. </> : null}
+          Both columns come from Visible Alpha, so a change is a revision rather than a definition gap.
+          {isNum(xMed) ? <> CapIQ ({S.asOf}) is the cross-check: for the US names the two agree on FY26E within a median {xMed.toFixed(1)}%.</> : null}
         </div>
         <div style={{ overflowX:"auto", border:`1.5px solid ${T.border}`, borderRadius:10 }}>
           <table style={{ borderCollapse:"collapse", fontSize:10.5, minWidth:"100%" }}>
@@ -979,28 +987,32 @@
                 <th rowSpan={2} style={{ ...th, ...cStick, background:T.bgHover, textAlign:"left" }}>FIRM</th>
                 <th colSpan={2} style={{ ...th, textAlign:"center", borderLeft:`1px solid ${T.border}` }}>PRICE</th>
                 {PERS.map(([p,lab])=>(<th key={p} colSpan={3} style={{ ...th, textAlign:"center", borderLeft:`1px solid ${T.border}` }}>{lab}</th>))}
+                <th colSpan={2} style={{ ...th, textAlign:"center", borderLeft:`2px solid ${T.border}` }}>CAPIQ FY26E</th>
               </tr>
               <tr style={{ background:T.bgHover }}>
-                <th style={{ ...th, borderLeft:`1px solid ${T.border}` }}>{S.pxDate.slice(8)}/{S.pxDate.slice(5,7)}</th><th style={th}>Δ</th>
+                <th style={{ ...th, borderLeft:`1px solid ${T.border}` }}>{S ? dd(S.pxDate) : "—"}</th><th style={th}>Δ SINCE {dd(P.asOf)}</th>
                 {PERS.map(([p])=>[
-                  <th key={p+"v"} style={{ ...th, borderLeft:`1px solid ${T.border}` }}>VA</th>,
-                  <th key={p+"s"} style={th}>NOW</th>,
+                  <th key={p+"a"} style={{ ...th, borderLeft:`1px solid ${T.border}` }}>VA {dd(P.asOf)}</th>,
+                  <th key={p+"b"} style={th}>VA {dd(CONS.asOf)}</th>,
                   <th key={p+"d"} style={th}>Δ</th>])}
+                <th style={{ ...th, borderLeft:`2px solid ${T.border}` }}>NOW</th><th style={th}>VA vs</th>
               </tr>
             </thead>
             <tbody>
-              {ORDER13.map((tk,ri)=>{ const f=S.firms[tk]; const c=colorOf(tk); const bg=ri%2?T.bgStripe:T.bgCard; const sym=cSymX(f.cur); const pd=pxD(tk);
+              {ORDER.map((tk,ri)=>{ const c=colorOf(tk); const bg=ri%2?T.bgStripe:T.bgCard; const sym=cSymX(curOf(tk)); const px=S&&S.firms[tk]?S.firms[tk].px:null; const st=stAt(tk,"2026E");
                 return (
                   <tr key={tk} style={{ background:bg }}>
                     <td style={{ ...td, ...cStick, background:bg, textAlign:"left", borderLeft:`3px solid ${c}` }}><FirmTag tk={tk} />{tk==="ICG" && <span style={{ marginLeft:6, fontSize:7.5, color:T.textFaint }}>FY Mar</span>}</td>
-                    <td style={{ ...td, color:T.textSub, borderLeft:`1px solid ${T.border}` }}>{sym}{cNum(f.px,2)}</td>
-                    <td style={{ ...td, fontSize:9.5, color:pd==null?T.textFaint:(pd>=0?T.pos:T.neg) }}>{pd==null?"·":fmtD(pd)}</td>
-                    {PERS.map(([p])=>{ const va=vaAt(tk,p), st=stAt(tk,p); const d=usd(tk)?dPct(va,st&&st.v):null;
+                    <td style={{ ...td, color:T.textSub, borderLeft:`1px solid ${T.border}` }}>{isNum(px)?sym+cNum(px,2):"·"}</td>
+                    {dCell(pxD(tk), "px")}
+                    {PERS.map(([p])=>{ const a=dsh(P,tk,p), b=dsh(CONS,tk,p);
                       return [
-                        <td key={p+"v"} style={{ ...td, color:T.textMuted, borderLeft:`1px solid ${T.border}` }}>{isNum(va)?cNum(va,2):"·"}</td>,
-                        <td key={p+"s"} style={{ ...td, fontWeight:700, color:T.text }} title={st?`${st.n} estimates`:""}>{st?cNum(st.v,2):"·"}{st && <span style={{ fontSize:7, color:T.textFaint, fontWeight:400 }}> n{st.n}</span>}</td>,
-                        <td key={p+"d"} style={{ ...td, fontWeight:700, fontSize:9.5, color:d==null?T.textFaint:(d>=0?T.pos:T.neg) }}>{d==null?"·":fmtD(d)}</td>];
+                        <td key={p+"a"} style={{ ...td, color:T.textMuted, borderLeft:`1px solid ${T.border}` }}>{isNum(a)?cNum(a,2):"·"}</td>,
+                        <td key={p+"b"} style={{ ...td, fontWeight:700, color:T.text }}>{isNum(b)?cNum(b,2):"·"}</td>,
+                        dCell(dPct(a,b), p+"d", true)];
                     })}
+                    <td style={{ ...td, color:T.textSub, borderLeft:`2px solid ${T.border}` }} title={st?`${st.n} estimates`:""}>{st?cNum(st.v,2):"·"}{st && <span style={{ fontSize:7, color:T.textFaint }}> n{st.n}</span>}</td>
+                    {dCell(usd(tk) && st ? dPct(st.v, dsh(CONS,tk,"2026E")) : null, "x")}
                   </tr>
                 );
               })}
@@ -1008,7 +1020,7 @@
           </table>
         </div>
         <div style={{ marginTop:8, fontSize:9, color:T.textFaint, fontFamily:MONO, lineHeight:1.7 }}>
-          NOW = S&amp;P Capital IQ mean normalized EPS (n = number of estimates), pulled {DATA.meta.refreshed || S.asOf}; prices {S.pxDate} close. For the US managers CapIQ's normalized EPS is the distributable-earnings-per-share line (within ~1–3% of its separate DE/sh line); ARES is on a realized-income-per-share basis. VA = Visible Alpha DE/sh from the pre-2Q-print tearsheets ({CONS.asOf}). Δ therefore mixes a genuine revision with a change of aggregator. European VA figures are operating diluted EPS, a different basis from CapIQ's normalized EPS, so no Δ is shown for them; OWL, PGHN, ICG and BPT were not in the VA set. FY26E moves also absorb the 2Q print (a 2Q beat lifts FY26E even when 3Q is cut). Price Δ is in local currency (EQT in EUR at the ECB rate).
+          VA = Visible Alpha consensus distributable earnings per share: the {P.asOf} set that preceded the 2Q print against the {CONS.asOf} consensus-repo snapshot. KKR is ANI per adjusted share; the European names are operating diluted EPS in both sets. Δ = revision between the two. Price Δ = move since the {P.asOf} set's price. CapIQ = S&amp;P Capital IQ mean normalized EPS (n = number of estimates), pulled {S ? S.asOf : "—"}; prices {S ? S.pxDate : "—"} close. The VA-vs-CapIQ gap is shown for the US names only, where normalized EPS is the DE line. Bridgepoint is not in the VA set, so only its CapIQ column fills; OWL, PGHN and ICG are new to the VA set, so they have no {P.asOf} column. ICG's FY runs to March.
         </div>
       </div>
     );
@@ -1016,7 +1028,7 @@
 
   // ── 2Q'26 print vs the 2Q26E consensus that preceded it (realized perf fees) ──
   function ConsPrint() {
-    const C = window.ALTS_CONSENSUS, R = window.ALTS_REPORTED;
+    const C = (window.ALTS_CONSENSUS && window.ALTS_CONSENSUS.prev) || window.ALTS_CONSENSUS, R = window.ALTS_REPORTED;   // the 2Q26E estimates set before the print
     if (!C || !R) return null;
     const rows = Object.keys(R.carry).map(tk => {
       const f = C.firms && C.firms[tk]; if (!f || !f.m || !f.m.PRE) return null;
@@ -1061,11 +1073,11 @@
 
   function Consensus({ filter, setFilter }) {
     const [view,setView] = useState("company");
-    const VIEWS = [["company","By company"],["street","Street now"],["print","2Q'26 vs cons."],["compare","Compare"],["valuation","Valuation (P/DE)"]];
+    const VIEWS = [["company","By company"],["street","Revisions"],["print","2Q'26 vs cons."],["compare","Compare"],["valuation","Valuation (P/DE)"]];
     const list = filter==="All" ? CONS_ORDER : CONS_ORDER.filter(tk=>tk===filter);
     return (
       <div>
-        <SectionTitle feeds={["va","street"]} kicker="Section 3" title="Consensus — Visible Alpha + street now" sub={`Two layers. Visible Alpha (${CONS.asOf}, set before the 2Q print): the per-firm metric build with y/y growth, a cross-firm comparison, and the 2Q'26 vs cons. scorecard. Street now (S&P Capital IQ, pulled ${CONS.street ? (DATA.meta.refreshed || CONS.street.asOf) : "—"}): current DE/sh consensus for all 13 managers, the revision since the VA set, and the P/DE screen at the latest close.`} />
+        <SectionTitle feeds={["va","street"]} kicker="Section 3" title="Consensus — Visible Alpha, with CapIQ as a cross-check" sub={`Visible Alpha consensus (${CONS.asOf}, consensus-repo live snapshot, ${CONS_ORDER.length} of 13 names): the per-firm metric build with y/y growth, a cross-firm comparison and a P/DE screen. Revisions compares it with the ${CONS.prev ? CONS.prev.asOf : "—"} set that preceded the 2Q print, with S&P Capital IQ (${CONS.street ? CONS.street.asOf : "—"}) as a cross-check; the 2Q'26 vs cons. scorecard keeps those pre-print estimates. Estimates run 3Q26E→FY28E for the US managers (quarterly) and 2H26E→FY28E for the European ones (half-year; ICG to a March year-end).`} />
         <div style={{ display:"flex", gap:6, marginBottom:16, flexWrap:"wrap" }}>
           {VIEWS.map(([id,lab])=>(
             <button key={id} onClick={()=>setView(id)} style={{ padding:"6px 16px", borderRadius:7, cursor:"pointer", fontFamily:MONO, fontSize:10.5, fontWeight:view===id?700:500, letterSpacing:"0.05em", border:`1.5px solid ${view===id?T.accent:T.border}`, background:view===id?T.accent+"14":T.bgCard, color:view===id?T.accent:T.textSub }}>{lab.toUpperCase()}</button>
@@ -1129,7 +1141,10 @@
     const QS = REP.quarters; const LQ = QS[QS.length-1], PQ = QS[QS.length-2];
     const mk = isC ? "perf" : "fees";
     const lab = isC ? "Net realized performance fees" : "Transaction / capital-markets fees";
-    const rows = Object.keys(box).map(tk => ({ tk, v2:(box[tk][LQ]||{})[mk], v1:(box[tk][PQ]||{})[mk], pe:(box[tk][QTD]||{}).prelimEst, pn:(box[tk][QTD]||{}).prelim })).filter(r => isNum(r.v2));
+    // Visible Alpha consensus for the in-progress quarter ("2026 Q3" -> "3Q26E"), same net basis as the REPORTED row
+    const vaKey = QTD.slice(6) + "Q" + QTD.slice(2,4) + "E";
+    const vaPRE = (tk) => { const f = CONS.firms && CONS.firms[tk]; if (!f || !f.m || !f.m.PRE) return null; const i = f.periods.indexOf(vaKey); return i<0 ? null : f.m.PRE.v[i]; };
+    const rows = Object.keys(box).map(tk => ({ tk, v2:(box[tk][LQ]||{})[mk], v1:(box[tk][PQ]||{})[mk], pe:(box[tk][QTD]||{}).prelimEst, pn:(box[tk][QTD]||{}).prelim, ce: isC ? vaPRE(tk) : null })).filter(r => isNum(r.v2));
     if (!rows.length) return null;
     const up = rows.filter(r => isNum(r.v1) && r.v2 > r.v1).length;
     const dn = rows.filter(r => isNum(r.v1) && r.v2 < r.v1).length;
@@ -1168,7 +1183,8 @@
                 {isC && Array.isArray(r.pe) && isNum(r.pe[0]) &&
                   <div title={r.pn} style={{ marginTop:4, paddingTop:4, borderTop:`1px dashed ${T.border}`, fontFamily:MONO, fontSize:8, color:T.textMuted, lineHeight:1.35, cursor:"help" }}>
                     {qLabel(QTD)} prelim ≈<b style={{ color:T.text }}>{rangeTV(r.pe[0], r.pe[1])}</b> net<br/>
-                    <span style={{ color: r.pe[1] < r.v2 ? T.neg : r.pe[0] > r.v2 ? T.pos : T.textMuted }}>{rangePct(qoq(r.pe[0], r.v2), qoq(r.pe[1], r.v2))} vs {qLabel(LQ)}</span> ⓘ
+                    <span style={{ color: r.pe[1] < r.v2 ? T.neg : r.pe[0] > r.v2 ? T.pos : T.textMuted }}>{rangePct(qoq(r.pe[0], r.v2), qoq(r.pe[1], r.v2))} vs {qLabel(LQ)}</span>
+                    {isNum(r.ce) && <><br/><span style={{ color: r.pe[1] < r.ce ? T.neg : r.pe[0] > r.ce ? T.pos : T.textMuted }}>{rangePct(qoq(r.pe[0], r.ce), qoq(r.pe[1], r.ce))} vs VA {fmtTV(r.ce)}</span></>} ⓘ
                   </div>}
               </div>
             );
@@ -1178,7 +1194,7 @@
           {isC
             ? `Net realized carry rose q/q at ${up} of ${rows.length} core names and fell at ${dn}. `
             : `Transaction fees rose q/q at ${up} of ${rows.length} core names and fell at ${dn}${up>=rows.length-1?" — a broad capital-markets fee surge (BX, CG and APO each set records)":""}. `}
-          {pl.length > 0 && <span><b style={{ color:T.textMuted }}>{qLabel(QTD)} so far:</b> intra-quarter company updates put net carry at {pl.map(r => `${r.tk} ≈${rangeTV(r.pe[0], r.pe[1])}`).join(" and ")}{pl.every(r => r.pe[1] < r.v2) ? (pl.length > 1 ? ", both below " : ", below ") + qLabel(LQ) : ""}. These are derived from the gross figures the firms published, so they are estimates, not reported numbers (hover a card for the method). </span>}
+          {pl.length > 0 && <span><b style={{ color:T.textMuted }}>{qLabel(QTD)} so far:</b> intra-quarter company updates put net carry at {pl.map(r => `${r.tk} ≈${rangeTV(r.pe[0], r.pe[1])}`).join(" and ")}{pl.every(r => r.pe[1] < r.v2) ? (pl.length > 1 ? ", both below " : ", below ") + qLabel(LQ) : ""}{pl.every(r => isNum(r.ce) && r.pe[1] < r.ce) ? ` and below Visible Alpha's ${qLabel(QTD)} consensus (${pl.map(r => `${r.tk} ${fmtTV(r.ce)}`).join(", ")}; ${CONS.asOf})` : ""}. These are derived from the gross figures the firms published, so they are estimates, not reported numbers (hover a card for the method). </span>}
           <b style={{ color:T.textMuted }}>Proxy strength (measured live, {QUARTERS.length} qtrs):</b> {PS
             ? <span>{isC ? "realization TV (as shown in the table)" : "new-investment count"} vs reported {isC ? "net carry" : "transaction fees"} runs at a median <b>r ≈ {PS.med.toFixed(2)}</b> across {PS.n} names (range {PS.min.toFixed(2).replace("-","−")} to {PS.max.toFixed(2).replace("-","−")}) — {PS.med < 0.15 ? <>effectively <i>no</i> linear lead</> : PS.med < 0.35 ? <>a <i>weak</i> lead</> : PS.med < 0.6 ? <>a <i>moderate</i> lead</> : <>a <i>strong</i> lead</>}.</span>
             : <span>not enough paired quarters to measure.</span>} The feed also lags by weeks and undercounts the newest quarters, and transaction value ≠ realized carry while entry-count ≠ fee dollars. Read activity for tempo and for <i>which</i> deals; the REPORTED rows are the truth{isC ? null : <span>, and the <b>fee drivers</b> below are the size signal that actually moves the fee line</span>}.
@@ -1692,7 +1708,7 @@
           {tab==="deployment"  && <Deployment filter={dFilter} setFilter={setDFilter} />}
           {/* footer */}
           <div style={{ marginTop:30, paddingTop:14, borderTop:`1px solid ${T.border}`, fontSize:8.5, color:T.textFaint, lineHeight:1.9, fontFamily:MONO }}>
-            Sources: S&P Global (transcripts, guidance, transcript check) · PitchBook Premium (investor funds, exits & new investments) · Visible Alpha (consensus — paste into data.js) · company 10-Q/10-K (accrued carry). Exit/deal "size" = total transaction value, not manager proceeds; PitchBook's investor feed exposes entry dates but not entry deal size. Reported actuals as stated on each firm's latest call. Not investment advice.
+            Sources: S&P Global (transcripts, guidance, transcript check) · PitchBook Premium (investor funds, exits & new investments) · Visible Alpha (consensus-repo live snapshot, 27 Sep 2026) · company 10-Q/10-K (accrued carry). Exit/deal "size" = total transaction value, not manager proceeds; PitchBook's investor feed exposes entry dates but not entry deal size. Reported actuals as stated on each firm's latest call. Not investment advice.
           </div>
         </div>
       </div>
