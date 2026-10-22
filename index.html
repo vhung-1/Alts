@@ -435,7 +435,7 @@
               </table>
             </div>
             <div style={{ marginTop:8, fontSize:9, color:T.textFaint, fontFamily:MONO, lineHeight:1.6 }}>
-              <b>A</b> = reported actuals (2Q26 added 26 Sep from company supplements) · <b>EST</b> = Visible Alpha consensus ({FLOWS.estAsOf||FLOWS.asOf}) · <b>A/E</b> = actual for most firms, faded cells still VA estimates · Flow Rate = annualized net / prior-period FPAUM × 4, quarterly only · All values in $B except Rate. Not investment advice.
+              <b>A</b> = reported actuals (2Q26 added 26 Sep from company supplements; BX 3Q26 added 22 Oct) · <b>EST</b> = Visible Alpha consensus ({FLOWS.estAsOf||FLOWS.asOf}) · <b>A/E</b> = actual for most firms, faded cells still VA estimates · Flow Rate = annualized net / prior-period FPAUM × 4, quarterly only · All values in $B except Rate. Not investment advice.
             </div>
           </div>
         )}
@@ -454,7 +454,7 @@
         </div>
         <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:14 }}>
           <span style={{ fontSize:9, fontFamily:MONO, color:T.textMuted }}>
-            {f.periods.some(p=>p==="2Q26A") ? <>actuals to 2Q26 · VA est. {FLOWS.estAsOf}</> : <>VA · {FLOWS.estAsOf||FLOWS.asOf}</>} · {f.cur} · {f.label}
+            {(() => { const la = f.periods.filter(p => /^[1-4]Q\d\dA$/.test(p)).pop(); return ["2Q26A","3Q26A","4Q26A"].includes(la) ? <>actuals to {la.slice(0,-1)} · VA est. {FLOWS.estAsOf}</> : <>VA · {FLOWS.estAsOf||FLOWS.asOf}</>; })()} · {f.cur} · {f.label}
           </span>
           <button onClick={()=>setShowChart(c=>!c)} style={{
             padding:'3px 10px', fontFamily:MONO, fontSize:9, border:`1px solid ${T.border}`, borderRadius:4,
@@ -1027,28 +1027,42 @@
   }
 
   // ── 2Q'26 print vs the 2Q26E consensus that preceded it (realized perf fees) ──
+  // each print against the Visible Alpha set that preceded it: 3Q'26 vs the 27 Sep set (fills in as firms report), 2Q'26 vs the June set
   function ConsPrint() {
-    const C = (window.ALTS_CONSENSUS && window.ALTS_CONSENSUS.prev) || window.ALTS_CONSENSUS, R = window.ALTS_REPORTED;   // the 2Q26E estimates set before the print
-    if (!C || !R) return null;
-    const rows = Object.keys(R.carry).map(tk => {
-      const f = C.firms && C.firms[tk]; if (!f || !f.m || !f.m.PRE) return null;
-      const i = (f.periods||[]).indexOf("2Q26E"); if (i < 0) return null;
-      const est = f.m.PRE.v[i], act = (R.carry[tk]["2026 Q2"]||{}).perf;
-      if (!isNum(est) || !isNum(act)) return null;
-      return { tk, est, act, d: (act-est)/Math.abs(est)*100 };
-    }).filter(Boolean).sort((a,b)=>b.d-a.d);
-    if (!rows.length) return null;
-    const beats = rows.filter(r=>r.d>=0).length;
+    const CUR = window.ALTS_CONSENSUS, R = window.ALTS_REPORTED;
+    if (!CUR || !R) return null;
+    return (
+      <div>
+        <PrintBlock C={CUR} per="3Q26E" q="2026 Q3" lab="3Q'26" cal={(R.calendar||{})["2026 Q3"]} />
+        <div style={{ height:22 }} />
+        <PrintBlock C={CUR.prev || CUR} per="2Q26E" q="2026 Q2" lab="2Q'26" />
+      </div>
+    );
+  }
+  function PrintBlock({ C, per, q, lab, cal }) {
+    const R = window.ALTS_REPORTED;
+    const est = (tk) => { const f = C.firms && C.firms[tk]; if (!f || !f.m || !f.m.PRE) return null; const i = (f.periods||[]).indexOf(per); return i < 0 ? null : f.m.PRE.v[i]; };
+    const core = Object.keys(R.carry).filter(tk => isNum(est(tk)));
+    const rows = core.map(tk => { const e = est(tk), act = (R.carry[tk][q]||{}).perf;
+      return isNum(act) ? { tk, est:e, act, d:(act-e)/Math.abs(e)*100 } : null; }).filter(Boolean).sort((a,b)=>b.d-a.d);
+    const pending = core.filter(tk => !rows.some(r => r.tk === tk)).sort((a,b) => ((cal||{})[a]||"9").localeCompare((cal||{})[b]||"9"));
+    if (!rows.length && !pending.length) return null;
+    const beats = rows.filter(r=>r.d>=0).length, bad = rows.filter(r=>r.d<=-20).length;
+    const dm = (s) => s ? `${+s.slice(8)} ${["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"][+s.slice(5,7)-1]}` : "date tbc";
     return (
       <div>
         <div style={{ background:T.bgCard, border:`1.5px solid ${T.border}`, borderLeft:`3px solid ${T.accent}`, borderRadius:8, padding:"11px 15px", marginBottom:14, fontSize:10.5, color:T.textSub, lineHeight:1.6 }}>
-          <b style={{ color:T.accent, fontFamily:MONO, fontSize:9.5, letterSpacing:"0.06em" }}>2Q'26 PRINT vs 2Q26E CONSENSUS · REALIZED PERFORMANCE FEES</b><br/>
-          The Visible Alpha estimate was set <b>before</b> the quarter printed ({C.asOf}); the actual is the reported figure from the earnings supplement. <b>{beats} of {rows.length}</b> core names beat on realized carry — the rest missed, several badly. This is the scorecard the Carry tab's activity rows are ultimately trying to anticipate.
+          <b style={{ color:T.accent, fontFamily:MONO, fontSize:9.5, letterSpacing:"0.06em" }}>{lab} PRINT vs {per} CONSENSUS · REALIZED PERFORMANCE FEES</b><br/>
+          The Visible Alpha estimate was set <b>before</b> the quarter printed ({C.asOf}); the actual is the reported figure from the earnings supplement.{" "}
+          {pending.length
+            ? <><b>{rows.length} of {core.length}</b> core names have reported{rows.length ? <>, and <b>{beats}</b> beat on realized carry</> : null}. Still to report: {pending.map(tk => `${tk} (${dm((cal||{})[tk])})`).join(", ")}.</>
+            : <><b>{beats} of {rows.length}</b> core names beat on realized carry{bad ? <>; {bad} missed by more than 20%</> : null}.</>}
+          {" "}This is the scorecard the Carry tab's activity rows are ultimately trying to anticipate.
         </div>
-        <div style={{ overflowX:"auto" }}>
+        {rows.length > 0 && <div style={{ overflowX:"auto" }}>
           <table style={{ borderCollapse:"collapse", fontSize:11, minWidth:"100%", background:T.bgCard, border:`1px solid ${T.border}`, borderRadius:8 }}>
             <thead><tr style={{ background:T.bgHover }}>
-              {["FIRM","2Q26E CONS.","2Q26 ACTUAL","SURPRISE"].map((h,i)=>(
+              {["FIRM",`${per} CONS.`,`${per.slice(0,4)} ACTUAL`,"SURPRISE"].map((h,i)=>(
                 <th key={h} style={{ padding:"7px 14px", textAlign:i?"right":"left", fontFamily:MONO, fontSize:8, fontWeight:700, letterSpacing:"0.06em", color:T.textMuted, borderBottom:`2px solid ${T.border}`, whiteSpace:"nowrap" }}>{h}</th>
               ))}
             </tr></thead>
@@ -1063,9 +1077,9 @@
               ))}
             </tbody>
           </table>
-        </div>
+        </div>}
         <div style={{ marginTop:8, fontSize:9, color:T.textFaint, fontFamily:MONO, lineHeight:1.7 }}>
-          Consensus = Visible Alpha PRE (realized performance revenue) for 2Q26E. Actual = each firm's reported net realized performance fees (see Carry tab · definitions differ by firm). Prior-period VA actuals reconcile to the reported series for all six names.
+          Consensus = each firm's Visible Alpha carry line for {per} (the net realized line, mapped in consensus.js). Actual = each firm's reported net realized performance fees (see Carry tab · definitions differ by firm). Prior-period VA actuals reconcile to the reported series for all six names.
         </div>
       </div>
     );
@@ -1073,7 +1087,7 @@
 
   function Consensus({ filter, setFilter }) {
     const [view,setView] = useState("company");
-    const VIEWS = [["company","By company"],["street","Revisions"],["print","2Q'26 vs cons."],["compare","Compare"],["valuation","Valuation (P/DE)"]];
+    const VIEWS = [["company","By company"],["street","Revisions"],["print","Prints vs cons."],["compare","Compare"],["valuation","Valuation (P/DE)"]];
     const list = filter==="All" ? CONS_ORDER : CONS_ORDER.filter(tk=>tk===filter);
     return (
       <div>
@@ -1144,7 +1158,8 @@
     // Visible Alpha consensus for the in-progress quarter ("2026 Q3" -> "3Q26E"), same net basis as the REPORTED row
     const vaKey = QTD.slice(6) + "Q" + QTD.slice(2,4) + "E";
     const vaPRE = (tk) => { const f = CONS.firms && CONS.firms[tk]; if (!f || !f.m || !f.m.PRE) return null; const i = f.periods.indexOf(vaKey); return i<0 ? null : f.m.PRE.v[i]; };
-    const rows = Object.keys(box).map(tk => ({ tk, v2:(box[tk][LQ]||{})[mk], v1:(box[tk][PQ]||{})[mk], pe:(box[tk][QTD]||{}).prelimEst, pn:(box[tk][QTD]||{}).prelim, ce: isC ? vaPRE(tk) : null })).filter(r => isNum(r.v2));
+    // qa = the in-progress quarter's REPORTED figure once a firm has printed it (the others still read n/r or carry a prelim)
+    const rows = Object.keys(box).map(tk => ({ tk, v2:(box[tk][LQ]||{})[mk], v1:(box[tk][PQ]||{})[mk], qa:(box[tk][QTD]||{})[mk], pe:(box[tk][QTD]||{}).prelimEst, pn:(box[tk][QTD]||{}).prelim, ce: isC ? vaPRE(tk) : null })).filter(r => isNum(r.v2));
     if (!rows.length) return null;
     const up = rows.filter(r => isNum(r.v1) && r.v2 > r.v1).length;
     const dn = rows.filter(r => isNum(r.v1) && r.v2 < r.v1).length;
@@ -1167,7 +1182,9 @@
     // intra-quarter company updates are GROSS; reported.js carries a derived net range (prelimEst) for the in-progress quarter
     const rangeTV = (lo, hi) => lo === hi ? fmtTV(lo) : Math.max(lo, hi) < 1000 ? `$${Math.round(lo)}–${Math.round(hi)}M` : `${fmtTV(lo)}–${fmtTV(hi)}`;
     const rangePct = (a, b) => { const x = Math.min(a, b), y = Math.max(a, b); return y < 0 ? `▼ ${Math.abs(y).toFixed(0)}–${Math.abs(x).toFixed(0)}%` : x >= 0 ? `▲ ${x.toFixed(0)}–${y.toFixed(0)}%` : `${x.toFixed(0)}% to +${y.toFixed(0)}%`; };
-    const pl = isC ? rows.filter(r => Array.isArray(r.pe) && isNum(r.pe[0])) : [];
+    const pl = isC ? rows.filter(r => !isNum(r.qa) && Array.isArray(r.pe) && isNum(r.pe[0])) : [];
+    const rq = rows.filter(r => isNum(r.qa));
+    const pctTxt = (p) => p == null ? "—" : (p >= 0 ? "▲ " : "▼ ") + Math.abs(p).toFixed(0) + "%";
     return (
       <div style={{ marginBottom:16, background:T.bgCard, border:`1.5px solid ${T.border}`, borderLeft:`3px solid ${T.accent}`, borderRadius:8, padding:"11px 15px" }}>
         <div style={{ fontFamily:MONO, fontSize:9, letterSpacing:"0.08em", color:T.accent, fontWeight:700, marginBottom:9 }}>
@@ -1180,7 +1197,14 @@
                 <div style={{ fontFamily:MONO, fontSize:9, fontWeight:700, color:colorOf(r.tk) }}>{r.tk}</div>
                 <div style={{ fontFamily:MONO, fontSize:13.5, fontWeight:700, color:T.text, lineHeight:1.2 }}>{fmtTV(r.v2)}</div>
                 <div style={{ fontFamily:MONO, fontSize:8.5, color:cc }}>{p==null?"— q/q":(p>=0?"▲ ":"▼ ")+Math.abs(p).toFixed(0)+"% q/q"}</div>
-                {isC && Array.isArray(r.pe) && isNum(r.pe[0]) &&
+                {isNum(r.qa) &&
+                  <div title={r.pn || undefined} style={{ marginTop:4, paddingTop:4, borderTop:`1px solid ${T.border}`, fontFamily:MONO, fontSize:8, color:T.textMuted, lineHeight:1.35, cursor:r.pn?"help":"default" }}>
+                    {qLabel(QTD)} reported <b style={{ color:T.text }}>{fmtTV(r.qa)}</b><br/>
+                    <span style={{ color: r.qa < r.v2 ? T.neg : T.pos }}>{pctTxt(qoq(r.qa, r.v2))} vs {qLabel(LQ)}</span>
+                    {isNum(r.ce) && <><br/><span style={{ color: r.qa < r.ce ? T.neg : T.pos }}>{pctTxt(qoq(r.qa, r.ce))} vs VA {fmtTV(r.ce)}</span></>}
+                    {Array.isArray(r.pe) && isNum(r.pe[0]) && <><br/><span style={{ color:T.textFaint }}>prelim was ≈{rangeTV(r.pe[0], r.pe[1])} ⓘ</span></>}
+                  </div>}
+                {isC && !isNum(r.qa) && Array.isArray(r.pe) && isNum(r.pe[0]) &&
                   <div title={r.pn} style={{ marginTop:4, paddingTop:4, borderTop:`1px dashed ${T.border}`, fontFamily:MONO, fontSize:8, color:T.textMuted, lineHeight:1.35, cursor:"help" }}>
                     {qLabel(QTD)} prelim ≈<b style={{ color:T.text }}>{rangeTV(r.pe[0], r.pe[1])}</b> net<br/>
                     <span style={{ color: r.pe[1] < r.v2 ? T.neg : r.pe[0] > r.v2 ? T.pos : T.textMuted }}>{rangePct(qoq(r.pe[0], r.v2), qoq(r.pe[1], r.v2))} vs {qLabel(LQ)}</span>
@@ -1194,6 +1218,7 @@
           {isC
             ? `Net realized carry rose q/q at ${up} of ${rows.length} core names and fell at ${dn}. `
             : `Transaction fees rose q/q at ${up} of ${rows.length} core names and fell at ${dn}${up>=rows.length-1?" — a broad capital-markets fee surge (BX, CG and APO each set records)":""}. `}
+          {rq.length > 0 && <span><b style={{ color:T.textMuted }}>{qLabel(QTD)} reported:</b> {rq.map(r => `${r.tk} ${fmtTV(r.qa)} (${pctTxt(qoq(r.qa, r.v2))} q/q${isNum(r.ce) ? `, ${pctTxt(qoq(r.qa, r.ce))} vs Visible Alpha's ${fmtTV(r.ce)}` : ""}${Array.isArray(r.pe) && isNum(r.pe[0]) ? `; its intra-quarter prelim was ≈${rangeTV(r.pe[0], r.pe[1])}` : ""})`).join("; ")}. </span>}
           {pl.length > 0 && <span><b style={{ color:T.textMuted }}>{qLabel(QTD)} so far:</b> intra-quarter company updates put net carry at {pl.map(r => `${r.tk} ≈${rangeTV(r.pe[0], r.pe[1])}`).join(" and ")}{pl.every(r => r.pe[1] < r.v2) ? (pl.length > 1 ? ", both below " : ", below ") + qLabel(LQ) : ""}{pl.every(r => isNum(r.ce) && r.pe[1] < r.ce) ? ` and below Visible Alpha's ${qLabel(QTD)} consensus (${pl.map(r => `${r.tk} ${fmtTV(r.ce)}`).join(", ")}; ${CONS.asOf})` : ""}. These are derived from the gross figures the firms published, so they are estimates, not reported numbers (hover a card for the method). </span>}
           <b style={{ color:T.textMuted }}>Proxy strength (measured live, {QUARTERS.length} qtrs):</b> {PS
             ? <span>{isC ? "realization TV (as shown in the table)" : "new-investment count"} vs reported {isC ? "net carry" : "transaction fees"} runs at a median <b>r ≈ {PS.med.toFixed(2)}</b> across {PS.n} names (range {PS.min.toFixed(2).replace("-","−")} to {PS.max.toFixed(2).replace("-","−")}) — {PS.med < 0.15 ? <>effectively <i>no</i> linear lead</> : PS.med < 0.35 ? <>a <i>weak</i> lead</> : PS.med < 0.6 ? <>a <i>moderate</i> lead</> : <>a <i>strong</i> lead</>}.</span>
@@ -1486,12 +1511,12 @@
         {isDeploy && <FeeDriverDeals filter={filter} ORDER={ORDER} />}
         <div style={{ marginTop:6, fontSize:9, color:T.textFaint, fontFamily:MONO, lineHeight:1.7 }}>
           {isReal
-            ? "Trailing 12 complete quarters through 2026 Q2, plus 2026 Q3 quarter-to-date (QTD, excluded from the 3-yr totals). Q3 fees do not print until late Oct, so the REPORTED cells read n/r there — that gap is the point. Click a quarter to expand the underlying deals. Activity rows = PitchBook investor-exit feed (Exit rows) + company-deal records (IPO / Sell-Down rows), de-duped, sized by TV (exit) or gross proceeds (IPO/sell-down). REPORTED rows = net realized performance fees + disclosed realizations from S&P Global transcripts / SEC 8-K earnings supplements (core US names, 2025 Q1–2026 Q2). Transcript check = S&P Global last-two-quarters calls vs PitchBook."
+            ? "Trailing 12 complete quarters through 2026 Q2, plus 2026 Q3 quarter-to-date (QTD, excluded from the 3-yr totals). Q3 REPORTED cells fill as each firm prints (BX on 22 Oct; ARES and TPG 29 Oct, APO 3 Nov, CG 5 Nov, KKR 9 Nov) and read n/r until then. Click a quarter to expand the underlying deals. Activity rows = PitchBook investor-exit feed (Exit rows) + company-deal records (IPO / Sell-Down rows), de-duped, sized by TV (exit) or gross proceeds (IPO/sell-down). REPORTED rows = net realized performance fees + disclosed realizations from S&P Global transcripts / SEC 8-K earnings supplements (core US names, 2023 Q3–2026 Q2, plus 3Q26 as each firm reports). Transcript check = S&P Global last-two-quarters calls vs PitchBook."
             : isExit
             ? "Trailing 12 complete quarters through 2026 Q2 plus 2026 Q3 QTD. Click a quarter column to expand its exits. Source: PitchBook investor-exit feed (investor_status = Former), deduped by company + date. Transcript check = S&P Global last-two-quarters earnings calls vs PitchBook."
             : isIPO
             ? "Trailing 12 complete quarters through 2026 Q2 plus 2026 Q3 QTD. Click a quarter column to expand its IPOs & listings. Source: PitchBook company-deal records — IPOs and post-IPO open-market secondaries; captures listings where the GP retains a stake (which the exit feed omits). Coverage = named/marquee listings + best-effort scan of recent active holdings."
-            : "Trailing 12 complete quarters through 2026 Q2, plus 2026 Q3 quarter-to-date (QTD, excluded from the 3-yr totals). Q3 fees do not print until late Oct, so the REPORTED cells read n/r there. Click a quarter to see the new investments. Activity row = PitchBook investor-investment feed (entry date = investor_since), deduped by company + date; entry deal size is not exposed, so activity is a count. REPORTED rows = transaction / capital-markets fees + capital deployed from S&P Global transcripts / SEC 8-K earnings supplements (core US names, 2025 Q1–2026 Q2)."}
+            : "Trailing 12 complete quarters through 2026 Q2, plus 2026 Q3 quarter-to-date (QTD, excluded from the 3-yr totals). Q3 REPORTED cells fill as each firm prints (BX on 22 Oct; the others 29 Oct–9 Nov) and read n/r until then. Click a quarter to see the new investments. Activity row = PitchBook investor-investment feed (entry date = investor_since), deduped by company + date; entry deal size is not exposed, so activity is a count. REPORTED rows = transaction / capital-markets fees + capital deployed from S&P Global transcripts / SEC 8-K earnings supplements (core US names, 2023 Q3–2026 Q2, plus 3Q26 as each firm reports)."}
         </div>
       </div>
     );
@@ -1612,7 +1637,7 @@
     const acc = window.__ACCRUED__;
     return (
       <div>
-        <SectionTitle feeds={["exits","ipos","reported","accrued"]} kicker="Section 4" title="Carry — realizations as a fee proxy" sub="Realization activity is observable deal-by-deal intra-quarter (PitchBook exits + retained-stake IPOs & sell-downs, merged, 12 quarters, 12 names — Blue Owl excluded as it earns fees not carry); the net realized performance fees it generates only print weeks later on the call. So the activity rows are a leading proxy and the REPORTED rows beneath (net realized perf fees + disclosed realizations, core US names, trailing 6 qtrs) are the ground truth. Second lens: net accrued (unrealized) carry from fund-level 10-Q disclosure. Each realization table also carries a transcript check vs the last two calls." />
+        <SectionTitle feeds={["exits","ipos","reported","accrued"]} kicker="Section 4" title="Carry — realizations as a fee proxy" sub="Realization activity is observable deal-by-deal intra-quarter (PitchBook exits + retained-stake IPOs & sell-downs, merged, 12 quarters, 12 names — Blue Owl excluded as it earns fees not carry); the net realized performance fees it generates only print weeks later on the call. So the activity rows are a leading proxy and the REPORTED rows beneath (net realized perf fees + disclosed realizations, core US names, 2023 Q3–2026 Q2 plus 3Q26 as each firm reports) are the ground truth. Second lens: net accrued (unrealized) carry from fund-level 10-Q disclosure. Each realization table also carries a transcript check vs the last two calls." />
         <div style={{ display:"flex", gap:6, marginBottom:18, flexWrap:"wrap" }}>
           {[["real","Realizations"],["accrued","Net accrued carry"]].map(([id,lab])=>(
             <button key={id} onClick={()=>setSub(id)} style={{ padding:"6px 16px", borderRadius:7, cursor:"pointer", fontFamily:MONO, fontSize:10.5, fontWeight:sub===id?700:500, letterSpacing:"0.05em", border:`1.5px solid ${sub===id?T.accent:T.border}`, background:sub===id?T.accent+"14":T.bgCard, color:sub===id?T.accent:T.textSub }}>{lab.toUpperCase()}</button>
@@ -1653,7 +1678,7 @@
   function Deployment({ filter, setFilter }) {
     return (
       <div>
-        <SectionTitle feeds={["deploy","financings","reported"]} kicker="Section 5" title="Deployment — deals as a transaction-fee proxy" sub="Deployment cadence is observable intra-quarter (new investments by PitchBook entry date = investor_since); the transaction / capital-markets fees it drives print later on the call. So the count row is a leading proxy and the REPORTED rows beneath (transaction fees + capital deployed, core US names, trailing 6 qtrs) are the ground truth. The feed exposes entry dates but not deal size, so activity is a count; the reported Capital-deployed row supplies the dollar dimension. Quarters run across the top; click any quarter to see the deals. All 13 names, Blue Owl included." />
+        <SectionTitle feeds={["deploy","financings","reported"]} kicker="Section 5" title="Deployment — deals as a transaction-fee proxy" sub="Deployment cadence is observable intra-quarter (new investments by PitchBook entry date = investor_since); the transaction / capital-markets fees it drives print later on the call. So the count row is a leading proxy and the REPORTED rows beneath (transaction fees + capital deployed, core US names, 2023 Q3–2026 Q2 plus 3Q26 as each firm reports) are the ground truth. The feed exposes entry dates but not deal size, so activity is a count; the reported Capital-deployed row supplies the dollar dimension. Quarters run across the top; click any quarter to see the deals. All 13 names, Blue Owl included." />
         <QuarterPanel kind="deploy" filter={filter} setFilter={setFilter} />
       </div>
     );
