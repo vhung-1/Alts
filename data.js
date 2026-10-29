@@ -448,7 +448,7 @@ window.ALTS = {
      ========================================================================== */
   accruedMeta: {
  "asOf": "2Q26 (Jun 30, 2026)",
- "note": "Blackstone net +$468M to $7.47B (Multi-Asset +$187M, Infrastructure +$164M); Carlyle −$173M as CP VII fell $153M. Blackstone's 3Q26 release (22 Oct) puts the total at $7.26B (−$205M) as distributions outran gains; fund-level detail awaits the 10-Q."
+ "note": "Blackstone net +$468M to $7.47B (Multi-Asset +$187M, Infrastructure +$164M); Carlyle −$173M as CP VII fell $153M. Blackstone's 3Q26 release (22 Oct) puts the total at $7.26B (−$205M) as distributions outran gains; fund-level detail awaits the 10-Q. Ares' 29 Oct deck puts its unconsolidated total at $1.19B (+$45M q/q); quarter-by-quarter totals for all six core names are in NAC trends above."
 },
 
   // Section 4b — the 1-2 funds that drive each disclosing firm's accrued carry (watch list).
@@ -1757,4 +1757,4 @@ window.ALTS.exitRecon = {
 };
 ;(window.ALTS_FEEDS=window.ALTS_FEEDS||{}).fundraising={lab:"Fundraising",verb:"updated",asOf:"2026-09-26",through:"2Q26 / H1 2026 + announcements to date",src:"Company releases, calls and supplements; PitchBook fund profiles"};
 ;(window.ALTS_FEEDS=window.ALTS_FEEDS||{}).guidance={lab:"Guidance",verb:"updated",asOf:"2026-09-26",through:"2Q26 calls + September remarks / filings",src:"Company transcripts (S&P Global), filings and releases"};
-;(window.ALTS_FEEDS=window.ALTS_FEEDS||{}).accrued={lab:"Accrued carry",verb:"from",asOf:"2026-06-30",extra:"2Q26 10-Qs; BX 3Q26 total from its 22 Oct release",src:"Fund-level accrued carry tables in each firm's 2Q26 Form 10-Q"};
+;(window.ALTS_FEEDS=window.ALTS_FEEDS||{}).accrued={lab:"Accrued carry",verb:"from",asOf:"2026-06-30",extra:"2Q26 10-Qs; 3Q26 firm totals in NAC trends",src:"Fund-level accrued carry tables in each firm's 2Q26 Form 10-Q"};

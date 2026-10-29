@@ -8,7 +8,7 @@ const Babel = require("@babel/standalone");
 
 const ROOT = path.join(__dirname, "..");
 const OUT = process.argv[2] || path.join(ROOT, "dist", "alts-tracker-artifact.html");
-const DATA = ["data", "exits", "deploy", "ipos", "consensus", "flows", "reported", "financings"];
+const DATA = ["data", "exits", "deploy", "ipos", "consensus", "flows", "reported", "financings", "nac"];
 
 let h = fs.readFileSync(path.join(ROOT, "index.html"), "utf8");
 const need = (re, what) => { if (!re.test(h)) throw new Error(`index.html: ${what} not found`); };

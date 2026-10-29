@@ -47,6 +47,8 @@
   <!-- Marquee SIZED fee-driving deals (window.ALTS_FINANCINGS) — the deal-size signal behind the
        transaction/capital-markets fee line that a bare deal count can't capture. -->
   <script src="financings.js"></script>
+  <!-- Quarter-end net accrued carry per firm, from each firm's earnings releases (window.ALTS_NAC) — the Carry > Net accrued carry trends. -->
+  <script src="nac.js"></script>
 
   <script type="text/plain" id="appsrc">
   const { useState, useMemo } = React;
@@ -1631,13 +1633,123 @@
     );
   }
 
+  // ── NAC trends: quarter-end net accrued carry per firm, from each firm's earnings releases (window.ALTS_NAC, nac.js) ──
+  const nacQ = (q) => q[6] + "Q" + q.slice(2,4);                       // "2026 Q3" → "3Q26"
+  const sgnM = (v) => !isNum(v) ? "—" : (v < 0 ? "−$" : "+$") + Math.abs(Math.round(v)).toLocaleString("en-US") + "M";
+  const pctCh = (a, b) => (isNum(a) && isNum(b) && b) ? (a/b - 1) * 100 : null;
+  function DeltaTxt({ v, lab }) {
+    if (!isNum(v)) return <span style={{ color:T.textFaint }}>{lab} —</span>;
+    return <span style={{ color:T.textSub }}><span style={{ color:v>=0?T.pos:T.neg }}>{v>=0?"▲":"▼"}</span> {Math.abs(v).toFixed(0)}% {lab}</span>;
+  }
+  function NacSpark({ tk, F, Q }) {
+    const [hi,setHi] = useState(null);
+    const pts = Q.map((q,i) => ({ q, i, v:(F.series[q]||{}).nac })).filter(p => isNum(p.v));
+    if (pts.length < 2) return <Empty label="Not enough history." />;
+    const W=300, H=96, pl=4, pr=46, pt=12, pb=16;
+    const vs = pts.map(p => p.v); let lo = Math.min(...vs), top = Math.max(...vs);
+    const pad = (top - lo) * 0.15 || top * 0.05 || 1; lo = Math.max(0, lo - pad); top += pad;
+    const x = i => pl + (W - pl - pr) * i / (Q.length - 1), y = v => pt + (H - pt - pb) * (1 - (v - lo) / (top - lo));
+    const c = colorOf(tk), last = pts[pts.length - 1];
+    const d = pts.map((p,k) => (k ? "L" : "M") + x(p.i).toFixed(1) + "," + y(p.v).toFixed(1)).join("");
+    const onMove = e => { const r = e.currentTarget.getBoundingClientRect(), fx = (e.clientX - r.left) / r.width * W;
+      setHi(pts.reduce((b,p) => !b || Math.abs(x(p.i) - fx) < Math.abs(x(b.i) - fx) ? p : b, null)); };
+    const h = hi && F.series[hi.q];
+    return (
+      <div style={{ position:"relative" }}>
+        <svg viewBox={`0 0 ${W} ${H}`} width="100%" style={{ display:"block", overflow:"visible", touchAction:"none" }} onPointerMove={onMove} onPointerDown={onMove} onPointerLeave={()=>setHi(null)}
+          role="img" aria-label={`${tk} net accrued carry by quarter, ${nacQ(pts[0].q)} to ${nacQ(last.q)}; table below`}>
+          <line x1={pl} x2={W-pr} y1={H-pb} y2={H-pb} stroke={T.border} strokeWidth="1" />
+          <path d={d} fill="none" stroke={c} strokeWidth="2" strokeLinejoin="round" strokeLinecap="round" />
+          {hi && <line x1={x(hi.i)} x2={x(hi.i)} y1={pt-6} y2={H-pb} stroke={T.textMuted} strokeWidth="1" />}
+          {hi && hi !== last && <circle cx={x(hi.i)} cy={y(hi.v)} r="4" fill={c} stroke={T.bgCard} strokeWidth="2" />}
+          <circle cx={x(last.i)} cy={y(last.v)} r="4" fill={c} stroke={T.bgCard} strokeWidth="2" />
+          <text x={x(last.i)+8} y={y(last.v)+3.5} fontFamily={MONO} fontSize="10.5" fontWeight="700" fill={T.text}>{fmtB(last.v)}</text>
+          <text x={pl} y={H-3} fontFamily={MONO} fontSize="8.5" fill={T.textFaint}>{nacQ(Q[0])}</text>
+          <text x={W-pr} y={H-3} textAnchor="end" fontFamily={MONO} fontSize="8.5" fill={T.textFaint}>{nacQ(Q[Q.length-1])}</text>
+          <rect x="0" y="0" width={W} height={H} fill="transparent" />
+        </svg>
+        {hi && (
+          <div style={{ position:"absolute", top:0, ...(x(hi.i) / W > 0.5 ? { right:`${Math.max(0, 100 - x(hi.i) / W * 100 - 6)}%` } : { left:`${Math.max(0, x(hi.i) / W * 100 - 6)}%` }), transform:"translateY(-100%)", maxWidth:230, background:T.bgCard, border:`1px solid ${T.borderFt}`, borderRadius:6, padding:"5px 8px", fontFamily:MONO, fontSize:9.5, lineHeight:1.45, color:T.textSub, pointerEvents:"none", boxShadow:"0 2px 8px rgba(28,23,18,0.10)", zIndex:3 }}>
+            <b style={{ color:T.text, fontSize:11 }}>${fmtM(Math.round(hi.v))}M</b> {nacQ(hi.q)}
+            {h && (isNum(h.build) || isNum(h.drain)) && <div>{F.buildLab || "build"} {sgnM(h.build)} · {F.drainLab || "realized"} {sgnM(isNum(h.drain) ? -h.drain : null)}{isNum(h.adj) ? ` · ${h.adjLab || "other"} ${sgnM(h.adj)}` : ""}</div>}
+          </div>
+        )}
+      </div>
+    );
+  }
+  function NacTrends() {
+    const N = window.ALTS_NAC; if (!N) return null;
+    const R = window.ALTS_REPORTED || {}, Q = N.quarters, cal = (R.calendar || {})[Q[Q.length-1]] || {};
+    const ltm = (tk, i) => { if (i < 3) return null; let s = 0;
+      for (let k = i - 3; k <= i; k++) { const p = ((R.carry || {})[tk] || {})[Q[k]]; if (!p || !isNum(p.perf)) return null; s += p.perf; } return s; };
+    const card = (tk) => {
+      const F = N.firms[tk]; const ix = Q.map((q,i) => isNum((F.series[q]||{}).nac) ? i : -1).filter(i => i >= 0); if (!ix.length) return null;
+      const li = ix[ix.length-1], q = Q[li], cur = F.series[q], prev = (F.series[Q[li-1]]||{}).nac, yago = (F.series[Q[li-4]]||{}).nac;
+      const real = (((R.carry||{})[tk]||{})[q]||{}).perf, L = ltm(tk, li), pending = li < Q.length - 1;
+      return (
+        <div key={tk} style={{ minWidth:0, background:T.bgCard, border:`1.5px solid ${T.border}`, borderRadius:10, padding:"12px 14px 10px" }}>
+          <div style={{ display:"flex", justifyContent:"space-between", alignItems:"baseline", gap:8 }}>
+            <FirmTag tk={tk} />
+            <span style={{ fontFamily:MONO, fontSize:8.5, color:T.textMuted, textAlign:"right" }}>{F.short}</span>
+          </div>
+          <div style={{ display:"flex", gap:12, alignItems:"baseline", margin:"8px 0 2px", flexWrap:"wrap" }}>
+            <span style={{ fontFamily:SANS, fontSize:20, fontWeight:600, color:T.text }}>{fmtB(cur.nac)}</span>
+            <span style={{ fontFamily:MONO, fontSize:9.5, color:T.textMuted }}>{nacQ(q)}</span>
+            <span style={{ fontFamily:MONO, fontSize:9.5 }}><DeltaTxt v={pctCh(cur.nac, prev)} lab="q/q" /> · <DeltaTxt v={pctCh(cur.nac, yago)} lab="y/y" /></span>
+          </div>
+          <div style={{ marginTop:14 }}><NacSpark tk={tk} F={F} Q={Q} /></div>
+          <div style={{ marginTop:6, fontFamily:MONO, fontSize:9.5, color:T.textSub, lineHeight:1.65 }}>
+            {(isNum(cur.build) || isNum(cur.drain))
+              ? <div>{nacQ(q)} walk: {F.buildLab || "build"} <b style={{ color:T.text }}>{sgnM(cur.build)}</b> · {F.drainLab || "realized"} <b style={{ color:T.text }}>{sgnM(isNum(cur.drain) ? -cur.drain : null)}</b>{isNum(cur.adj) && <> · {cur.adjLab || "other"} <b style={{ color:T.text }}>{sgnM(cur.adj)}</b></>}</div>
+              : <div>{nacQ(q)} change <b style={{ color:T.text }}>{sgnM(isNum(prev) ? cur.nac - prev : null)}</b>{isNum(real) && <> · net realized carry in the quarter <b style={{ color:T.text }}>${fmtM(real)}M</b></>}</div>}
+            {isNum(cur.gaap) && <div style={{ color:T.textMuted }}>GAAP net ${fmtM(Math.round(cur.gaap))}M (walk basis); the gap is Consolidated Funds' accrual</div>}
+            {isNum(L) && L > 0 && <div>{F.coverFactor ? "Net est." : "NAC"} = <b style={{ color:T.text }}>{(cur.nac * (F.coverFactor || 1) / L).toFixed(1)}×</b> LTM net realized carry (${fmtM(Math.round(L))}M){F.coverNote ? ` · ${F.coverNote}` : ""}</div>}
+            {pending && <div style={{ color:T.textMuted }}>{nacQ(Q[Q.length-1])} due {cal[tk] ? dShort(cal[tk]).replace(/ \d{4}$/, "") : "—"}</div>}
+            {cur.note && <div style={{ color:T.textMuted, fontStyle:"italic" }}>{cur.note}</div>}
+          </div>
+        </div>
+      );
+    };
+    return (
+      <div style={{ marginBottom:22 }}>
+        <div style={{ fontSize:9, color:T.textMuted, fontFamily:MONO, letterSpacing:"0.12em", textTransform:"uppercase", marginBottom:6 }}>NAC trends · quarter-end net accrued carry, {nacQ(Q[0])}–{nacQ(Q[Q.length-1])}</div>
+        <div style={{ fontSize:11, color:T.textSub, lineHeight:1.6, marginBottom:12 }}>{N.intro}</div>
+        {N.takeaways && N.takeaways.length > 0 && (
+          <ul style={{ margin:"0 0 14px", paddingLeft:18, fontSize:11, color:T.textSub, lineHeight:1.6 }}>
+            {N.takeaways.map((t,i) => <li key={i} style={{ marginBottom:3 }}>{t}</li>)}
+          </ul>
+        )}
+        <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill, minmax(min(100%, 280px), 1fr))", gap:12 }}>{N.order.map(card)}</div>
+        <div style={{ marginTop:14, overflowX:"auto", borderRadius:8, border:`1px solid ${T.border}` }}>
+          <table style={{ width:"100%", borderCollapse:"collapse", fontSize:10.5, fontVariantNumeric:"tabular-nums" }}>
+            <thead><tr>
+              {["FIRM", ...Q.map(nacQ)].map((h,i) => <th key={h} style={{ padding:"6px 9px", textAlign:i?"right":"left", fontFamily:MONO, fontSize:8.5, letterSpacing:"0.06em", color:T.textMuted, background:T.bgHover, borderBottom:`2px solid ${T.border}`, whiteSpace:"nowrap", position:i?"static":"sticky", left:0 }}>{h}</th>)}
+            </tr></thead>
+            <tbody>
+              {N.order.map((tk,r) => { const F = N.firms[tk];
+                return (
+                  <tr key={tk} style={{ background:r%2?T.bgStripe:T.bgCard }}>
+                    <td style={{ padding:"5px 9px", whiteSpace:"nowrap", position:"sticky", left:0, background:r%2?T.bgStripe:T.bgCard }}><FirmTag tk={tk} /></td>
+                    {Q.map(q => { const s = F.series[q] || {};
+                      return <td key={q} title={isNum(s.build)||isNum(s.drain) ? `${F.buildLab||"build"} ${sgnM(s.build)} · ${F.drainLab||"realized"} ${sgnM(isNum(s.drain)?-s.drain:null)}${isNum(s.adj) ? ` · ${s.adjLab || "other"} ${sgnM(s.adj)}` : ""}` : (s.note||"")} style={{ padding:"5px 9px", textAlign:"right", fontFamily:MONO, color:isNum(s.nac)?T.text:T.textFaint }}>{isNum(s.nac) ? fmtM(Math.round(s.nac)) : "—"}</td>; })}
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+        <div style={{ marginTop:8, fontSize:8.5, color:T.textFaint, lineHeight:1.8 }}>$M at each quarter-end, each firm's own headline line, so levels are not like-for-like across firms; read the trend within a firm. {N.order.map(tk => `${tk}: ${N.firms[tk].def}`).join(" · ")}. Hover a cell or the chart for the quarter's walk where the firm discloses one. LTM net realized carry is the REPORTED series on the Realizations view.</div>
+      </div>
+    );
+  }
+
   function Carry() {
     const [sub,setSub]=useState("exits");
     const [filter,setFilter]=useState("All");
     const acc = window.__ACCRUED__;
     return (
       <div>
-        <SectionTitle feeds={["exits","ipos","reported","accrued"]} kicker="Section 4" title="Carry — realizations as a fee proxy" sub="Realization activity is observable deal-by-deal intra-quarter (PitchBook exits + retained-stake IPOs & sell-downs, merged, 12 quarters, 12 names — Blue Owl excluded as it earns fees not carry); the net realized performance fees it generates only print weeks later on the call. So the activity rows are a leading proxy and the REPORTED rows beneath (net realized perf fees + disclosed realizations, core US names, 2023 Q3–2026 Q2 plus 3Q26 as each firm reports) are the ground truth. Second lens: net accrued (unrealized) carry from fund-level 10-Q disclosure. Each realization table also carries a transcript check vs the last two calls." />
+        <SectionTitle feeds={["exits","ipos","reported","accrued","nac"]} kicker="Section 4" title="Carry — realizations as a fee proxy" sub="Realization activity is observable deal-by-deal intra-quarter (PitchBook exits + retained-stake IPOs & sell-downs, merged, 12 quarters, 12 names — Blue Owl excluded as it earns fees not carry); the net realized performance fees it generates only print weeks later on the call. So the activity rows are a leading proxy and the REPORTED rows beneath (net realized perf fees + disclosed realizations, core US names, 2023 Q3–2026 Q2 plus 3Q26 as each firm reports) are the ground truth. Second lens: net accrued (unrealized) carry from fund-level 10-Q disclosure. Each realization table also carries a transcript check vs the last two calls." />
         <div style={{ display:"flex", gap:6, marginBottom:18, flexWrap:"wrap" }}>
           {[["real","Realizations"],["accrued","Net accrued carry"]].map(([id,lab])=>(
             <button key={id} onClick={()=>setSub(id)} style={{ padding:"6px 16px", borderRadius:7, cursor:"pointer", fontFamily:MONO, fontSize:10.5, fontWeight:sub===id?700:500, letterSpacing:"0.05em", border:`1.5px solid ${sub===id?T.accent:T.border}`, background:sub===id?T.accent+"14":T.bgCard, color:sub===id?T.accent:T.textSub }}>{lab.toUpperCase()}</button>
@@ -1648,8 +1760,9 @@
         {(sub==="exits"||sub==="ipos") && <QuarterPanel kind="real" filter={filter} setFilter={setFilter} />}
         {sub==="accrued" && (
           <div>
+            <NacTrends />
             <div style={{ marginBottom:14, fontSize:11, color:T.textSub, lineHeight:1.6 }}>
-              Net accrued carried interest, bottom-up from fund-level 10-Q data. Currently {acc?acc.firms.length:0} firms disclose at this granularity (KKR, Blackstone, Ares, Carlyle, Apollo, all 1Q26). The remaining names either report differently or do not break carry out by fund — exit activity above is the cross-firm comparable.
+              Fund-level detail: net accrued carried interest, bottom-up from fund-level 10-Q data. Currently {acc?acc.firms.length:0} firms disclose at this granularity (KKR, Blackstone, Ares, Carlyle, Apollo, all at 2Q26 until the 3Q26 10-Qs). The remaining names either report differently or do not break carry out by fund — exit activity above is the cross-firm comparable.
             </div>
             {DATA.accruedFocus && (
               <div style={{ marginBottom:18, background:T.bgCard, border:`1.5px solid ${T.border}`, borderRadius:10, overflow:"hidden" }}>
