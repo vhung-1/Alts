@@ -29,7 +29,7 @@
    ============================================================================ */
 
 window.ALTS = {
-  meta: {"asOf":"2026-10-22","refreshed":"2026-10-22","note":"US managers at 2Q26 (30 Jun 2026) except BX at 3Q26 (reported 22 Oct); European names at H1 2026 (ICG at FY Mar-26 plus its Q1 FY27 trading update). PitchBook activity feeds re-pulled end to end and street consensus pulled on 2026-09-26."},
+  meta: {"asOf":"2026-11-05","refreshed":"2026-11-05","note":"US managers at 2Q26 (30 Jun 2026) except BX (reported 22 Oct) and CG (5 Nov) at 3Q26; ARES and TPG 3Q26 carry, fees and NAC loaded from their 29 Oct prints; European names at H1 2026 (ICG at FY Mar-26 plus its Q1 FY27 trading update). PitchBook activity feeds re-pulled end to end and street consensus pulled on 2026-09-26."},
 
   // Display order (left→right). All 13 mandate names.
   order: ["BX","KKR","APO","ARES","BAM","CG","TPG","OWL","PGHN","EQT","CVC","ICG","BPT"],
@@ -215,13 +215,13 @@ window.ALTS = {
     // ───────────────────────── CG ─────────────────────────
     CG: {
       ticker:"CG", name:"Carlyle", longName:"The Carlyle Group Inc.", exchange:"NasdaqGS", country:"US",
-      color:"#16A34A", cadence:"quarterly", period:"Q2 2026", periodEnd:"2026-06-30", reportDate:"2026-08-05",
-      reported:{ FRE:"$358M", FRE_ps:null, fpAUM:"$334B", DE_ps:"$1.07", comment:"Record FRE $358M +11% at 47% margin; DE $472M / $1.07, best in ~4 years; FEAUM $334B +3%; $16.8B inflows, $14.3B deployed, ~$7B returned to LPs." },
-      fundraising:[ { "name": "Carlyle Partners IX (CP IX)", "strategy": "US Buyout (GPE)", "status": "In market — marketing launched Q2'26; $5B anchor toward first close", "target": "~$15B (Bloomberg, Jun'26)", "hardCap": "N/A", "prevFund": "$14.8B (CP VIII)", "raisedToDate": "$5B commitments earmarked (Q2'26 inflows)", "firstClose": "By YE2026 (targeted, per Bloomberg)", "finalClose": "N/A", "pb": "27832-69F", "comment": "Anchor seeded via a ~$8.5B structured financing, of which ~$5B was earmarked for the new fund (Bloomberg); 15bp fee discount for commitments before first close. Replaces the mislabelled 'CP X' row: the next US buyout vintage is CP IX." }, { "name": "Carlyle Europe Partners VI", "strategy": "Europe Buyout (GPE)", "status": "Open", "target": ">$8.7B", "hardCap": "N/A", "prevFund": "€6.4B (CEP V)", "raisedToDate": "$1.06B (PB, 26 Sep)", "firstClose": "N/A", "finalClose": "N/A", "pb": "20707-66F", "comment": "No fund-level update in the 2Q26 materials; predecessor CEP V (€6.4B) is at 1.0x MOIC / negative net IRR, a headwind for the raise." }, { "name": "AlpInvest Atom Fund II (AAF II)", "strategy": "Secondaries — single-asset CVs (AlpInvest)", "status": "Final close (Jul'26)", "target": "$1.0B", "hardCap": "$1.7B", "prevFund": "AAF I (2023); AAF II +393% vs predecessor", "raisedToDate": "$1.7B (final, at hard cap)", "firstClose": "N/A", "finalClose": "2026-07-15", "pb": "N/A", "comment": "Takes AlpInvest SACV capacity to $7B incl. evergreen vehicles, ASF VIII and sidecars; CFO: '4x larger than its predecessor'. Counted in Q2 AlpInvest inflows ($4.5B)." }, { "name": "Carlyle Infrastructure Credit Fund II (CICF II)", "strategy": "Infrastructure Credit (Global Credit)", "status": "Final close (Sep'26)", "target": "$2.0B", "hardCap": "N/A", "prevFund": "$643M (CICF I)", "raisedToDate": "~$2.3B (final)", "firstClose": "N/A", "finalClose": "2026-09-14", "pb": "N/A", "comment": ">3x predecessor; 6 investments / ~$500M committed at close; Carlyle Infrastructure Credit platform ~$8.7B." }, { "name": "Carlyle Asset-Backed Income Fund (CABI)", "strategy": "Credit / ABF", "status": "Open — first close held (Q1'26)", "target": "N/A", "hardCap": "N/A", "prevFund": "N/A", "raisedToDate": "$1.5B (first close); ABF platform >$12B", "firstClose": "Q1 2026", "finalClose": "N/A", "pb": "N/A", "comment": "Q2 credit inflows cite ABF activity; one ABF fund flipped from carry to a performance-fee structure (now in FRPR run-rate)." }, { "name": "Carlyle Credit Opportunities (next vintage)", "strategy": "Opportunistic Credit", "status": "Pre-launch — in super-cycle line-up", "target": "N/A", "hardCap": "N/A", "prevFund": "$5.7B committed (CCOF III platform; $7.1B investable)", "raisedToDate": "N/A", "firstClose": "N/A", "finalClose": "N/A", "pb": "N/A", "comment": "CFO (2Q call): credit opportunities, secondaries, portfolio finance, US buyout and defense flagships are all in market over the next ~24 months. The ctx pb 23182-03F ('Bravo Opportunistic Credit') could not be matched to this vintage, so it was dropped." } ],
-      fundraisingSummary:"Carlyle took in $16.8B of inflows in Q2'26 ($29.8B in 1H, a firm record for organic inflows; $55.8B LTM, +10%), led by $5B earmarked for the next US buyout fund (CP IX, marketing launched, ~$15B target per Bloomberg), $4.5B at AlpInvest and $5.8B in Global Credit (three new US CLOs plus insurance). Since quarter-end AlpInvest closed AAF II at its $1.7B hard cap (15 Jul) and Global Credit closed CICF II at ~$2.3B vs a $2B target (14 Sep). H2 pipeline: the CP IX first close (targeted by year-end), the Unum block (>$5B credit AUM on closing) and the start of the 2026-28 super cycle, with nearly every flagship in market over the next ~24 months.",
-      guidance:[ { "metric": "GPE realized principal investment income / DE", "period": "2H 2026 (disposition 'later in 2026')", "value": "~$222M realized loss expected; GPE 2H DE 'may be lower than 1H'", "source": "10-Q (filed 2026-08-10)", "comment": "New DE-specific language in the 2Q 10-Q: the cumulative unrealized loss on an investment in a consolidated infrastructure fund was $222M at 6/30 (1Q 10-Q: ~$175M, 'in 2026') and is realized on disposition. $222M / 356.4M dividend-eligible shares = ~$0.62/sh pre-tax. Explains the ~40% cut to Street 4Q26E DE (CapIQ mean $0.68, median $0.60)." }, { "metric": "FRE margin / comp ratio", "period": "FY2026", "value": "~47%", "source": "transcript", "comment": "Reinvesting in people, AI/technology and wealth; margin uplift pushed to 2027-28." }, { "metric": "Transaction / capital markets fees", "period": "Q3-Q4 2026", "value": "Below Q2's record $111M", "source": "transcript", "comment": "Management does not expect the Q2 record to repeat; quarterly volatility is normal." }, { "metric": "Global Credit AUM", "period": "2H 2026", "value": "+$5B on Unum close", "source": "transcript", "comment": "Second block reinsurance deal alongside Fortitude Re expected to close later this year." }, { "metric": "Net realized perf revenue", "period": "2H 2026", "value": "Continued momentum", "source": "transcript", "comment": "Several deals closed in July; 3Q seasonally lighter but realization pace market-leading." }, { "metric": "Fee-related perf revenue", "period": "2027", "value": "Steps up", "source": "transcript", "comment": "Wealth/AlpInvest growth; an ABF fund converted to a performance-fee structure is now in the run rate." }, { "metric": "Fundraising super cycle", "period": "2026-2028", "value": "Target reaffirmed", "source": "transcript", "comment": "Nearly all flagships in market over the next ~24 months; 1H26 organic inflows of $30B a firm record." } ],
-      guidanceSummary:"Carlyle framed 2026 as an investment year (FRE margin ~47%, operating leverage deferred to 2027-28) and said Q2's record transaction fees and FRPR won't repeat in 3Q/4Q. After the call, the 2Q 10-Q (10 Aug) warned that GPE DE in 2H26 may be lower than in 1H because a ~$222M loss on a consolidated infrastructure-fund investment will be realized on disposition later in 2026. That is the main reason Street 4Q26E DE was cut by ~40%. Realization momentum, the Unum block (>$5B credit AUM) and the $200B 2026-28 super-cycle target are unchanged.",
-      consensus:{ FRE:{cons:320,n:10}, PFRE:{cons:74,n:10}, FRE_ps:{cons:0.89,n:10}, DE_ps:{cons:0.91,n:10}, netFlowsTotal:{cons:2.2,n:10}, netFlowsCredit:{cons:1.2,n:10} },  // 2Q26E VA cons (10-Jun-26); netFlowsCredit=Global Credit seg
+      color:"#16A34A", cadence:"quarterly", period:"Q3 2026", periodEnd:"2026-09-30", reportDate:"2026-11-05",
+      reported:{ FRE:"$293M", FRE_ps:null, fpAUM:"$330B", DE_ps:"$1.12", comment:"FRE $293M (−6% YoY, 47% margin) vs Visible Alpha's $325M as transaction fees fell back to $33M from Q2's record $111M; DE $433M / $1.12 vs $1.07 consensus; realized net performance revenues $100M (VA $99M); $10.8B inflows, $11.0B deployed, $8.8B realized proceeds; net accrued performance revenues −12% q/q to $2.1B as CP VII's accrued carry reversed." },
+      fundraising:[ { "name": "Carlyle Partners IX (CP IX)", "strategy": "US Buyout (GPE)", "status": "In market — marketing launched Q2'26; $5B anchor toward first close", "target": "~$15B (Bloomberg, Jun'26)", "hardCap": "N/A", "prevFund": "$14.8B (CP VIII)", "raisedToDate": "$5B commitments earmarked (Q2'26 inflows)", "firstClose": "By YE2026 (targeted, per Bloomberg)", "finalClose": "N/A", "pb": "27832-69F", "comment": "Anchor seeded via a ~$8.5B structured financing, of which ~$5B was earmarked for the new fund (Bloomberg); 15bp fee discount for commitments before first close. Replaces the mislabelled 'CP X' row: the next US buyout vintage is CP IX. 3Q26 release (5 Nov): no CP IX close announced; Q3 GPE inflows ($2.2B) came from US growth." }, { "name": "Carlyle Europe Partners VI", "strategy": "Europe Buyout (GPE)", "status": "Open", "target": ">$8.7B", "hardCap": "N/A", "prevFund": "€6.4B (CEP V)", "raisedToDate": "$1.06B (PB, 26 Sep)", "firstClose": "N/A", "finalClose": "N/A", "pb": "20707-66F", "comment": "No fund-level update in the 2Q26 materials; predecessor CEP V (€6.4B) is at 1.0x MOIC / negative net IRR, a headwind for the raise." }, { "name": "AlpInvest Atom Fund II (AAF II)", "strategy": "Secondaries — single-asset CVs (AlpInvest)", "status": "Final close (Jul'26)", "target": "$1.0B", "hardCap": "$1.7B", "prevFund": "AAF I (2023); AAF II +393% vs predecessor", "raisedToDate": "$1.7B (final, at hard cap)", "firstClose": "N/A", "finalClose": "2026-07-15", "pb": "N/A", "comment": "Takes AlpInvest SACV capacity to $7B incl. evergreen vehicles, ASF VIII and sidecars; CFO: '4x larger than its predecessor'. Counted in Q2 AlpInvest inflows ($4.5B)." }, { "name": "Carlyle Infrastructure Credit Fund II (CICF II)", "strategy": "Infrastructure Credit (Global Credit)", "status": "Final close (Sep'26)", "target": "$2.0B", "hardCap": "N/A", "prevFund": "$643M (CICF I)", "raisedToDate": "$2.32B (final; 3Q26 fund table)", "firstClose": "N/A", "finalClose": "2026-09-14", "pb": "N/A", "comment": ">3x predecessor; 6 investments / ~$500M committed at close; Carlyle Infrastructure Credit platform ~$8.7B. The 3Q26 release counts its final close in Q3 inflows; committed capital $2,319M." }, { "name": "Carlyle Asset-Backed Income Fund (CABI)", "strategy": "Credit / ABF", "status": "Open — first close held (Q1'26)", "target": "N/A", "hardCap": "N/A", "prevFund": "N/A", "raisedToDate": "$1.5B (first close); ABF platform >$12B", "firstClose": "Q1 2026", "finalClose": "N/A", "pb": "N/A", "comment": "Q2 credit inflows cite ABF activity; one ABF fund flipped from carry to a performance-fee structure (now in FRPR run-rate)." }, { "name": "Carlyle Credit Opportunities Fund IV (CCOF IV)", "strategy": "Opportunistic Credit", "status": "Open — first close held (Q3'26)", "target": "N/A", "hardCap": "N/A", "prevFund": "$5.7B committed (CCOF III platform; $7.1B investable)", "raisedToDate": "$2.4B platform at first close (CCOF IV Levered $2.25B + Unlevered)", "firstClose": "Q3 2026 (fees from Jul 2026)", "finalClose": "N/A", "pb": "N/A", "comment": "3Q26 release: the first close of CCOF IV led Q3 Global Credit inflows. The CCOF IV platform has $2.4B of committed capital against $5.7B for the CCOF III platform. CFO (2Q call): credit opportunities, secondaries, portfolio finance, US buyout and defense flagships are all in market over the next ~24 months. The ctx pb 23182-03F ('Bravo Opportunistic Credit') could not be matched to this vintage, so it was dropped." } ],
+      fundraisingSummary:"Q3 inflows were $10.8B ($49.8B LTM, −15% on the prior LTM). Global Credit led with $7.3B: the first close of CCOF IV (a $2.4B platform so far, against $5.7B for CCOF III), aviation capital, reinsurance activity, two new-issue CLOs and CICF II's final close ($2.32B). GPE took $2.2B, mostly US growth, and AlpInvest $1.4B (secondaries & portfolio finance, CAPM). No CP IX close was announced. Fee-earning AUM fell 1% to $329.6B as $5.5B of market activity, mostly in Global Credit, outweighed +$0.8B of net flows; pending fee-earning AUM is $28B (+48% y/y). Q2 for comparison: Carlyle took in $16.8B of inflows in Q2'26 ($29.8B in 1H, a firm record for organic inflows; $55.8B LTM, +10%), led by $5B earmarked for the next US buyout fund (CP IX, marketing launched, ~$15B target per Bloomberg), $4.5B at AlpInvest and $5.8B in Global Credit (three new US CLOs plus insurance). Since quarter-end AlpInvest closed AAF II at its $1.7B hard cap (15 Jul) and Global Credit closed CICF II at ~$2.3B vs a $2B target (14 Sep). H2 pipeline: the CP IX first close (targeted by year-end), the Unum block (>$5B credit AUM on closing) and the start of the 2026-28 super cycle, with nearly every flagship in market over the next ~24 months.",
+      guidance:[ { "metric": "GPE realized principal investment income / DE", "period": "2H 2026 (disposition 'later in 2026')", "value": "~$222M realized loss expected; GPE 2H DE 'may be lower than 1H'", "source": "10-Q (filed 2026-08-10)", "comment": "New DE-specific language in the 2Q 10-Q: the cumulative unrealized loss on an investment in a consolidated infrastructure fund was $222M at 6/30 (1Q 10-Q: ~$175M, 'in 2026') and is realized on disposition. $222M / 356.4M dividend-eligible shares = ~$0.62/sh pre-tax. Explains the ~40% cut to Street 4Q26E DE (CapIQ mean $0.68, median $0.60). OUTCOME (3Q26 release): not realized in Q3 (realized principal investment income was +$64M). The cumulative loss is still ~$222M and the disposition is now expected in 4Q26 specifically." }, { "metric": "FRE margin / comp ratio", "period": "FY2026", "value": "~47%", "source": "transcript", "comment": "Reinvesting in people, AI/technology and wealth; margin uplift pushed to 2027-28. OUTCOME: Q3 FRE margin 47% (48% in 3Q25); 47% YTD." }, { "metric": "Transaction / capital markets fees", "period": "Q3-Q4 2026", "value": "Below Q2's record $111M", "source": "transcript", "comment": "Management does not expect the Q2 record to repeat; quarterly volatility is normal. OUTCOME: $32.6M in Q3 against $110.5M in Q2, as guided." }, { "metric": "Global Credit AUM", "period": "2H 2026", "value": "+$5B on Unum close", "source": "transcript", "comment": "Second block reinsurance deal alongside Fortitude Re expected to close later this year. OUTCOME: the 3Q26 release cites 'reinsurance activity' in Q3 inflows but does not mention the Unum close; Global Credit FEAUM fell to $163.7B after $5.7B of market activity." }, { "metric": "Net realized perf revenue", "period": "2H 2026", "value": "Continued momentum", "source": "transcript", "comment": "Several deals closed in July; 3Q seasonally lighter but realization pace market-leading. OUTCOME: $99.8M in Q3 (Q2 $114.6M; VA $99M), from CEOF II, CJP IV, NGP XI and CIEP I; realized proceeds $8.8B, +23% LTM." }, { "metric": "Fee-related perf revenue", "period": "2027", "value": "Steps up", "source": "transcript", "comment": "Wealth/AlpInvest growth; an ABF fund converted to a performance-fee structure is now in the run rate." }, { "metric": "Fundraising super cycle", "period": "2026-2028", "value": "Target reaffirmed", "source": "transcript", "comment": "Nearly all flagships in market over the next ~24 months; 1H26 organic inflows of $30B a firm record. Q3: inflows $10.8B ($49.8B LTM, −15%), led by CCOF IV's first close, aviation, two new CLOs and CICF II's final close." } ],
+      guidanceSummary:"3Q26 print (5 Nov): FRE $293M missed Visible Alpha's $325M as transaction fees fell back to $33M, as guided, from Q2's record $111M; the margin held at 47%. DE of $1.12/sh beat the $1.07 consensus on $64M of realized principal investment income and $100M of realized carry. The ~$222M consolidated-infrastructure loss has not been realized yet and is now expected in 4Q26, so the Street's low 4Q DE stands. Net accrued performance revenues fell 12% to $2.1B. Call commentary is pending its transcript. Before the print: Carlyle framed 2026 as an investment year (FRE margin ~47%, operating leverage deferred to 2027-28) and said Q2's record transaction fees and FRPR won't repeat in 3Q/4Q. After the call, the 2Q 10-Q (10 Aug) warned that GPE DE in 2H26 may be lower than in 1H because a ~$222M loss on a consolidated infrastructure-fund investment will be realized on disposition later in 2026. That is the main reason Street 4Q26E DE was cut by ~40%. Realization momentum, the Unum block (>$5B credit AUM) and the $200B 2026-28 super-cycle target are unchanged.",
+      consensus:{ FRE:{cons:325,n:null}, PFRE:{cons:99.2,n:null}, FRE_ps:{cons:0.91,n:null}, DE_ps:{cons:1.07,n:null}, netFlowsTotal:{cons:5.6,n:null}, netFlowsCredit:{cons:2.6,n:null} },  // 3Q26E: Visible Alpha 27 Sep (FRE, carry, per-share); net flows = flows.js VA 28 Jun. Prior: 2Q26E VA cons (10-Jun-26); netFlowsCredit=Global Credit seg
       exits:{ quarterly:{
         "2023 Q2":{count:11,totalTV:2661}, "2023 Q3":{count:11,totalTV:6195}, "2023 Q4":{count:5,totalTV:1768}, "2024 Q1":{count:9,totalTV:4172},
         "2024 Q2":{count:7,totalTV:2316}, "2024 Q3":{count:6,totalTV:3061}, "2024 Q4":{count:11,totalTV:3336}, "2025 Q1":{count:7,totalTV:1749},
@@ -448,7 +448,7 @@ window.ALTS = {
      ========================================================================== */
   accruedMeta: {
  "asOf": "2Q26 (Jun 30, 2026)",
- "note": "Blackstone net +$468M to $7.47B (Multi-Asset +$187M, Infrastructure +$164M); Carlyle −$173M as CP VII fell $153M. Blackstone's 3Q26 release (22 Oct) puts the total at $7.26B (−$205M) as distributions outran gains; fund-level detail awaits the 10-Q. Ares' 29 Oct deck puts its unconsolidated total at $1.19B (+$45M q/q); quarter-by-quarter totals for all six core names are in NAC trends above."
+ "note": "Blackstone net +$468M to $7.47B (Multi-Asset +$187M, Infrastructure +$164M); Carlyle −$173M as CP VII fell $153M. Blackstone's 3Q26 release (22 Oct) puts the total at $7.26B (−$205M) as distributions outran gains; fund-level detail awaits the 10-Q. Ares' 29 Oct deck puts its unconsolidated total at $1.19B (+$45M q/q); quarter-by-quarter totals for all six core names are in NAC trends above. Carlyle's fund table is at 3Q26 from its 5 Nov release (fund performance tables): $2.14B, −$279M q/q, as CP VII fell to $1M."
 },
 
   // Section 4b — the 1-2 funds that drive each disclosing firm's accrued carry (watch list).
@@ -456,7 +456,7 @@ window.ALTS = {
  "KKR": "Co-Investment Vehicles ($1.68B gross) and North America Fund XIII ($1.27B) now lead PE as Americas Fund XII harvests (↓ to $1.12B on OneStream/Flow Control exits); Global Infrastructure IV ($1.08B) leads Real Assets and European Fund VI ($196M) began accruing.",
  "BX": "BCP Global ($1.76B net) is still the largest pool but dipped on Corporate PE realizations; Secondaries ($1.15B) and Energy/Transition ($1.05B) follow, while Infrastructure (↑ to $936M) and Multi-Asset (↑ to $243M) drove the build to $7.5B.",
  "ARES": "Credit still carries Ares: PCS II ($114M net) and ASOF II ($105M) now lead after ACE V's $47M post-investment-period distribution cut it to $86M, ACE VI ($94M, ↑) is the builder, and ACOF VI's $626M gross still nets to ~$17M (~97% comp).",
- "CG": "CP VII dropped to $256M net (↓$153M on lower public marks and the preferred return) and is now barely ahead of CP VIII ($228M); CJP IV ($71M) realized carry for the first time, and AlpInvest secondaries (ASF VII $161M, ASF VIII ↑ to $76M) remain the growth pool.",
+ "CG": "3Q26: CP VII's net accrued carry all but vanished (↓$255M to $1M on lower public marks), so CP VIII ($241M, ↑$13M) is now Carlyle's largest pool. CEOF II ($67M) was fully realized and CJP IV kept realizing (↓ to $51M). Energy (CGIOF $97M, CIEP I $84M, CIEP II $79M) and credit (CCOF II $98M, SASOF V $49M) are the builders; AlpInvest secondaries eased (ASF VII $149M). 2Q26: CP VII dropped to $256M net (↓$153M on lower public marks and the preferred return) and is now barely ahead of CP VIII ($228M); CJP IV ($71M) realized carry for the first time, and AlpInvest secondaries (ASF VII $161M, ASF VIII ↑ to $76M) remain the growth pool.",
  "APO": "Fund IX (~$424M net) is still the core PE carry but slipped again on MTT/consumer markdowns; Fund X (~$250M, ↑) is building, Fund VIII jumped to ~$61M (still in escrow) and Redding Ridge (~$107M) leads credit."
 },
 
@@ -1068,36 +1068,25 @@ window.ALTS = {
  "CG": {
   "name": "Carlyle",
   "color": "#16A34A",
-  "period": "2Q26",
-  "periodEnd": "Jun 30, 2026",
-  "disclosure": "Net carry per fund (10-Q fund metrics table)",
+  "period": "3Q26",
+  "periodEnd": "Sep 30, 2026",
+  "disclosure": "Net carry per fund (3Q26 earnings-release fund performance tables)",
   "compType": "disclosed",
-  "compNote": "Net disclosed per fund. ~63% implied comp (net $2,415M / gross $6,608M). Clawback $(92)M.",
+  "compNote": "Net disclosed per fund. ~63% implied comp (net $2,136M / gross $5,801M incl. $120M giveback). Giveback $(120)M (2Q26 $(92)M). 3Q26 total −$279M q/q: −$179M of marks (CP VII) and $100M realized.",
   "segments": [
    {
     "label": "Corporate Private Equity",
     "funds": [
      {
-      "name": "CP VII",
-      "vintage": "2018",
-      "net": 256,
-      "note": "↓ from $409M 1Q26 — lower public marks, pref. return (stepdown Oct 2021)"
-     },
-     {
       "name": "CP VIII",
       "vintage": "2021",
-      "net": 228
-     },
-     {
-      "name": "CJP IV",
-      "vintage": "2020",
-      "net": 71,
-      "note": "↓ from $121M 1Q26 — first carry realizations"
+      "net": 241,
+      "note": "↑ from $228M 2Q26; now the largest Carlyle pool"
      },
      {
       "name": "CP VI",
       "vintage": "2013",
-      "net": 71
+      "net": 72
      },
      {
       "name": "CGFSP III",
@@ -1105,29 +1094,31 @@ window.ALTS = {
       "net": 70
      },
      {
-      "name": "CEOF II",
-      "vintage": "2015",
-      "net": 67
-     },
-     {
       "name": "CGP II",
       "vintage": "2020",
-      "net": 52
+      "net": 65,
+      "note": "↑ from $52M 2Q26"
+     },
+     {
+      "name": "CJP IV",
+      "vintage": "2020",
+      "net": 51,
+      "note": "↓ from $71M 2Q26 — carry realized again in Q3"
      },
      {
       "name": "CEP IV",
       "vintage": "2014",
-      "net": 40
+      "net": 37
      },
      {
       "name": "CETP IV",
       "vintage": "2019",
-      "net": 38
+      "net": 34
      },
      {
       "name": "CGFSP II",
       "vintage": "2013",
-      "net": 30
+      "net": 32
      },
      {
       "name": "CAP IV",
@@ -1135,14 +1126,15 @@ window.ALTS = {
       "net": 19
      },
      {
+      "name": "CP Growth",
+      "vintage": "2021",
+      "net": 19,
+      "note": "↑ from $14M 2Q26"
+     },
+     {
       "name": "CETP III",
       "vintage": "2014",
       "net": 15
-     },
-     {
-      "name": "CP Growth",
-      "vintage": "2021",
-      "net": 14
      },
      {
       "name": "CP V",
@@ -1155,20 +1147,26 @@ window.ALTS = {
       "net": 4
      },
      {
+      "name": "CP VII",
+      "vintage": "2018",
+      "net": 1,
+      "note": "↓ from $256M 2Q26 (and $409M 1Q26) — unrealized carry reversed on lower public marks"
+     },
+     {
       "name": "CGP",
       "vintage": "2015",
-      "net": 2
+      "net": 0
+     },
+     {
+      "name": "CEOF II",
+      "vintage": "2015",
+      "net": 0,
+      "note": "Fully realized in 3Q26 (was $67M at 2Q26); a named source of Q3 realized carry"
      },
      {
       "name": "All Other Active",
       "vintage": "Various",
-      "net": 30
-     },
-     {
-      "name": "Other / Rounding Adj.",
-      "vintage": "Various",
-      "net": -2,
-      "note": "Residual to disclosed $1,017M"
+      "net": 62
      }
     ]
    },
@@ -1178,23 +1176,30 @@ window.ALTS = {
      {
       "name": "CRP VIII",
       "vintage": "2017",
-      "net": 59
+      "net": 52,
+      "note": "↓ from $59M 2Q26"
      },
      {
       "name": "CRP VII",
       "vintage": "2014",
-      "net": -34,
-      "note": "Giveback (from $(28)M 1Q26)"
+      "net": -49,
+      "note": "Giveback (from $(34)M 2Q26)"
      },
      {
       "name": "CRP VI",
       "vintage": "2011",
-      "net": 4
+      "net": 3
      },
      {
       "name": "All Other Active",
       "vintage": "Various",
       "net": 6
+     },
+     {
+      "name": "Other / Rounding Adj.",
+      "vintage": "Various",
+      "net": -1,
+      "note": "Residual to disclosed $11M"
      }
     ]
    },
@@ -1204,51 +1209,53 @@ window.ALTS = {
      {
       "name": "CGIOF",
       "vintage": "2018",
-      "net": 90
+      "net": 97,
+      "note": "↑ from $90M 2Q26"
      },
      {
       "name": "CIEP I",
       "vintage": "2013",
-      "net": 80
+      "net": 84,
+      "note": "Realized carry in Q3"
      },
      {
       "name": "CIEP II",
       "vintage": "2019",
-      "net": 69,
-      "note": "↑ from $59M 1Q26"
+      "net": 79,
+      "note": "↑ from $69M 2Q26"
      },
      {
       "name": "NGP XI",
       "vintage": "2014",
-      "net": 58
+      "net": 45,
+      "note": "↓ from $58M 2Q26 — realized carry in Q3"
      },
      {
       "name": "NGP XII",
       "vintage": "2017",
-      "net": 40
+      "net": 39
      },
      {
       "name": "CRSEF II",
       "vintage": "2022",
-      "net": 27,
-      "note": "New fund"
+      "net": 32,
+      "note": "↑ from $27M 2Q26"
      },
      {
       "name": "NGP XIII",
       "vintage": "2023",
-      "net": 12,
-      "note": "New fund"
+      "net": 15
      },
      {
       "name": "All Other Active",
       "vintage": "Various",
-      "net": 49
+      "net": 55
      },
      {
       "name": "Other / Rounding Adj.",
       "vintage": "Various",
-      "net": 0,
-      "note": "Residual to disclosed $425M"
+      "net": -1,
+      "note": "Residual to disclosed $445M"
      }
     ]
    },
@@ -1258,28 +1265,53 @@ window.ALTS = {
      {
       "name": "CCOF II",
       "vintage": "2020",
-      "net": 99
+      "net": 98
      },
      {
-      "name": "All Other Active",
-      "vintage": "Various",
-      "net": 112
+      "name": "SASOF V",
+      "vintage": "2020",
+      "net": 49,
+      "note": "Shown separately from 3Q26 (in All Other Active before)"
      },
      {
       "name": "CCOF III-Levered",
       "vintage": "2023",
+      "net": 44,
+      "note": "↑ from $36M 2Q26"
+     },
+     {
+      "name": "SASOF IV",
+      "vintage": "2017",
       "net": 36,
-      "note": "New fund"
+      "note": "Shown separately from 3Q26"
      },
      {
       "name": "CCOF I",
       "vintage": "2017",
-      "net": 30
+      "net": 32
      },
      {
       "name": "SASOF III",
       "vintage": "2014",
-      "net": 6
+      "net": 4
+     },
+     {
+      "name": "CCOF IV-Levered",
+      "vintage": "2026",
+      "net": 0,
+      "note": "New fund; first close Q3'26"
+     },
+     {
+      "name": "All Other Active",
+      "vintage": "Various",
+      "net": 66,
+      "note": "2Q26 $112M included SASOF IV/V"
+     },
+     {
+      "name": "Other / Rounding Adj.",
+      "vintage": "Various",
+      "net": -2,
+      "note": "Residual to disclosed $327M"
      }
     ]
    },
@@ -1289,43 +1321,43 @@ window.ALTS = {
      {
       "name": "ASF VII (incl. SMAs)",
       "vintage": "2020",
-      "net": 161,
-      "note": "Secondaries"
+      "net": 149,
+      "note": "Secondaries; ↓ from $161M 2Q26"
      },
      {
       "name": "ASF VI (incl. SMAs)",
       "vintage": "2017",
-      "net": 106,
-      "note": "Secondaries"
+      "net": 95,
+      "note": "Secondaries; ↓ from $106M 2Q26"
      },
      {
       "name": "ASF VIII",
       "vintage": "2024",
-      "net": 76,
-      "note": "Secondaries; ↑ from $59M 1Q26"
+      "net": 70,
+      "note": "Secondaries; ↓ from $76M 2Q26"
      },
      {
       "name": "ASPF II",
       "vintage": "2023",
-      "net": 15,
+      "net": 17,
       "note": "Secondaries"
      },
      {
       "name": "ASF V (incl. SMAs)",
       "vintage": "2012",
-      "net": 11,
+      "net": 9,
       "note": "Secondaries"
      },
      {
       "name": "AAF II",
       "vintage": "2025",
-      "net": 6,
-      "note": "Secondaries; new to table"
+      "net": 7,
+      "note": "Secondaries"
      },
      {
       "name": "Other Secondaries",
       "vintage": "Various",
-      "net": 41,
+      "net": 40,
       "note": "Secondaries"
      },
      {
@@ -1341,16 +1373,16 @@ window.ALTS = {
       "note": "Co-Investments"
      },
      {
-      "name": "ACF VIII (incl. SMAs)",
-      "vintage": "2021",
-      "net": 27,
-      "note": "Co-Investments; ↓ from $50M 1Q26 — preferred return"
-     },
-     {
       "name": "ACF IX (incl. SMAs)",
       "vintage": "2023",
-      "net": 12,
+      "net": 16,
       "note": "Co-Investments"
+     },
+     {
+      "name": "ACF VIII (incl. SMAs)",
+      "vintage": "2021",
+      "net": 15,
+      "note": "Co-Investments; ↓ from $27M 2Q26"
      },
      {
       "name": "Other Co-Invests",
@@ -1360,15 +1392,15 @@ window.ALTS = {
      },
      {
       "name": "Primary SMAs (all)",
-      "vintage": "2009–26",
+      "vintage": "2003–26",
       "net": 25,
       "note": "Primary Investments"
      },
      {
       "name": "Other / Rounding Adj.",
       "vintage": "Various",
-      "net": -2,
-      "note": "Residual to disclosed $655M"
+      "net": -1,
+      "note": "Residual to disclosed $619M"
      }
     ]
    }
@@ -1646,6 +1678,7 @@ window.ALTS.exitRecon = {
     "pbExits": "10 exits since 1 Apr 2026: Q2 2 (~$54M disclosed TV: Liderman $53.5M, Atmas Health n/d); Q3 QTD 8 (~$5.26B disclosed TV, led by Copia Power $2.6B)",
     "note": "Q2 realized proceeds were $6.7B from carry funds ($3.9B in GPE). Management named Vantage Group (CP VII/CGFSP III), Rigaku and Iwasaki Electric (CJP IV), and none of the three is in PitchBook's Q2 window, which holds only 2 small exits. Q3-to-date lines up better: PitchBook has the announced Copia Power sale to EQT ($2.6B), the iC Consult sale to Bridgepoint ($491M) and a Rigaku sell-down ($702M), consistent with 'several announced transactions already closed in July'. Verdict stays Partial because PitchBook lags and under-captures Japan, financial-services and block-sale realizations.",
     "points": [
+      "3Q26 REPORTED (5 Nov): realized proceeds $8.8B ($5.7B GPE, +23% LTM). Named GPE realizations: Rigaku (Japan buyout), Camino Natural Resources (energy platform), Tescan Group (Europe technology) and VaroPreem (international energy). PitchBook has Rigaku ($702M sell-down) and Tescan ($678M) but not Camino or VaroPreem; its largest Q3 row, Copia Power ($2.6B), is not among the realizations Carlyle named. Realized net performance revenues $100M came from CEOF II (now fully realized), CJP IV, NGP XI and CIEP I.",
       "Q2 2026: carry-fund realized proceeds $6.7B ($36.8B LTM); named exits Vantage Group Holdings (CP VII/CGFSP III), Rigaku and Iwasaki Electric (CJP IV); realized net performance revenues $115M (CJP IV's first carry, CP VI, CCOF II).",
       "Q2 call: 'several announced transactions already closed in July or expected to close over the next few quarters'; 3Q seasonally lighter; US buyout returned 23% of fair value over the LTM.",
       "PitchBook Q2 (Apr-Jun): only Liderman ($53.5M) and Atmas Health (n/d), so it misses all three exits management cited.",
@@ -1757,4 +1790,4 @@ window.ALTS.exitRecon = {
 };
 ;(window.ALTS_FEEDS=window.ALTS_FEEDS||{}).fundraising={lab:"Fundraising",verb:"updated",asOf:"2026-09-26",through:"2Q26 / H1 2026 + announcements to date",src:"Company releases, calls and supplements; PitchBook fund profiles"};
 ;(window.ALTS_FEEDS=window.ALTS_FEEDS||{}).guidance={lab:"Guidance",verb:"updated",asOf:"2026-09-26",through:"2Q26 calls + September remarks / filings",src:"Company transcripts (S&P Global), filings and releases"};
-;(window.ALTS_FEEDS=window.ALTS_FEEDS||{}).accrued={lab:"Accrued carry",verb:"from",asOf:"2026-06-30",extra:"2Q26 10-Qs; 3Q26 firm totals in NAC trends",src:"Fund-level accrued carry tables in each firm's 2Q26 Form 10-Q"};
+;(window.ALTS_FEEDS=window.ALTS_FEEDS||{}).accrued={lab:"Accrued carry",verb:"from",asOf:"2026-06-30",extra:"2Q26 10-Qs (Carlyle 3Q26 from its release); 3Q26 firm totals in NAC trends",src:"Fund-level accrued carry tables in each firm's 2Q26 Form 10-Q"};

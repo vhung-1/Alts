@@ -437,7 +437,7 @@
               </table>
             </div>
             <div style={{ marginTop:8, fontSize:9, color:T.textFaint, fontFamily:MONO, lineHeight:1.6 }}>
-              <b>A</b> = reported actuals (2Q26 added 26 Sep from company supplements; BX 3Q26 added 22 Oct) · <b>EST</b> = Visible Alpha consensus ({FLOWS.estAsOf||FLOWS.asOf}) · <b>A/E</b> = actual for most firms, faded cells still VA estimates · Flow Rate = annualized net / prior-period FPAUM × 4, quarterly only · All values in $B except Rate. Not investment advice.
+              <b>A</b> = reported actuals (2Q26 added 26 Sep from company supplements; BX 3Q26 added 22 Oct, CG 3Q26 5 Nov) · <b>EST</b> = Visible Alpha consensus ({FLOWS.estAsOf||FLOWS.asOf}) · <b>A/E</b> = actual for most firms, faded cells still VA estimates · Flow Rate = annualized net / prior-period FPAUM × 4, quarterly only · All values in $B except Rate. Not investment advice.
             </div>
           </div>
         )}
@@ -1057,7 +1057,8 @@
           <b style={{ color:T.accent, fontFamily:MONO, fontSize:9.5, letterSpacing:"0.06em" }}>{lab} PRINT vs {per} CONSENSUS · REALIZED PERFORMANCE FEES</b><br/>
           The Visible Alpha estimate was set <b>before</b> the quarter printed ({C.asOf}); the actual is the reported figure from the earnings supplement.{" "}
           {pending.length
-            ? <><b>{rows.length} of {core.length}</b> core names have reported{rows.length ? <>, and <b>{beats}</b> beat on realized carry</> : null}. Still to report: {pending.map(tk => `${tk} (${dm((cal||{})[tk])})`).join(", ")}.</>
+            ? <><b>{rows.length} of {core.length}</b> core names are loaded{rows.length ? <>, and <b>{beats}</b> beat on realized carry</> : null}.{(() => { const done = pending.filter(tk => (cal||{})[tk] && (cal||{})[tk] <= (R.asOf||"")), todo = pending.filter(tk => !done.includes(tk));
+                return <>{todo.length ? <> Still to report: {todo.map(tk => `${tk} (${dm((cal||{})[tk])})`).join(", ")}.</> : null}{done.length ? <> Printed, not loaded yet: {done.map(tk => `${tk} (${dm((cal||{})[tk])})`).join(", ")}.</> : null}</>; })()}</>
             : <><b>{beats} of {rows.length}</b> core names beat on realized carry{bad ? <>; {bad} missed by more than 20%</> : null}.</>}
           {" "}This is the scorecard the Carry tab's activity rows are ultimately trying to anticipate.
         </div>
@@ -1704,7 +1705,7 @@
               : <div>{nacQ(q)} change <b style={{ color:T.text }}>{sgnM(isNum(prev) ? cur.nac - prev : null)}</b>{isNum(real) && <> · net realized carry in the quarter <b style={{ color:T.text }}>${fmtM(real)}M</b></>}</div>}
             {isNum(cur.gaap) && <div style={{ color:T.textMuted }}>GAAP net ${fmtM(Math.round(cur.gaap))}M (walk basis); the gap is Consolidated Funds' accrual</div>}
             {isNum(L) && L > 0 && <div>{F.coverFactor ? "Net est." : "NAC"} = <b style={{ color:T.text }}>{(cur.nac * (F.coverFactor || 1) / L).toFixed(1)}×</b> LTM net realized carry (${fmtM(Math.round(L))}M){F.coverNote ? ` · ${F.coverNote}` : ""}</div>}
-            {pending && <div style={{ color:T.textMuted }}>{nacQ(Q[Q.length-1])} due {cal[tk] ? dShort(cal[tk]).replace(/ \d{4}$/, "") : "—"}</div>}
+            {pending && <div style={{ color:T.textMuted }}>{nacQ(Q[Q.length-1])} {cal[tk] && cal[tk] <= (R.asOf || "") ? "printed" : "due"} {cal[tk] ? dShort(cal[tk]).replace(/ \d{4}$/, "") : "—"}{cal[tk] && cal[tk] <= (R.asOf || "") ? ", not loaded yet" : ""}</div>}
             {cur.note && <div style={{ color:T.textMuted, fontStyle:"italic" }}>{cur.note}</div>}
           </div>
         </div>
@@ -1762,7 +1763,7 @@
           <div>
             <NacTrends />
             <div style={{ marginBottom:14, fontSize:11, color:T.textSub, lineHeight:1.6 }}>
-              Fund-level detail: net accrued carried interest, bottom-up from fund-level 10-Q data. Currently {acc?acc.firms.length:0} firms disclose at this granularity (KKR, Blackstone, Ares, Carlyle, Apollo, all at 2Q26 until the 3Q26 10-Qs). The remaining names either report differently or do not break carry out by fund — exit activity above is the cross-firm comparable.
+              Fund-level detail: net accrued carried interest, bottom-up from fund-level 10-Q data. Currently {acc?acc.firms.length:0} firms disclose at this granularity (KKR, Blackstone, Ares and Apollo at 2Q26 until their 3Q26 10-Qs; Carlyle at 3Q26 from its release fund tables). The remaining names either report differently or do not break carry out by fund — exit activity above is the cross-firm comparable.
             </div>
             {DATA.accruedFocus && (
               <div style={{ marginBottom:18, background:T.bgCard, border:`1.5px solid ${T.border}`, borderRadius:10, overflow:"hidden" }}>
