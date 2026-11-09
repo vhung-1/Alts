@@ -1,0 +1,14 @@
+{
+  "name": "alts-tracker-tools",
+  "private": true,
+  "description": "Build and check the single-file Alts Tracker dashboard",
+  "scripts": {
+    "build": "node build_artifact.js",
+    "check": "node check.js"
+  },
+  "dependencies": {
+    "@babel/standalone": "7.25.6",
+    "react": "18.3.1",
+    "react-dom": "18.3.1"
+  }
+}

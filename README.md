@@ -21,7 +21,7 @@ There is also an **Overview** tab with a per-firm snapshot and the cross-firm ac
 | **Visible Alpha** | consensus (Section 3) — multi-period estimates in `consensus.js` |
 | **Company 10-Q / 10-K** | fund-level net accrued carry (KKR, BX, ARES, CG, APO) |
 
-Data as of **2026-06-17** (`window.ALTS.meta.asOf`).
+Data as of **2026-10-22** (`window.ALTS.meta.asOf`): 2Q26 actuals for all names, BX at 3Q26.
 
 ## Running it
 
@@ -35,6 +35,18 @@ python3 -m http.server 8000      # then open http://localhost:8000
 Or just open `index.html` directly in a browser. **First paint needs network access** for the CDN libraries (React 18, Babel standalone, Google Fonts); it degrades gracefully with a message if those are blocked. To publish, point **GitHub Pages** at the repo root.
 
 > `data.js` is loaded as a plain `<script>` (not `fetch`), so opening `index.html` from the local filesystem works without a server.
+
+### Single-file build and smoke test
+
+`tools/` builds a self-contained copy (JSX precompiled, React and every data file inlined, no CDN scripts) for sharing as one HTML file, and checks it headlessly:
+
+```
+(cd tools && npm install)
+node tools/build_artifact.js                 # → dist/alts-tracker-artifact.html
+node tools/check.js dist/alts-tracker-artifact.html "Carry=Q3'26 reported" "Consensus>Prints vs cons.=3Q'26 PRINT"
+```
+
+`check.js` clicks every tab and sub-view, fails on any page error, and confirms each `Tab>Sub-view=text` string appears. It uses Playwright (preinstalled in the Claude cloud container).
 
 ## File structure
 
